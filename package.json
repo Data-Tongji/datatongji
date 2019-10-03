@@ -1,8 +1,10 @@
 {
-  "name": "black-dashboard-react",
+  "name": "datatongji",
   "version": "1.0.0",
   "private": true,
-  "homepage": "https://creativetimofficial.github.io/black-dashboard-react/#/dashboard",
+  "engines": {
+    "node": "6.11.1"
+  },
   "dependencies": {
     "@babel/runtime": "^7.6.0",
     "@blueprintjs/core": "^3.18.0",
