@@ -21,7 +21,7 @@ class UserProfile extends React.Component {
 
   async componentDidMount() {
     const token = localStorage.getItem('token');
-    const response = await fetch(`https://api-data-statistic.herokuapp.com/auth/get_user?token=${token}`)
+    const response = await fetch(`https://datatongji-backend.com/auth/get_user?token=${token}`)
     const responseJson = await response.json()
     this.setState({ data: responseJson })
   };

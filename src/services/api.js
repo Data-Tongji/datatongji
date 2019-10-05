@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'https://api-data-statistic.herokuapp.com'
+    baseURL: 'https://datatongji-backend.com'
 });
 
 export default api;
