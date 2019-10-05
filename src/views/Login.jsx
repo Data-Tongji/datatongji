@@ -42,7 +42,7 @@ export class Login extends React.Component {
       }),
     };
 
-    fetch('https://datatongji-backend.com/auth/authenticate', requestInfo)
+    fetch('https://datatongji-backend.herokuapp.com/auth/authenticate', requestInfo)
       .then(response => {
         if (response.ok) {
           this.setState({ message: '' });
@@ -72,7 +72,7 @@ export class Login extends React.Component {
       }),
     };
 
-    fetch('https://datatongji-backend.com/auth/register', requestInfo)
+    fetch('https://datatongji-backend.herokuapp.com/auth/register', requestInfo)
       .then(response => {
         if (response.ok) {
           this.setState({ message: 'Usuário cadsatrado com sucesso!' });
@@ -103,8 +103,6 @@ export class Login extends React.Component {
   };
 
   valida = () => {
-    console.log(this.state.register)
-    console.log(this.state.name)
     this.colorAlert = 'warning'
     if (this.state.register === true) {
       if (this.state.name == null || this.state.name.trim() === "") {

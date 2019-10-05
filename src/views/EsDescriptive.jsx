@@ -35,6 +35,7 @@ import ReactTable from "react-table";
 import "react-table/react-table.css";
 import { runInThisContext } from "vm";
 
+
 class Descriptive extends React.Component {
     constructor(props) {
         super(props);
@@ -53,7 +54,6 @@ class Descriptive extends React.Component {
             btncolor: "primary",
             focused: "",
             PopAmost: "",
-            SubType: "",
             Type: "",
             var: "",
             step: 1,
@@ -99,7 +99,8 @@ class Descriptive extends React.Component {
             body: JSON.stringify({
                 "varPesq": this.state.Var,
                 "data": aux,
-                "userId": "5d6de134389a2a15b8517971"
+                "subTypeMeasure": this.state.rSelected,
+                "amost": this.state.PopAmost
             }),
             headers: new Headers({
                 'Content-Type': 'application/json',
@@ -107,7 +108,7 @@ class Descriptive extends React.Component {
             }),
         };
 
-        fetch('https://datatongji-backend.com/descriptive/simple_frequency', requestInfo)
+        fetch('https://datatongji-backend.herokuapp.com/descriptive/simple_frequency', requestInfo)
             .then(response => {
                 if (response.ok) {
                     this.setState({ message: '' });
@@ -117,16 +118,13 @@ class Descriptive extends React.Component {
             }).then(descriptive => {
                 let desc = descriptive;
                 this.setState({ Type: desc.typeVar });
-                this.setState({ SubType: desc.subType });
                 this.setState({ weightedMean: desc.weightedMean });
                 this.setState({ median: desc.median });
                 this.setState({ variance: desc.variance });
                 this.setState({ deviation: desc.deviation });
                 this.setState({ coefvar: desc.coefvar });
                 this.setState({ percentile: desc.percentile });
-                if (desc.subType === 'continua') {
-                    this.setState({ rSelected: 'Contínua' });
-                }
+                this.setState({ rSelected: desc.subType })
                 if (desc.mode.length > 1) {
                     let m = desc.mode[0].Value;
                     for (let i = 1; i < desc.mode.length; i++) {
@@ -137,7 +135,6 @@ class Descriptive extends React.Component {
                     this.setState({ mode: desc.mode[0].Value })
                 }
                 this.setState({ vet: desc.dataDescriptive });
-                console.log(this.state.vet);
             })
             .catch(e => {
                 this.setState({ message: e.message });
@@ -232,6 +229,9 @@ class Descriptive extends React.Component {
 
     ResultCollapse() {
         this.setState(state => ({ collapse: !this.state.collapse }));
+        if (this.state.stepPosition === 2) {
+            this.SendArray();
+        }
     }
 
     positionStep = (steps) => {
@@ -313,7 +313,6 @@ class Descriptive extends React.Component {
         let Position = this.state.stepPosition;
         let Card_Body;
         let ButtonType;
-        const { data } = this.state;
 
         button.push(
             <Button
@@ -375,14 +374,14 @@ class Descriptive extends React.Component {
             </CardBody>
         } else if (Position === 2) {
 
-            if (this.state.Type === 'qualitativo') {
+            if (this.state.Type === 'Qualitativo') {
                 ButtonType = <ButtonGroup>
                     <Button color={this.buttoncolor('QntQuali', 'Nominal')} onClick={() => this.onRadioBtnClick('QntQuali', 'Nominal')} active={this.state.rSelected === 'Nominal'}>Nominal</Button>
                     <Button color={this.buttoncolor('QntQuali', 'Ordinal')} onClick={() => this.onRadioBtnClick('QntQuali', 'Ordinal')} active={this.state.rSelected === 'Ordinal'}>Ordinal</Button>
                 </ButtonGroup>
-            } else if (this.state.Type === 'quantitativo') {
+            } else if (this.state.Type === 'Quantitativo') {
 
-                if (this.state.SubType !== 'continua') {
+                if (this.state.rSelected !== 'Contínua') {
                     ButtonType = <ButtonGroup>
                         <Button color={this.buttoncolor('QntQuali', 'Contínua')} onClick={() => this.onRadioBtnClick('QntQuali', 'Contínua')} active={this.state.rSelected === 'Contínua'}>Contínua</Button>
                         <Button color={this.buttoncolor('QntQuali', 'Discreta')} onClick={() => this.onRadioBtnClick('QntQuali', 'Discreta')} active={this.state.rSelected === 'Discreta'}>Discreta</Button>
@@ -466,7 +465,8 @@ class Descriptive extends React.Component {
                                             value={this.state.value}
                                             formatLabel={value => `${value}%`}
                                             onChange={value =>
-                                                this.setState({ value
+                                                this.setState({
+                                                    value
                                                 })} ></InputRange>
                                     </Col>
                                     <Col className="text-center text-md-left" sm={{ size: 1 }}>
@@ -482,33 +482,33 @@ class Descriptive extends React.Component {
                         </MDBCol>
                     </MDBRow>
                     {/* <Collapse isOpen={this.state.collapse}> */}
-                        <div><br /><br />
+                    <div><br /><br />
 
-                            <ListGroup>
-                                <ListGroupItem style={{ backgroundColor: 'transparent' }}
-                                    className="justify-content-between">Média Ponderada Simples: <Badge pill>{this.state.weightedMean}</Badge></ListGroupItem>
-                                <ListGroupItem style={{ backgroundColor: 'transparent' }}
-                                    className="justify-content-between">Moda: <Badge pill>{this.state.mode}</Badge></ListGroupItem>
-                                <ListGroupItem style={{ backgroundColor: 'transparent' }}
-                                    className="justify-content-between">Mediana: <Badge pill>{this.state.median}</Badge></ListGroupItem>
-                                <ListGroupItem style={{ backgroundColor: 'transparent' }}
-                                    className="justify-content-between">Variância: <Badge pill>{this.state.variance}</Badge></ListGroupItem>
-                                <ListGroupItem style={{ backgroundColor: 'transparent' }}
-                                    className="justify-content-between">Desvio Padrão: <Badge pill>{this.state.deviation}</Badge></ListGroupItem>
-                                <ListGroupItem style={{ backgroundColor: 'transparent' }}
-                                    className="justify-content-between">Coeficiente de Variação: <Badge pill>{this.state.coefvar}</Badge></ListGroupItem>
-                                <ListGroupItem style={{ backgroundColor: 'transparent' }}
-                                    className="justify-content-between">{this.state.MedSep} ({((this.state.value * (100 / this.state.step)) / 100)}): <Badge pill>{this.state.percentile[this.state.value - 1]}</Badge></ListGroupItem>
+                        <ListGroup>
+                            <ListGroupItem style={{ backgroundColor: 'transparent' }}
+                                className="justify-content-between">Média Ponderada Simples: <Badge pill>{this.state.weightedMean}</Badge></ListGroupItem>
+                            <ListGroupItem style={{ backgroundColor: 'transparent' }}
+                                className="justify-content-between">Moda: <Badge pill>{this.state.mode}</Badge></ListGroupItem>
+                            <ListGroupItem style={{ backgroundColor: 'transparent' }}
+                                className="justify-content-between">Mediana: <Badge pill>{this.state.median}</Badge></ListGroupItem>
+                            <ListGroupItem style={{ backgroundColor: 'transparent' }}
+                                className="justify-content-between">Variância: <Badge pill>{this.state.variance}</Badge></ListGroupItem>
+                            <ListGroupItem style={{ backgroundColor: 'transparent' }}
+                                className="justify-content-between">Desvio Padrão: <Badge pill>{this.state.deviation}</Badge></ListGroupItem>
+                            <ListGroupItem style={{ backgroundColor: 'transparent' }}
+                                className="justify-content-between">Coeficiente de Variação: <Badge pill>{this.state.coefvar}</Badge></ListGroupItem>
+                            <ListGroupItem style={{ backgroundColor: 'transparent' }}
+                                className="justify-content-between">{this.state.MedSep} ({((this.state.value * (100 / this.state.step)) / 100)}): <Badge pill>{this.state.percentile[this.state.value - 1]}</Badge></ListGroupItem>
 
-                            </ListGroup><br /><br />
+                        </ListGroup><br /><br />
 
-                            <table id='students' hover>
-                                <tbody>
-                                    <tr>{this.renderTableHeader()}</tr>
-                                    {this.renderTableData()}
-                                </tbody>
-                            </table>
-                        </div>
+                        <table id='students' hover>
+                            <tbody>
+                                <tr>{this.renderTableHeader()}</tr>
+                                {this.renderTableData()}
+                            </tbody>
+                        </table>
+                    </div>
                     {/* </Collapse> */}
 
 

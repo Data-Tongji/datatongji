@@ -10,7 +10,7 @@ function authenticate_token () {
     }),
   };
 
-  fetch('https://datatongji-backend.com/auth/authenticate_token', requestInfo)
+  fetch('https://datatongji-backend.herokuapp.com/auth/authenticate_token', requestInfo)
   .then(response => {
     if (response.ok) {
       return response.json();

@@ -7,7 +7,7 @@ function ForgotPass () {
     }),
   };
 
-  fetch('https://datatongji-backend.com/auth/forgot_password', requestInfo)
+  fetch('https://datatongji-backend.herokuapp.com/auth/forgot_password', requestInfo)
     .then(response => {
       if (response.ok) {
         this.setState({ message: '' });
