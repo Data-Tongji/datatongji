@@ -33,7 +33,6 @@ import {
 
 import ReactTable from "react-table";
 import "react-table/react-table.css";
-import { runInThisContext } from "vm";
 
 
 class Descriptive extends React.Component {

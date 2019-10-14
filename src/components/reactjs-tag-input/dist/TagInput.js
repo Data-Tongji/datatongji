@@ -76,8 +76,8 @@ var TagInput = function (_Component) {
                     inputValue = inputValue.replace(/\s{2,}/g, ' ');
                     inputValue = inputValue.replace(/-{2,}/g, '-');
                     inputValue = inputValue.replace(/,{1,}/g, '.');
-                    inputValue = inputValue.replace(/\.{2,}/g, '.');
-                    inputValue = inputValue.replace(/\;{2,}/g, ';');
+                    inputValue = inputValue.replace(/.{2,}/g, '.');
+                    inputValue = inputValue.replace(/;{2,}/g, ';');
                     inputValue = inputValue.normalize('NFD').replace(/([\u0300-\u036f]|[^0-9a-zA-Z\s,-\.\;])/g, '');
                     if (inputValue.includes(';')) {
                         if (inputValue.substr(inputValue.length-1,(inputValue.length))===';'){

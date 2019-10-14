@@ -1,39 +1,3 @@
-function ForgotPass () {
-  const requestInfo = {
-    method: 'POST',
-    body: JSON.stringify({ "email": this.state.email }),
-    headers: new Headers({
-      'Content-Type': 'application/json'
-    }),
-  };
-
-  fetch('https://datatongji-backend.herokuapp.com/auth/forgot_password', requestInfo)
-    .then(response => {
-      if (response.ok) {
-        this.setState({ message: '' });
-        return response.json();
-      }
-      throw new Error("login e/ou senha incorretos!");
-    })
-    .then(token => {
-      console.log(token);
-      this.positionStep(1);
-      return;
-    })
-    .catch(e => {
-      this.setState({ message: e.message });
-    });
-
-}
-
-
-
-
-
-
-
-
-
 function RetornaZ(x, media, dp) {
   let res = '';
   res = ((x - media) / dp);
