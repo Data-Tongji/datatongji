@@ -306,7 +306,10 @@ class Probability extends React.Component {
   };
 
   onDismiss = () => {
-    this.setState({ visible: false });
+    this.setState({
+      visible: false,
+      message: ''
+    });
   };
 
   inputValidation = () => {

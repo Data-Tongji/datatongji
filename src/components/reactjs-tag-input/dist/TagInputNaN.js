@@ -22,13 +22,13 @@ import Tag from './styled/Tag';
 import Input from './styled/Input';
 import TagDelete from './styled/TagDelete';
 
-var TagInputNaN = function (_Component) {
-  _inherits(TagInputNaN, _Component);
+var TagInput = function (_Component) {
+  _inherits(TagInput, _Component);
 
-  function TagInputNaN(props) {
-    _classCallCheck(this, TagInputNaN);
+  function TagInput(props) {
+    _classCallCheck(this, TagInput);
 
-    var _this = _possibleConstructorReturn(this, (TagInputNaN.__proto__ || Object.getPrototypeOf(TagInputNaN)).call(this, props));
+    var _this = _possibleConstructorReturn(this, (TagInput.__proto__ || Object.getPrototypeOf(TagInput)).call(this, props));
 
     _this.state = {
       selectedTags: []
@@ -42,7 +42,7 @@ var TagInputNaN = function (_Component) {
     return _this;
   }
 
-  _createClass(TagInputNaN, [{
+  _createClass(TagInput, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
       var tags = this.props.tags;
@@ -68,31 +68,67 @@ var TagInputNaN = function (_Component) {
       var _props = this.props,
         addTagOnEnterKeyPressed = _props.addTagOnEnterKeyPressed,
         onTagsChanged = _props.onTagsChanged;
-
+      var vet = [];
       var inputValue = e.target.value;
+      inputValue = inputValue.replace(/\s{2,}/g, ' ');
+      inputValue = inputValue.replace(/-{2,}/g, '-');
+      inputValue = inputValue.replace(/,{1,}/g, '.');
+      inputValue = inputValue.replace(/\.{2,}/g, '.');
+      inputValue = inputValue.replace(/\;{2,}/g, ';');
       var inputNotEmpty = inputValue && inputValue.trim() !== '';
       var inputnumber = inputValue && !isNaN(inputValue.trim());
+      var inputdot = inputValue && (inputValue.trim()).includes(';');
       var addTag = function addTag() {
+
+
         _this2.setState(function (state) {
+          inputValue = inputValue.normalize('NFD').replace(/([\u0300-\u036f]|[^0-9\.\;])/g, '');
+          if (inputValue.includes(';')) {
+            if (inputValue.substr(inputValue.length - 1, (inputValue.length)) === ';') {
+              inputValue = inputValue.substr(0, (inputValue.length - 1));
+            }
+            vet = inputValue.split(';');
+            let aux = _toConsumableArray(state.selectedTags);
+            for (let i = 0; i < vet.length; i++) {
+              if (!isNaN(parseFloat(vet[i]))) {
+                if (vet[i].includes('.')) {
+                  var x = vet[i];
+                  if (x.split('.').length <= 2) {
+                    aux = [].concat(aux, [{
+                      index: aux.length + 1,
+                      displayValue: parseFloat(vet[i].trim())
+                    }])
+                  }
+                }
+                else {
+                  aux = [].concat(aux, [{
+                    index: aux.length + 1,
+                    displayValue: parseFloat(vet[i].trim())
+                  }])
+                }
+              }
+            }
+
+            return { selectedTags: aux };
+          }
           return {
             selectedTags: [].concat(_toConsumableArray(state.selectedTags), [{
-              index: state.selectedTags.length+1,
-              displayValue: parseFloat(inputValue)
+              index: state.selectedTags.length + 1,
+              displayValue: parseFloat(inputValue.trim())
             }])
-          
           };
-          
         }, function () {
           var selectedTags = _this2.state.selectedTags;
-
 
           _this2.clearInput();
           onTagsChanged(selectedTags);
         });
+
+
       };
 
       if (e.key === 'Enter') {
-        if (inputNotEmpty && inputnumber && addTagOnEnterKeyPressed) {
+        if (inputNotEmpty && (inputnumber || inputdot) && addTagOnEnterKeyPressed) {
           addTag();
         } else {
           _this2.clearInput();
@@ -122,18 +158,7 @@ var TagInputNaN = function (_Component) {
         deleteLastTag();
       }
     }
-  },
-  // {
-  //   key: 'onKeyPressNaN',
-  //   value: function onKeyPressNaN(event) {
-
-  //     const keyCode = event.keyCode || event.which;
-  //     const keyValue = String.fromCharCode(keyCode);
-  //     if (/\+|-/.test(keyValue))
-  //       event.preventDefault();
-  //   }
-  // }  ,
-  {
+  }, {
     key: 'clearInput',
     value: function clearInput() {
       this.input.value = '';
@@ -267,10 +292,10 @@ var TagInputNaN = function (_Component) {
     }
   }]);
 
-  return TagInputNaN;
+  return TagInput;
 }(Component);
 
-TagInputNaN.propTypes = {
+TagInput.propTypes = {
   tags: PropTypes.array.isRequired,
   onTagsChanged: PropTypes.func.isRequired,
   onInputChange: PropTypes.func,
@@ -284,10 +309,10 @@ TagInputNaN.propTypes = {
   hideInputPlaceholderTextIfTagsPresent: PropTypes.bool
 };
 
-TagInputNaN.defaultProps = {
+TagInput.defaultProps = {
   placeholder: 'Type something and hit enter...',
   addTagOnEnterKeyPressed: true,
   hideInputPlaceholderTextIfTagsPresent: true
 };
 
-export default TagInputNaN;
+export default TagInput;

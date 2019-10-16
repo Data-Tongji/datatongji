@@ -24,6 +24,8 @@
     "dotenv": "^8.1.0",
     "grommet": "^2.7.8",
     "grommet-icons": "^4.3.0",
+    "highcharts": "^7.2.0",
+    "highcharts-react-official": "^2.2.2",
     "history": "4.7.2",
     "mdbootstrap": "^4.8.10",
     "mdbreact": "^4.19.2",
@@ -53,6 +55,7 @@
     "react-widgets": "^4.4.11",
     "reactjs-tag-input": "^2.0.13",
     "reactstrap": "6.5.0",
+    "recharts": "^1.8.0",
     "styled-components": "^4.3.2"
   },
   "scripts": {

@@ -76,12 +76,12 @@ var TagInput = function (_Component) {
                     inputValue = inputValue.replace(/\s{2,}/g, ' ');
                     inputValue = inputValue.replace(/-{2,}/g, '-');
                     inputValue = inputValue.replace(/,{1,}/g, '.');
-                    inputValue = inputValue.replace(/.{2,}/g, '.');
-                    inputValue = inputValue.replace(/;{2,}/g, ';');
+                    inputValue = inputValue.replace(/\.{2,}/g, '.');
+                    inputValue = inputValue.replace(/\;{2,}/g, ';');
                     inputValue = inputValue.normalize('NFD').replace(/([\u0300-\u036f]|[^0-9a-zA-Z\s,-\.\;])/g, '');
                     if (inputValue.includes(';')) {
-                        if (inputValue.substr(inputValue.length-1,(inputValue.length))===';'){
-                            inputValue=inputValue.substr(0,(inputValue.length - 1));
+                        if (inputValue.substr(inputValue.length - 1, (inputValue.length)) === ';') {
+                            inputValue = inputValue.substr(0, (inputValue.length - 1));
                         }
                         vet = inputValue.split(';');
                         let aux = _toConsumableArray(state.selectedTags);
@@ -90,13 +90,13 @@ var TagInput = function (_Component) {
                                 vet[i] = vet[i].replace(/,{1,}/g, '');
                                 vet[i] = vet[i].replace(/\.{1,}/g, '');
                             };
-                            aux= [].concat(aux, [{
+                            aux = [].concat(aux, [{
                                 index: aux.length + 1,
                                 displayValue: vet[i].trim()
                             }])
                         }
-                        
-                    return {selectedTags: aux};
+
+                        return { selectedTags: aux };
                     }
                     if (isNaN(inputValue)) {
                         inputValue = inputValue.replace(/,{1,}/g, '');
