@@ -52,8 +52,8 @@ export class Login extends React.Component {
       })
       .then(token => {
         localStorage.setItem('token', token);
-        
         localStorage.setItem('valid', "OK");
+        this.getUser(token);
         this.props.history.push("/admin/dashboard");
         return;
       })
@@ -61,6 +61,13 @@ export class Login extends React.Component {
         this.setState({ message: e.message });
       });
 
+  };
+
+  async getUser() {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`https://datatongji-backend.herokuapp.com/auth/get_user?token=${token}`)
+    const responseJson = await response.json()
+    localStorage.setItem('UserName', responseJson.name);
   };
 
   register = () => {

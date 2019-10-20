@@ -19,6 +19,7 @@ import {
   Container,
   Modal
 } from "reactstrap";
+const user = localStorage.getItem('UserName');
 
 class AdminNavbar extends React.Component {
   constructor(props) {
@@ -129,7 +130,7 @@ class AdminNavbar extends React.Component {
             <Collapse navbar isOpen={this.state.collapseOpen}>
               <Nav className="ml-auto" navbar>
                 <InputGroup className="search-bar">
-                  <Button
+                  {/* <Button
                     color="link"
                     data-target="#searchModal"
                     data-toggle="modal"
@@ -138,10 +139,10 @@ class AdminNavbar extends React.Component {
                   >
                     <i className="tim-icons icon-zoom-split" />
                     <span className="d-lg-none d-md-block">Search</span>
-                  </Button>
+                  </Button> */}
                 </InputGroup>
                 <UncontrolledDropdown nav>
-                  <DropdownToggle
+                  {/* <DropdownToggle
                     caret
                     color="default"
                     data-toggle="dropdown"
@@ -150,7 +151,7 @@ class AdminNavbar extends React.Component {
                     <div className="notification d-none d-lg-block d-xl-block" />
                     <i className="tim-icons icon-sound-wave" />
                     <p className="d-lg-none">Notifications</p>
-                  </DropdownToggle>
+                  </DropdownToggle> */}
                   <DropdownMenu className="dropdown-navbar" right tag="ul">
                     <NavLink tag="li">
                       <DropdownItem className="nav-item">
@@ -191,7 +192,7 @@ class AdminNavbar extends React.Component {
                       <img alt="..." src={require("assets/img/user.svg")} />
                     </div>
                     <b className="caret d-none d-lg-block d-xl-block" />
-                    <p className="d-lg-none" onClick={this.logout}>Log out</p>
+                    <p className="d-lg-none">{user}</p>
                   </DropdownToggle>
                   <DropdownMenu className="dropdown-navbar" right tag="ul">
                     <NavLink tag="li">
@@ -202,7 +203,6 @@ class AdminNavbar extends React.Component {
                     <NavLink onClick={this.handleClick} tag="li">
                       <DropdownItem className="nav-item">Settings</DropdownItem>
                     </NavLink>
-                    <DropdownItem divider tag="li" />
                     <NavLink tag="li">
                       <DropdownItem className="nav-item" onClick={this.logout}>Log out</DropdownItem>
                     </NavLink>

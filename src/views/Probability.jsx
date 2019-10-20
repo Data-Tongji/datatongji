@@ -1,5 +1,4 @@
 import React from "react";
-import { MDBRow, MDBCol } from 'mdbreact';
 import { Save } from 'grommet-icons';
 import {
   Alert,
@@ -643,26 +642,27 @@ class Probability extends React.Component {
                                     color={this.colorAlert} className="text-center">{this.state.message}</Alert>
                                 ) : ''}
                               <Container >
-                                <MDBRow className="mx-auto" >
-                                  <MDBCol ><FormGroup inline >
-                                    <CardTitle>Mean value:</CardTitle>
-                                    <Input type="text"
-                                      pattern="[^0-9,.]"
-                                      onInput={this.handleChange.bind(this)}
-                                      value={this.state.Mean}
-                                      name='Mean'
-                                      placeholder="0.00" />
-                                    <br /><br />
-                                    <CardTitle>Standard Devation value (%):</CardTitle>
-                                    <Input type="text"
-                                      pattern="[^0-9,.]"
-                                      onInput={this.handleChange.bind(this)}
-                                      value={this.state.stdDev}
-                                      name='stdDev'
-                                      placeholder="0.00%" />
-                                  </FormGroup><br />
-                                  </MDBCol>
-                                  <MDBCol >
+                                <Row>
+                                  <Col sm>
+                                    <FormGroup inline >
+                                      <CardTitle>Mean value:</CardTitle>
+                                      <Input type="text"
+                                        pattern="[^0-9,.]"
+                                        onInput={this.handleChange.bind(this)}
+                                        value={this.state.Mean}
+                                        name='Mean'
+                                        placeholder="0.00" />
+                                      <br /><br />
+                                      <CardTitle>Standard Devation value (%):</CardTitle>
+                                      <Input type="text"
+                                        pattern="[^0-9,.]"
+                                        onInput={this.handleChange.bind(this)}
+                                        value={this.state.stdDev}
+                                        name='stdDev'
+                                        placeholder="0.00%" />
+                                    </FormGroup><br />
+                                  </Col>
+                                  <Col sm>
                                     <CardTitle>The interval between values must be</CardTitle>
                                     <FormGroup check inline className="form-check-radio" >
                                       <Label className="form-check-label">
@@ -690,7 +690,7 @@ class Probability extends React.Component {
                                     </FormGroup><br /><br />
                                     <form>
                                       <Row>
-                                        <Col>
+                                        <Col sm>
                                           <Input type="text"
                                             pattern="[^0-9,.]"
                                             onInput={this.handleChange.bind(this)}
@@ -698,7 +698,7 @@ class Probability extends React.Component {
                                             name='Min'
                                             placeholder="0.00" />
                                         </Col>
-                                        <Col>
+                                        <Col sm>
                                           <Collapse isOpen={this.state.collapseint}>
                                             <Input type="text"
                                               pattern="[^0-9,.]"
@@ -711,8 +711,8 @@ class Probability extends React.Component {
                                       </Row>
                                     </form>
                                     <br />
-                                  </MDBCol>
-                                </MDBRow>
+                                  </Col>
+                                </Row>
                               </Container>
                             </CardBody>
                           </Col>
@@ -730,8 +730,8 @@ class Probability extends React.Component {
                                   color={this.colorAlert} className="text-center">{this.state.message}</Alert>
                               ) : ''}
                               <Container >
-                                <MDBRow className="mx-auto" >
-                                  <MDBCol ><FormGroup inline >
+                                <Row>
+                                  <Col sm> <FormGroup inline >
                                     <CardTitle>Initial value:</CardTitle>
                                     <Input type="text"
                                       pattern="[^0-9,.]"
@@ -747,10 +747,8 @@ class Probability extends React.Component {
                                       value={this.state.PMax}
                                       name='PMax'
                                       placeholder="0.00" />
-                                  </FormGroup><br />
-                                  </MDBCol>
-                                  <MDBCol >
-                                    <CardTitle>The interval between values must be</CardTitle>
+                                  </FormGroup><br /></Col>
+                                  <Col sm><CardTitle>The interval between values must be</CardTitle>
                                     <FormGroup check inline className="form-check-radio" >
                                       <Label className="form-check-label">
                                         <Input type="radio" name="exampleRadios1" id="exampleRadios11" value="1"
@@ -777,7 +775,7 @@ class Probability extends React.Component {
                                     </FormGroup><br /><br />
                                     <form>
                                       <Row>
-                                        <Col>
+                                        <Col sm>
                                           <Input type="text"
                                             pattern="[^0-9,.]"
                                             onInput={this.handleChange.bind(this)}
@@ -785,7 +783,7 @@ class Probability extends React.Component {
                                             name='Min'
                                             placeholder="0.00" />
                                         </Col>
-                                        <Col>
+                                        <Col sm>
                                           <Collapse isOpen={this.state.collapseint}>
                                             <Input type="text"
                                               pattern="[^0-9,.]"
@@ -797,9 +795,8 @@ class Probability extends React.Component {
                                         </Col>
                                       </Row>
                                     </form>
-                                    <br />
-                                  </MDBCol>
-                                </MDBRow>
+                                    <br /></Col>
+                                </Row>
                               </Container>
                             </CardBody>
                           </Col>
@@ -817,40 +814,39 @@ class Probability extends React.Component {
                                   color={this.colorAlert} className="text-center">{this.state.message}</Alert>
                               ) : ''}
                               <Container >
-                                <MDBRow className="mx-auto" >
-                                  <MDBCol >
-                                    <FormGroup inline >
-                                      <CardTitle>Sample size (<i>n</i>):</CardTitle>
-                                      <Input type="text"
-                                        pattern="[^0-9,.]"
-                                        onInput={this.handleChange.bind(this)}
-                                        value={this.state.spn}
-                                        name='spn'
-                                        placeholder="0" />
-                                      <br /><br />
-                                      <form>
-                                        <Row>
-                                          <Col>
-                                            <CardTitle>Success (<i>p</i>):</CardTitle>
-                                            <Input type="text"
-                                              onInput={this.handleChange.bind(this)}
-                                              value={this.state.p}
-                                              name='p'
-                                              placeholder="0.00%" />
-                                          </Col>
-                                          <Col>
-                                            <CardTitle>Failure (<i>q</i>):</CardTitle>
-                                            <Input type="text"
-                                              onInput={this.handleChange.bind(this)}
-                                              value={this.state.q}
-                                              name='q'
-                                              placeholder="0.00%" />
-                                          </Col>
-                                        </Row>
-                                      </form>
-                                    </FormGroup><br />
-                                  </MDBCol>
-                                  <MDBCol >
+                                <Row>
+                                  <Col sm>  <FormGroup inline >
+                                    <CardTitle>Sample size (<i>n</i>):</CardTitle>
+                                    <Input type="text"
+                                      pattern="[^0-9,.]"
+                                      onInput={this.handleChange.bind(this)}
+                                      value={this.state.spn}
+                                      name='spn'
+                                      placeholder="0" />
+                                    <br /><br />
+                                    <form>
+                                      <Row>
+                                        <Col sm>
+                                          <CardTitle>Success (<i>p</i>):</CardTitle>
+                                          <Input type="text"
+                                            onInput={this.handleChange.bind(this)}
+                                            value={this.state.p}
+                                            name='p'
+                                            placeholder="0.00%" /><br />
+                                        </Col>
+                                        <Col sm>
+                                          <CardTitle>Failure (<i>q</i>):</CardTitle>
+                                          <Input type="text"
+                                            onInput={this.handleChange.bind(this)}
+                                            value={this.state.q}
+                                            name='q'
+                                            placeholder="0.00%" />
+                                        </Col>
+                                      </Row>
+                                    </form>
+                                  </FormGroup><br />
+                                  </Col>
+                                  <Col sm>
                                     <CardTitle>The Event (<i>k</i>)  must be</CardTitle>
                                     <FormGroup check inline className="form-check-radio" >
                                       <Label className="form-check-label">
@@ -886,7 +882,7 @@ class Probability extends React.Component {
                                     </FormGroup><br /><br />
                                     <form>
                                       <Row>
-                                        <Col>
+                                        <Col sm>
                                           <Input type="text"
                                             pattern="[^0-9,.]"
                                             onInput={this.handleChange.bind(this)}
@@ -894,7 +890,7 @@ class Probability extends React.Component {
                                             name='BMin'
                                             placeholder="0" />
                                         </Col>
-                                        <Col>
+                                        <Col sm>
                                           <Collapse isOpen={this.state.collapseint}>
                                             <Input type="text"
                                               pattern="[^0-9,.]"
@@ -907,8 +903,8 @@ class Probability extends React.Component {
                                       </Row>
                                     </form>
                                     <br />
-                                  </MDBCol>
-                                </MDBRow>
+                                  </Col>
+                                </Row>
                               </Container>
                             </CardBody>
                           </Col>

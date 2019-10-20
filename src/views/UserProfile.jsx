@@ -21,9 +21,9 @@ class UserProfile extends React.Component {
 
   async componentDidMount() {
     const token = localStorage.getItem('token');
-    const response = await fetch(`https://datatongji-backend.herokuapp.com/auth/get_user?token=${token}`)
-    const responseJson = await response.json()
-    this.setState({ data: responseJson })
+    const response = await fetch(`https://datatongji-backend.herokuapp.com/auth/get_user?token=${token}`);
+    const responseJson = await response.json();
+    this.setState({ data: responseJson });
   };
 
   // handleBgClick = color => {

@@ -225,7 +225,21 @@ var TagInput = function (_Component) {
 
       return hideInputPlaceholderTextIfTagsPresent && selectedTags.length > 0 ? null : placeholder;
     }
-  }, {
+  },
+  {
+    key: 'pasteSplit',
+    value: function defaultPasteSplit(data) {
+      const separators = [',', ';', '\\(', '\\)', '\\*', '/', ':', '\\?', '\n', '\r'];
+      return data.split(new RegExp(separators.join('|'))).map(d => d.trim());
+    }
+  },
+  {
+    key: 'inputValue ',
+    value: function inputValue(props) {
+      return props.currentValue || props.inputValue || ''
+    }
+  },
+  {
     key: 'getDeleteIcon',
     value: function getDeleteIcon() {
       var tagDeleteIcon = this.props.tagDeleteIcon;
@@ -300,10 +314,13 @@ TagInput.propTypes = {
   onTagsChanged: PropTypes.func.isRequired,
   onInputChange: PropTypes.func,
   placeholder: PropTypes.string,
+  currentValue: PropTypes.string,
   wrapperStyle: PropTypes.string,
+  inputValue: PropTypes.string,
   inputStyle: PropTypes.string,
   tagStyle: PropTypes.string,
   tagDeleteStyle: PropTypes.string,
+  pasteSplit: PropTypes.func,
   tagDeleteIcon: PropTypes.element,
   addTagOnEnterKeyPressed: PropTypes.bool,
   hideInputPlaceholderTextIfTagsPresent: PropTypes.bool
@@ -312,7 +329,7 @@ TagInput.propTypes = {
 TagInput.defaultProps = {
   placeholder: 'Type something and hit enter...',
   addTagOnEnterKeyPressed: true,
-  hideInputPlaceholderTextIfTagsPresent: true
+  hideInputPlaceholderTextIfTagsPresent: false
 };
 
 export default TagInput;

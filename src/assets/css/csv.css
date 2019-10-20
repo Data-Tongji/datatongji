@@ -1,0 +1,23 @@
+label#csv {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+      align-items: center;
+      border: 1px dashed #ddd;
+      background-size: cover;
+      height: 50px;
+      cursor: pointer;
+    }
+    
+    label#csv input {
+      display: none;
+    }
+    
+    label#csv.has-csv {
+      display: none;
+      border: 0;
+    }
+    
+    label#csv.has-csv img {
+      display: none;
+    }

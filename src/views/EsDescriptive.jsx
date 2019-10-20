@@ -372,7 +372,6 @@ class Descriptive extends React.Component {
                 </Container>
             </CardBody>
         } else if (Position === 2) {
-
             if (this.state.Type === 'Qualitativo') {
                 ButtonType = <ButtonGroup>
                     <Button color={this.buttoncolor('QntQuali', 'Nominal')} onClick={() => this.onRadioBtnClick('QntQuali', 'Nominal')} active={this.state.rSelected === 'Nominal'}>Nominal</Button>
@@ -446,8 +445,6 @@ class Descriptive extends React.Component {
                             <CardTitle>Tipo de distribuição de dados: <b>{this.state.PopAmost}</b></CardTitle>
                             <CardTitle>Tipo de análise de dados desejada: <b>{this.state.rSelected}</b></CardTitle>
                             <ComboBox value={this.state.MedSep} data={['Quartil', 'Quintil', 'Decil', 'Percentil']} onChange={event => this.onChangeCB(event.target.value)} color={'primary'} style={{ color: 'black' }} /><br /><br />
-
-
                             <form>
                                 <Row>
                                     <Col className="text-center text-md-right" sm={{ size: 2 }}>
