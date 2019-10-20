@@ -393,7 +393,7 @@ class CorrelationRegression extends React.Component {
       to the dependent variable. It indicates the impact of a unit change in the known 
       variable (x) on the estimated variable (y).<br/>
       Use the input fields below to insert the data manually or import a 
-      <b> .csv </b> file and calculate the results, use <a href="#">this</a> as an example file.
+      <b> .csv </b> file and calculate the results, use <a href="https://raw.githubusercontent.com/leoronne/datatongji/master/src/assets/files/Correlation-Regression.csv" target="_blank">this</a> as an example file.
       </ModalBody>
       <ModalFooter>
         <Button color="secondary" onClick={this.toggleModalHelp}>
