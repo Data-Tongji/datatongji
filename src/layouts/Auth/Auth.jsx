@@ -86,7 +86,6 @@ class Auth extends React.Component {
   render() {
     return (
       <>
-        <div className="wrapper">
          
           <div
             className="main-panel"
@@ -100,7 +99,6 @@ class Auth extends React.Component {
               <Footer fluid />
             )}
           </div>
-        </div>
       </>
     );
   }

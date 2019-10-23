@@ -79,6 +79,7 @@ class CorrelationRegression extends React.Component {
       collapse: false,
       VarX: '',
       VarY: '',
+      body: '',
       modalDemo: false,
       modalHelp: false,
       btnSave: true,
@@ -148,7 +149,19 @@ class CorrelationRegression extends React.Component {
     for (var i = 0; i < this.state.tagsX.length; i++) {
       tagsx.splice(i, 0, this.state.tagsX[i].displayValue);
       tagsy.splice(i, 0, this.state.tagsY[i].displayValue);
-    }
+    };
+    this.setState({
+      body: {
+        "X": {
+          "name": this.state.VarX,
+          "values": tagsx
+        },
+        "Y": {
+          "name": this.state.VarY,
+          "values": tagsy
+        }
+      }
+    })
     const requestInfo = {
       method: 'POST',
       body: JSON.stringify({
@@ -257,6 +270,50 @@ class CorrelationRegression extends React.Component {
       complete: this.updateData,
       header: true
     });
+  };
+
+  saveChanges = () => {
+    if (this.state.body === '') {
+      this.setState({ message: 'Please, calculate the results first!' })
+    }
+    else if (this.state.Name === '') {
+      this.Name.focus();
+    }
+    else {
+      this.setState({ visible: true });
+      var body = {
+        "name": this.state.Name,
+        "data": this.state.body,
+        "results": {
+          "correlation": this.state.correlation,
+          "regression": this.state.regression
+        }
+      };
+    };
+    const requestInfo = {
+      method: 'POST',
+      body: JSON.stringify(body),
+      headers: new Headers({
+        'Content-Type': 'application/json',
+        'Authorization': localStorage.getItem('token')
+      }),
+    };
+    fetch(`https://datatongji-backend.herokuapp.com/correlation/save`, requestInfo)
+      .then(response => {
+        if (response.ok) {
+          this.setState({ message: '' });
+          return response.json();
+        }
+        throw new Error("Failure!");
+      }).then(result => {
+        this.colorAlert = 'success';
+        this.setState({ message: 'Saved' });
+        this.toggleModalDemo();
+      })
+      .catch(e => {
+        this.colorAlert = 'danger';
+        this.setState({ message: e.message });
+      });
   };
 
   updateData(result) {
@@ -379,20 +436,20 @@ class CorrelationRegression extends React.Component {
           className="close"
           data-dismiss="modal"
           aria-hidden="true"
-          onClick={this.toggleModalLong}
+          onClick={this.toggleModalHelp}
         >
           <i className="tim-icons icon-simple-remove" />
         </button>
       </div>
-      <ModalBody style={{textAlign:'justify'}}>
-      <b>Correlation</b> is a statistical measure which determines 
-      co-relationship or association of two variables, using the 
-      <b> correlation coefficient</b>, which indicates the extent to which two 
-      variables move together.<br/>
-      <b>Regression</b> describes how an independent variable is numerically related 
-      to the dependent variable. It indicates the impact of a unit change in the known 
-      variable (x) on the estimated variable (y).<br/>
-      Use the input fields below to insert the data manually or import a 
+      <ModalBody style={{ textAlign: 'justify' }}>
+        <b>Correlation</b> is a statistical measure which determines
+        co-relationship or association of two variables, using the
+      <b> correlation coefficient</b>, which indicates the extent to which two
+      variables move together.<br />
+        <b>Regression</b> describes how an independent variable is numerically related
+        to the dependent variable. It indicates the impact of a unit change in the known
+      variable (x) on the estimated variable (y).<br />
+        Use the input fields below to insert the data manually or import a
       <b> .csv </b> file and calculate the results, use <a href="https://raw.githubusercontent.com/leoronne/datatongji/master/src/assets/files/Correlation-Regression.csv" target="_blank">this</a> as an example file.
       </ModalBody>
       <ModalFooter>
@@ -409,7 +466,7 @@ class CorrelationRegression extends React.Component {
               <Card>
                 <CardHeader>Correlation and Regression<span>&nbsp;&nbsp;</span>
 
-                <Button
+                  <Button
                     className="btn-round btn-icon animation-on-hover"
                     color="info"
                     onClick={this.toggleModalHelp}
@@ -417,7 +474,7 @@ class CorrelationRegression extends React.Component {
                   >?
                   </Button>
                   {ModalHelp}
-                  </CardHeader>
+                </CardHeader>
                 <CardBody>
                   <Card>
                     <Container >

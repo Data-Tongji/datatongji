@@ -41,14 +41,14 @@ export class Login extends React.Component {
         'Content-Type': 'application/json'
       }),
     };
-
     fetch('https://datatongji-backend.herokuapp.com/auth/authenticate', requestInfo)
       .then(response => {
         if (response.ok) {
           this.setState({ message: '' });
           return response.json();
         }
-        throw new Error("login e/ou senha incorretos!");
+        this.colorAlert = 'danger';
+        throw new Error(response.status === 400 ? 'User not found' : 'Invalid credentials');
       })
       .then(token => {
         localStorage.setItem('token', token);
@@ -58,6 +58,7 @@ export class Login extends React.Component {
         return;
       })
       .catch(e => {
+        this.colorAlert = 'danger';
         this.setState({ message: e.message });
       });
 
@@ -82,12 +83,12 @@ export class Login extends React.Component {
     fetch('https://datatongji-backend.herokuapp.com/auth/register', requestInfo)
       .then(response => {
         if (response.ok) {
-          this.setState({ message: 'Usuário cadsatrado com sucesso!' });
-          this.colorAlert = 'success'
+          this.colorAlert = 'success';
+          this.setState({ message: 'You have successfully registered, please sign in' });
           return response.json();
         }
-        this.colorAlert = 'danger'
-        throw new Error("Usuário já cadstrado !");
+        this.colorAlert = 'danger';
+        throw new Error("User has already been registered");
       })
       .then(token => {
         localStorage.setItem('token', token);
@@ -109,19 +110,20 @@ export class Login extends React.Component {
     return this.setState({ register: true });
   };
 
-  valida = () => {
-    this.colorAlert = 'warning'
+  inputValidation = () => {
+    this.colorAlert = 'danger';
+    this.setState({ visible: true });
     if (this.state.register === true) {
       if (this.state.name == null || this.state.name.trim() === "") {
-        return this.setState({ message: 'preencha o campo nome' });
+        return this.setState({ message: 'Fill the name field correctly' });
       }
     }
 
     if (this.state.email == null || this.state.email.trim() === "") {
-      return this.setState({ message: 'preencha o campo e-mail' });
+      return this.setState({ message: 'E-mail field cannot be blank' });
     }
     else if (this.state.password == null || this.state.password.trim() === "") {
-      return this.setState({ message: 'preencha o campo senha' });
+      return this.setState({ message: 'Password field cannot be blank' });
     }
     else {
       this.setState({ message: '' });
@@ -146,6 +148,14 @@ export class Login extends React.Component {
   onBlur = () => {
     this.setState({
       focused: ""
+    });
+  };
+
+
+  onDismiss = () => {
+    this.setState({
+      visible: false,
+      message: ''
     });
   };
 
@@ -199,7 +209,10 @@ export class Login extends React.Component {
                 <FormGroup>
                   {
                     this.state.message !== '' ? (
-                      <Alert color={colorAlert} className="text-center">{this.state.message}</Alert>
+                      <Alert
+                        isOpen={this.state.visible}
+                        toggle={this.onDismiss}
+                        color={this.colorAlert} className="text-center">{this.state.message}</Alert>
                     ) : ''}
                   {nameLabel}
                   {register}
@@ -228,7 +241,7 @@ export class Login extends React.Component {
                   color="primary"
                   block
                   className="btn-round"
-                  type="button" onClick={this.valida}
+                  type="button" onClick={this.inputValidation}
                 >
                   {actionLoginText}
                 </Button>

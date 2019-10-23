@@ -40,6 +40,7 @@ class Probability extends React.Component {
       p: '',
       q: '',
       modalDemo: false,
+      modalHelp: false,
       Name: '',
       message: this.props.location.state ? this.props.location.state.message : '',
       btnSave: true
@@ -47,6 +48,7 @@ class Probability extends React.Component {
     this.toggle = this.toggle.bind(this);
     this.interval = this.interval.bind(this);
     this.toggleModalDemo = this.toggleModalDemo.bind(this);
+    this.toggleModalHelp = this.toggleModalHelp.bind(this);
   };
 
   toggle(tab) {
@@ -493,11 +495,55 @@ class Probability extends React.Component {
     });
   };
 
+  toggleModalHelp() {
+    this.setState({
+      modalHelp: !this.state.modalHelp
+    });
+  };
+  
   render() {
     let colorAlert;
     let Results;
     var TableResults;
     let Position = this.state.activeTab;
+    let ModalHelp = (<Modal isOpen={this.state.modalHelp} toggle={this.toggleModalHelp}>
+      <div className="modal-header">
+        <h5 className="modal-title" id="exampleModalLongTitle">
+          Need information?
+        </h5>
+        <button
+          type="button"
+          className="close"
+          data-dismiss="modal"
+          aria-hidden="true"
+          onClick={this.toggleModalHelp}
+        >
+          <i className="tim-icons icon-simple-remove" />
+        </button>
+      </div>
+      <ModalBody style={{ textAlign: 'justify' }}>
+      <b>Normal distribution</b> is a probability distribution that is symmetric about the mean, 
+      showing that data near the mean are more frequent in occurrence than data far from the mean. 
+      In graph form, normal distribution will appear as a bell curve. The standard normal distribution has two parameters: 
+      the <b>mean</b> and the <b>standard deviation</b>.<br/>
+      A <b>uniform distribution</b> it's a type of probability distribution in which all outcomes 
+      are equally likely, each variable has the same probability that it will be the outcome. This distribution is defined by two parameters:
+      the <b>minimum point (initial)</b> and the <b>maximum point (final)</b>.<br/>
+      The <b>binomial distribution</b> summarizes the likelihood that a value will take one of two 
+      independent values under a given set of parameters or assumptions. The underlying assumptions 
+      of the binomial distribution are that there is only one outcome for each trial, 
+      that each trial has the same probability of success, and that each trial is mutually 
+      exclusive, or independent of each other. Therefore, represents 
+      the probability for <b><i>k</i> events </b> in <b><i>n</i> trials</b>, given a <b>success (<i>p</i>)</b> or <b>failure (<i>q</i>) </b> 
+       probability for each trial.      
+      </ModalBody>
+      <ModalFooter>
+        <Button color="secondary" onClick={this.toggleModalHelp}>
+          Close
+          </Button>
+      </ModalFooter>
+    </Modal>)
+
 
     if (Position === '1') {
       TableResults =
@@ -600,7 +646,17 @@ class Probability extends React.Component {
           <Row>
             <Col md="12">
               <Card>
-                <CardHeader>Probability</CardHeader>
+                <CardHeader>Probability<span>&nbsp;&nbsp;</span>
+
+                  <Button
+                    className="btn-round btn-icon animation-on-hover"
+                    color="info"
+                    onClick={this.toggleModalHelp}
+                    style={{ height: '20px', width: '15px' }}
+                  >?
+                  </Button>
+                  {ModalHelp}
+                </CardHeader>
                 <CardBody>
                   <div>
                     <Nav tabs>

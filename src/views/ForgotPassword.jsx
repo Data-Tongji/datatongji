@@ -316,27 +316,30 @@ export class ForgotPassword extends React.Component {
                     />
                   </a>
                 </div>
-          <form>
-            <Card>
-              <Stepper steps={this.state.steps
-              } activeStep={this.state.stepPosition} />
-              <CardBody>
-                {Card_Body}
-                {button[0]}
-                {button[1]}
-                {button[2]}
-                <Nav style={{ justifyContent: 'center' }}>
-                  <NavItem >
-                    <NavLink href="/#/"><i className="fas fa-home" style={{ marginRight: '10px' }}></i></NavLink>
-                  </NavItem>
-                </Nav>
+                <form>
+                  <Card>
+                    <Stepper
+                      activeColor={"#750f0f"}
+                      completeColor={"#c45858"}
+                      steps={this.state.steps}
+                      activeStep={this.state.stepPosition} />
+                    <CardBody>
+                      {Card_Body}
+                      {button[0]}
+                      {button[1]}
+                      {button[2]}
+                      <Nav style={{ justifyContent: 'center' }}>
+                        <NavItem >
+                          <NavLink href="/#/"><i className="fas fa-home" style={{ marginRight: '10px' }}></i></NavLink>
+                        </NavItem>
+                      </Nav>
+                    </CardBody>
+                  </Card>
+                </form>
               </CardBody>
             </Card>
-          </form>
-        </CardBody>
-      </Card>
-      </Col>
-      </Row>
+          </Col>
+        </Row>
       </>
     );
   }
