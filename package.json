@@ -2,7 +2,7 @@
   "name": "datatongji",
   "version": "1.0.0",
   "private": true,
-  "homepage": "datatongji.info",
+  "homepage": "https://data-tongji.github.io/datatongji",
   "engines": {
     "node": "12.4.0"
   },
