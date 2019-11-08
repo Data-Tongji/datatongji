@@ -47,7 +47,7 @@ const isAuthenticated = () => {
 };
 console.log(isAuthenticated())
 ReactDOM.render(
-  <Router history={hist}>
+  <Router history={hist} basename={window.location.pathname || ''}>
     <Switch>
       <PrivateRoute path="/admin" component={AdminLayout} />
       {/* <Route path="/admin" render={props => <AdminLayout {...props} />} /> */}
