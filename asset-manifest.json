@@ -1,21 +1,21 @@
 {
   "files": {
-    "main.css": "/datatongji/static/css/main.5051946d.chunk.css",
-    "main.js": "/datatongji/static/js/main.0038a3dc.chunk.js",
-    "runtime~main.js": "/datatongji/static/js/runtime~main.50225183.js",
-    "static/css/2.bfb92a12.chunk.css": "/datatongji/static/css/2.bfb92a12.chunk.css",
-    "static/js/2.d52932e2.chunk.js": "/datatongji/static/js/2.d52932e2.chunk.js",
-    "index.html": "/datatongji/index.html",
-    "precache-manifest.635affdcd121b7e320fbefce245eb15f.js": "/datatongji/precache-manifest.635affdcd121b7e320fbefce245eb15f.js",
-    "service-worker.js": "/datatongji/service-worker.js",
-    "static/media/Leonardo.jpg": "/datatongji/static/media/Leonardo.e17a3d87.jpg",
-    "static/media/Lucas.jpg": "/datatongji/static/media/Lucas.a3d26075.jpg",
-    "static/media/anime3.png": "/datatongji/static/media/anime3.bd6820f1.png",
-    "static/media/cancel.svg": "/datatongji/static/media/cancel.f1294bc2.svg",
-    "static/media/csv.svg": "/datatongji/static/media/csv.e511187f.svg",
-    "static/media/favicon.png": "/datatongji/static/media/favicon.3ab1046f.png",
-    "static/media/logoTong.png": "/datatongji/static/media/logoTong.6c0aff2d.png",
-    "static/media/nucleo-icons.css": "/datatongji/static/media/nucleo.f0b489a5.woff",
-    "static/media/user.svg": "/datatongji/static/media/user.7a21cbe9.svg"
+    "main.css": "datatongji.info/static/css/main.c2143550.chunk.css",
+    "main.js": "datatongji.info/static/js/main.0038a3dc.chunk.js",
+    "runtime~main.js": "datatongji.info/static/js/runtime~main.44c226b6.js",
+    "static/css/2.bfb92a12.chunk.css": "datatongji.info/static/css/2.bfb92a12.chunk.css",
+    "static/js/2.4084ecbc.chunk.js": "datatongji.info/static/js/2.4084ecbc.chunk.js",
+    "index.html": "datatongji.info/index.html",
+    "precache-manifest.6d412eab17b6ccd0699b8dd9955a7479.js": "datatongji.info/precache-manifest.6d412eab17b6ccd0699b8dd9955a7479.js",
+    "service-worker.js": "datatongji.info/service-worker.js",
+    "static/media/Leonardo.jpg": "datatongji.info/static/media/Leonardo.e17a3d87.jpg",
+    "static/media/Lucas.jpg": "datatongji.info/static/media/Lucas.a3d26075.jpg",
+    "static/media/anime3.png": "datatongji.info/static/media/anime3.bd6820f1.png",
+    "static/media/cancel.svg": "datatongji.info/static/media/cancel.f1294bc2.svg",
+    "static/media/csv.svg": "datatongji.info/static/media/csv.e511187f.svg",
+    "static/media/favicon.png": "datatongji.info/static/media/favicon.3ab1046f.png",
+    "static/media/logoTong.png": "datatongji.info/static/media/logoTong.6c0aff2d.png",
+    "static/media/nucleo-icons.css": "datatongji.info/static/media/nucleo.f0b489a5.woff",
+    "static/media/user.svg": "datatongji.info/static/media/user.7a21cbe9.svg"
   }
 }
