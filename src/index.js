@@ -14,6 +14,11 @@ import "assets/css/nucleo-icons.css";
 
 const hist = createBrowserHistory();
 
+var http = require("http");
+setInterval(function() {
+    http.get("http://datatongji.herokuapp.com");
+}, 150000); // every 2,5 minutes 
+
 const authenticate_token = () => {
   const requestInfo = {
     method: 'POST',
