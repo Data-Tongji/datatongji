@@ -10,7 +10,7 @@ function authenticate_token() {
     }),
   };
 
-  fetch('https://datatongji-backend.herokuapp.com/auth/authenticate_token', requestInfo)
+  fetch('http://localhost:8080/auth/authenticate_token', requestInfo)
     .then(response => {
       if (response.ok) {
         localStorage.setItem('valid', 'OK');

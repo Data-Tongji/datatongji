@@ -42,7 +42,6 @@ class Descriptive extends React.Component {
             steps: [
                 { title: '' },
                 { title: '' },
-                { title: '' },
                 { title: '' }],
             data: [],
             tags: [],
@@ -107,7 +106,7 @@ class Descriptive extends React.Component {
             }),
         };
 
-        fetch('https://datatongji-backend.herokuapp.com/descriptive/simple_frequency', requestInfo)
+        fetch('http://localhost:8080/descriptive/simple_frequency', requestInfo)
             .then(response => {
                 if (response.ok) {
                     this.setState({ message: '' });
@@ -200,7 +199,7 @@ class Descriptive extends React.Component {
                 step: 1
             })
         }
-    }
+    };
 
     PopAmost = e => {
         this.setState({
@@ -225,13 +224,12 @@ class Descriptive extends React.Component {
         this.setState({ [e.target.name]: e.target.value });
     };
 
-
     ResultCollapse() {
         this.setState(state => ({ collapse: !this.state.collapse }));
-        if (this.state.stepPosition === 2) {
+        if (this.state.stepPosition === 1) {
             this.SendArray();
         }
-    }
+    };
 
     positionStep = (steps) => {
         var Position = this.state.stepPosition;
@@ -266,7 +264,7 @@ class Descriptive extends React.Component {
             }
         }
         // this.Calcular();
-    }
+    };
 
     valida = () => {
         if (this.state.stepPosition === 0) {
@@ -274,13 +272,7 @@ class Descriptive extends React.Component {
                 this.setState({ message: 'Digite algum valor' });
                 return false;
             }
-            else {
-                this.setState({ message: '' });
-                return true;
-            }
-        }
-        else if (this.state.stepPosition === 1) {
-            if (this.state.Var == null || this.state.Var.trim() === "") {
+            else if (this.state.Var == null || this.state.Var.trim() === "") {
                 this.setState({ message: 'Digite o nome da variável' });
                 return false;
             }
@@ -294,7 +286,7 @@ class Descriptive extends React.Component {
                 return true;
             }
         }
-        else if (this.state.stepPosition === 2) {
+        else if (this.state.stepPosition === 1) {
             if (this.state.rSelected == null || this.state.rSelected.trim() === "") {
                 this.setState({ message: 'Selecione o tipo de análise desejada' });
                 return false;
@@ -330,20 +322,19 @@ class Descriptive extends React.Component {
             </Button>);
         if (Position === 0) {
             Card_Body = <CardBody style={{ marginLeft: '10%', marginRight: '10%' }}>
-                <CardTitle>Digite os valores da variável estudada</CardTitle>
-                <TagInput tags={this.state.tags}
-                    tagStyle={`
-                    background: linear-gradient(to bottom right, #550300, #d32a23, #550300);`}
-                    onTagsChanged={this.onTagsChanged}
-                    placeholder="Digite um valor e pressione ENTER" />
-
-            </CardBody>
-        } else if (Position === 1) {
-            Card_Body = <CardBody style={{ marginLeft: '10%', marginRight: '10%' }}>
                 <Container >
+                <MDBCol >
+                            <CardTitle>Tipo de distribuição de dados:</CardTitle>
+                            <ButtonGroup>
+                                <Button color={this.buttoncolor('PopAmost', 'População')} onClick={() => this.onRadioBtnClick('PopAmost', 'População')} active={this.state.PopAmost === 'População'}>População</Button>
+                                <Button color={this.buttoncolor('PopAmost', 'Amostra')} onClick={() => this.onRadioBtnClick('PopAmost', 'Amostra')} active={this.state.PopAmost === 'Amostra'}>Amostra</Button>
+                            </ButtonGroup>
+                            {/* <p>Selected: {this.state.PopAmost}</p> */}
+                        </MDBCol>
                     <MDBRow className="mx-auto" >
+                        
                         <MDBCol >
-                            <CardTitle>Nome da variável estudada:</CardTitle>
+                            <CardTitle>Name of variable:</CardTitle>
                             <InputGroup className={this.state.focused}>
                                 <InputGroupAddon addonType="prepend">
                                     <InputGroupText><i className="fab fa-dribbble"></i></InputGroupText>
@@ -360,18 +351,20 @@ class Descriptive extends React.Component {
                             </InputGroup>
 
                         </MDBCol>
-                        <MDBCol >
-                            <CardTitle>Tipo de distribuição de dados:</CardTitle>
-                            <ButtonGroup>
-                                <Button color={this.buttoncolor('PopAmost', 'População')} onClick={() => this.onRadioBtnClick('PopAmost', 'População')} active={this.state.PopAmost === 'População'}>População</Button>
-                                <Button color={this.buttoncolor('PopAmost', 'Amostra')} onClick={() => this.onRadioBtnClick('PopAmost', 'Amostra')} active={this.state.PopAmost === 'Amostra'}>Amostra</Button>
-                            </ButtonGroup>
-                            {/* <p>Selected: {this.state.PopAmost}</p> */}
-                        </MDBCol>
+
                     </MDBRow>
                 </Container>
+                <Container style={{ marginTop: '10%' }}>
+                    <CardTitle>Variable values:</CardTitle>
+                    <TagInput tags={this.state.tags}
+                        tagStyle={`
+                    background: linear-gradient(to bottom right, #550300, #d32a23, #550300);`}
+                        onTagsChanged={this.onTagsChanged}
+                        placeholder="Values" />
+                </Container>
+
             </CardBody>
-        } else if (Position === 2) {
+        } else if (Position === 1) {
             if (this.state.Type === 'Qualitativo') {
                 ButtonType = <ButtonGroup>
                     <Button color={this.buttoncolor('QntQuali', 'Nominal')} onClick={() => this.onRadioBtnClick('QntQuali', 'Nominal')} active={this.state.rSelected === 'Nominal'}>Nominal</Button>
@@ -379,17 +372,11 @@ class Descriptive extends React.Component {
                 </ButtonGroup>
             } else if (this.state.Type === 'Quantitativo') {
 
-                if (this.state.rSelected !== 'Contínua') {
-                    ButtonType = <ButtonGroup>
-                        <Button color={this.buttoncolor('QntQuali', 'Contínua')} onClick={() => this.onRadioBtnClick('QntQuali', 'Contínua')} active={this.state.rSelected === 'Contínua'}>Contínua</Button>
-                        <Button color={this.buttoncolor('QntQuali', 'Discreta')} onClick={() => this.onRadioBtnClick('QntQuali', 'Discreta')} active={this.state.rSelected === 'Discreta'}>Discreta</Button>
-                    </ButtonGroup>
-                } else {
-                    ButtonType = <ButtonGroup>
-                        <Button disabled color={this.buttoncolor('QntQuali', 'Contínua')} active={this.state.rSelected === 'Contínua'}>Contínua</Button>
-                        <Button disabled color={this.buttoncolor('QntQuali', 'Discreta')} active={this.state.rSelected === 'Discreta'}>Discreta</Button>
-                    </ButtonGroup>
-                }
+                ButtonType = <ButtonGroup>
+                    <Button color={this.buttoncolor('QntQuali', 'Contínua')} onClick={() => this.onRadioBtnClick('QntQuali', 'Contínua')} active={this.state.rSelected === 'Contínua'}>Contínua</Button>
+                    <Button color={this.buttoncolor('QntQuali', 'Discreta')} onClick={() => this.onRadioBtnClick('QntQuali', 'Discreta')} active={this.state.rSelected === 'Discreta'}>Discreta</Button>
+                </ButtonGroup>
+
             }
             Card_Body = <CardBody style={{ marginLeft: '10%', marginRight: '10%' }}>
                 <Container >
@@ -427,7 +414,7 @@ class Descriptive extends React.Component {
                 </Container>
 
             </CardBody>
-        } else if (Position === 3) {
+        } else if (Position === 2) {
             Card_Body = <CardBody style={{ marginLeft: '10%', marginRight: '10%' }}>
                 <Container >
                     <MDBRow className="mx-auto" >
@@ -542,7 +529,6 @@ class Descriptive extends React.Component {
                                             {button[1]}
                                             {button[2]}
                                         </CardBody>
-
 
                                     </Card>
                                 </CardBody>

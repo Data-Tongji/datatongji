@@ -178,7 +178,7 @@ class Probability extends React.Component {
         'Authorization': localStorage.getItem('token')
       }),
     };
-    fetch(`https://datatongji-backend.herokuapp.com/probability/${type}`, requestInfo)
+    fetch(`http://localhost:8080/probability/${type}`, requestInfo)
       .then(response => {
         if (response.ok) {
           this.setState({ message: '' });
@@ -287,7 +287,7 @@ class Probability extends React.Component {
           'Authorization': localStorage.getItem('token')
         }),
       };
-      fetch(`https://datatongji-backend.herokuapp.com/probability/save`, requestInfo)
+      fetch(`http://localhost:8080/probability/save`, requestInfo)
         .then(response => {
           if (response.ok) {
             this.setState({ message: '' });
@@ -562,7 +562,7 @@ class Probability extends React.Component {
           <ListGroupItem style={{ backgroundColor: 'transparent' }}
             className="justify-content-between">Variance:  <Badge pill>{this.state.variance}</Badge></ListGroupItem>
           <ListGroupItem style={{ backgroundColor: 'transparent' }}
-            className="justify-content-between">Standard Deviation:  <Badge pill>{this.state.stdDev}%</Badge></ListGroupItem>
+            className="justify-content-between">Standard Deviation:  <Badge pill>{this.state.stdDev}</Badge></ListGroupItem>
           <ListGroupItem style={{ backgroundColor: 'transparent' }}
             className="justify-content-between">Coefficient of Variation:  <Badge pill>{this.state.sdCoef}%</Badge></ListGroupItem>
         </ListGroup>
@@ -577,7 +577,7 @@ class Probability extends React.Component {
           <ListGroupItem style={{ backgroundColor: 'transparent' }}
             className="justify-content-between">Variance:  <Badge pill>{this.state.variance}</Badge></ListGroupItem>
           <ListGroupItem style={{ backgroundColor: 'transparent' }}
-            className="justify-content-between">Standard Deviation:  <Badge pill>{this.state.stdDev}%</Badge></ListGroupItem>
+            className="justify-content-between">Standard Deviation:  <Badge pill>{this.state.stdDev}</Badge></ListGroupItem>
         </ListGroup>
     }
     Results = <CardBody><Nav style={{ justifyContent: 'center' }}>

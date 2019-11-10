@@ -173,7 +173,7 @@ class CorrelationRegression extends React.Component {
         'Authorization': localStorage.getItem('token')
       }),
     };
-    fetch(`https://datatongji-backend.herokuapp.com/correlation/corrreg`, requestInfo)
+    fetch(`http://localhost:8080/correlation/corrreg`, requestInfo)
       .then(response => {
         if (response.ok) {
           this.setState({ message: '' });
@@ -298,7 +298,7 @@ class CorrelationRegression extends React.Component {
         'Authorization': localStorage.getItem('token')
       }),
     };
-    fetch(`https://datatongji-backend.herokuapp.com/correlation/save`, requestInfo)
+    fetch(`http://localhost:8080/correlation/save`, requestInfo)
       .then(response => {
         if (response.ok) {
           this.setState({ message: '' });

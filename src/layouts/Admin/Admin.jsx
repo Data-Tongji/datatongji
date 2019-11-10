@@ -91,10 +91,11 @@ class Admin extends React.Component {
     }
     return "Brand";
   };
+  // eslint-disable-next-line no-dupe-class-members
   async componentDidMount() {
     const token = localStorage.getItem('token');
 
-    const response = await fetch(`https://datatongji-backend.herokuapp.com/auth/get_user?token=${token}`)
+    const response = await fetch(`http://localhost:8080/auth/get_user?token=${token}`)
     const responseJson = await response.json()
 
     this.setState({ data: responseJson})
