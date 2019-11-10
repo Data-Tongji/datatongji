@@ -562,7 +562,7 @@ class Probability extends React.Component {
           <ListGroupItem style={{ backgroundColor: 'transparent' }}
             className="justify-content-between">Variance:  <Badge pill>{this.state.variance}</Badge></ListGroupItem>
           <ListGroupItem style={{ backgroundColor: 'transparent' }}
-            className="justify-content-between">Standard Deviation:  <Badge pill>{this.state.stdDev}%</Badge></ListGroupItem>
+            className="justify-content-between">Standard Deviation:  <Badge pill>{this.state.stdDev}</Badge></ListGroupItem>
           <ListGroupItem style={{ backgroundColor: 'transparent' }}
             className="justify-content-between">Coefficient of Variation:  <Badge pill>{this.state.sdCoef}%</Badge></ListGroupItem>
         </ListGroup>
@@ -577,7 +577,7 @@ class Probability extends React.Component {
           <ListGroupItem style={{ backgroundColor: 'transparent' }}
             className="justify-content-between">Variance:  <Badge pill>{this.state.variance}</Badge></ListGroupItem>
           <ListGroupItem style={{ backgroundColor: 'transparent' }}
-            className="justify-content-between">Standard Deviation:  <Badge pill>{this.state.stdDev}%</Badge></ListGroupItem>
+            className="justify-content-between">Standard Deviation:  <Badge pill>{this.state.stdDev}</Badge></ListGroupItem>
         </ListGroup>
     }
     Results = <CardBody><Nav style={{ justifyContent: 'center' }}>
@@ -709,13 +709,13 @@ class Probability extends React.Component {
                                         name='Mean'
                                         placeholder="0.00" />
                                       <br /><br />
-                                      <CardTitle>Standard Devation value (%):</CardTitle>
+                                      <CardTitle>Standard Deviation value:</CardTitle>
                                       <Input type="text"
                                         pattern="[^0-9,.]"
                                         onInput={this.handleChange.bind(this)}
                                         value={this.state.stdDev}
                                         name='stdDev'
-                                        placeholder="0.00%" />
+                                        placeholder="0.00" />
                                     </FormGroup><br />
                                   </Col>
                                   <Col sm>
