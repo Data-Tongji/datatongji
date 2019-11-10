@@ -104,6 +104,7 @@ class Admin extends React.Component {
   render() {
     return (
       <>
+      
         <div className="wrapper">
           <Sidebar
             {...this.props}
@@ -139,6 +140,7 @@ class Admin extends React.Component {
           handleBgClick={this.handleBgClick}
         /> */}
       </>
+      
     );
   }
 }

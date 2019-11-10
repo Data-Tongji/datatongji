@@ -54,7 +54,13 @@ class Sidebar extends React.Component {
   linkOnClick = () => {
     document.documentElement.classList.remove("nav-open");
   };
+
   render() {
+    if(localStorage.getItem('background') !== 'dark'){
+      document.body.classList.add("white-content")
+    }else{
+      document.body.classList.remove("white-content")
+    }
     const { bgColor, routes, rtlActive, logo } = this.props;
     let logoImg = null;
     let logoText = null;
@@ -106,7 +112,7 @@ class Sidebar extends React.Component {
       }
     }
     return (
-      <div className="sidebar" data={bgColor}>
+      <div className="sidebar" data={localStorage.getItem('sidebarColor')}>
         <div className="sidebar-wrapper" ref="sidebar">
           {logoImg !== null || logoText !== null ? (
             <div className="logo">
@@ -145,9 +151,10 @@ class Sidebar extends React.Component {
   }
 }
 
+
 Sidebar.defaultProps = {
   rtlActive: false,
-  bgColor: "primary",
+  bgColor: localStorage.getItem('sidebarColor'),
   routes: [{}]
 };
 

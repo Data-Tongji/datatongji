@@ -44,6 +44,7 @@ const isAuthenticated = () => {
   if (localStorage.hasOwnProperty('token')) {
     authenticate_token();
     if (localStorage.getItem('valid') === 'OK') {
+     
       return true;
     } else { return false }
   } else {

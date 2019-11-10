@@ -63,6 +63,7 @@ class Dashboard extends React.Component {
     });
   };
   render() {
+    // document.body.classList.add("white-content");
     return (
       <>
         <div className="content">
@@ -553,6 +554,7 @@ class Dashboard extends React.Component {
             </Col>
           </Row>
         </div>
+
       </>
     );
   }

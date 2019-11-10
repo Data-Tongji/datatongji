@@ -53,7 +53,7 @@ export class Login extends React.Component {
       .then(token => {
         localStorage.setItem('token', token);
         localStorage.setItem('valid', "OK");
-        this.getUser(token);
+        this.getUserConfig(token);
         this.props.history.push("/admin/dashboard");
         return;
       })
@@ -64,11 +64,14 @@ export class Login extends React.Component {
 
   };
 
-  async getUser() {
+  async getUserConfig() {
     const token = localStorage.getItem('token');
-    const response = await fetch(`https://datatongji-backend.herokuapp.com/auth/get_user?token=${token}`)
-    const responseJson = await response.json()
-    localStorage.setItem('UserName', responseJson.user.name);
+    const response = await fetch(`https://datatongji-backend.herokuapp.com/auth/get_user_cofig?token=${token}`);
+    const responseJson = await response.json();
+
+    localStorage.setItem('background', responseJson.backgroundColor );
+    localStorage.setItem('sidebarColor', responseJson.sidebarColor );
+    localStorage.setItem('defaultLanguage', responseJson.defaultLanguage);
   };
 
   register = () => {
@@ -164,7 +167,7 @@ export class Login extends React.Component {
     let colorAlert;
     let actionLoginText = 'Login';
     let nameLabel;
-
+    document.body.classList.remove("white-content")
     if (this.state.register === true) {
       actionLoginText = "Cadastrar"
       nameLabel = <Label for="exampleEmail">User Name</Label>

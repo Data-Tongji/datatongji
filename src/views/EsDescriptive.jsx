@@ -269,15 +269,15 @@ class Descriptive extends React.Component {
     valida = () => {
         if (this.state.stepPosition === 0) {
             if (this.state.tags === null || this.state.tags.length === 0) {
-                this.setState({ message: 'Digite algum valor' });
+                this.setState({ message: 'Enter some value!' });
                 return false;
             }
             else if (this.state.Var == null || this.state.Var.trim() === "") {
-                this.setState({ message: 'Digite o nome da variável' });
+                this.setState({ message: 'Enter variable name!' });
                 return false;
             }
             else if (this.state.PopAmost === "") {
-                this.setState({ message: 'Selecione o tipo de distribuição dos dados' });
+                this.setState({ message: 'Select data distribution type!' });
                 return false;
             }
             else {
@@ -304,7 +304,6 @@ class Descriptive extends React.Component {
         let Position = this.state.stepPosition;
         let Card_Body;
         let ButtonType;
-
         button.push(
             <Button
                 className="btn-round btn-icon"
@@ -323,21 +322,19 @@ class Descriptive extends React.Component {
         if (Position === 0) {
             Card_Body = <CardBody style={{ marginLeft: '10%', marginRight: '10%' }}>
                 <Container >
-                <MDBCol >
-                            <CardTitle>Tipo de distribuição de dados:</CardTitle>
-                            <ButtonGroup>
-                                <Button color={this.buttoncolor('PopAmost', 'População')} onClick={() => this.onRadioBtnClick('PopAmost', 'População')} active={this.state.PopAmost === 'População'}>População</Button>
-                                <Button color={this.buttoncolor('PopAmost', 'Amostra')} onClick={() => this.onRadioBtnClick('PopAmost', 'Amostra')} active={this.state.PopAmost === 'Amostra'}>Amostra</Button>
-                            </ButtonGroup>
+                    <MDBCol >
+                        <CardTitle>Tipo de distribuição de dados:</CardTitle>
+                        <ButtonGroup>
+                            <Button color={this.buttoncolor('PopAmost', 'População')} onClick={() => this.onRadioBtnClick('PopAmost', 'População')} active={this.state.PopAmost === 'População'}>População</Button>
+                            <Button color={this.buttoncolor('PopAmost', 'Amostra')} onClick={() => this.onRadioBtnClick('PopAmost', 'Amostra')} active={this.state.PopAmost === 'Amostra'}>Amostra</Button>
+                        </ButtonGroup>
                             {/* <p>Selected: {this.state.PopAmost}</p> */}
-                        </MDBCol>
-                    <MDBRow className="mx-auto" >
-                        
-                        <MDBCol >
-                            <CardTitle>Name of variable:</CardTitle>
-                            <InputGroup className={this.state.focused}>
-                                <InputGroupAddon addonType="prepend">
-                                    <InputGroupText><i className="fab fa-dribbble"></i></InputGroupText>
+                    </MDBCol>
+                    <MDBCol >
+                        <CardTitle>Name of variable:</CardTitle>
+                        <InputGroup className={this.state.focused}>
+                            <InputGroupAddon addonType="prepend">
+                                <InputGroupText><i className="fab fa-dribbble"></i></InputGroupText>
                                 </InputGroupAddon>
                                 <Input
                                     type="text"
@@ -348,23 +345,41 @@ class Descriptive extends React.Component {
                                     onBlur={this.onBlur}
                                     onChange={this.handleChange}
                                 />
-                            </InputGroup>
-
-                        </MDBCol>
-
-                    </MDBRow>
-                </Container>
-                <Container style={{ marginTop: '10%' }}>
+                        </InputGroup>
+                    </MDBCol>
+                    <MDBCol>
                     <CardTitle>Variable values:</CardTitle>
                     <TagInput tags={this.state.tags}
                         tagStyle={`
                     background: linear-gradient(to bottom right, #550300, #d32a23, #550300);`}
                         onTagsChanged={this.onTagsChanged}
                         placeholder="Values" />
+                </MDBCol>
                 </Container>
+
 
             </CardBody>
         } else if (Position === 1) {
+            button = []
+            
+        button.push(
+            <Button
+                className="btn-round btn-icon"
+                color="primary"
+                onClick={() => this.positionStep(0)}>
+                <i className="tim-icons icon-double-left" />
+            </Button>
+        );
+            button.push(
+                <Button 
+                className="btn-round animation-on-hover" 
+                color="primary" 
+                type="button" 
+                onClick={() => this.positionStep(1)}
+                >
+                Show Results
+              </Button>);
+
             if (this.state.Type === 'Qualitativo') {
                 ButtonType = <ButtonGroup>
                     <Button color={this.buttoncolor('QntQuali', 'Nominal')} onClick={() => this.onRadioBtnClick('QntQuali', 'Nominal')} active={this.state.rSelected === 'Nominal'}>Nominal</Button>
@@ -396,9 +411,10 @@ class Descriptive extends React.Component {
                             <CardTitle>Tipo de análise de dados desejada:</CardTitle>
                             {ButtonType}
                             {/* <p>Selected: {this.state.rSelected}</p> */}
-                            <Button style={{ width: '100%' }} color="primary" type="button" onClick={() => this.ResultCollapse()}>
+                            {/* <Button style={{ width: '100%' }} color="primary" type="button" onClick={() => this.ResultCollapse()}>
                                 Aplicar
-                            </Button>
+                            </Button> */}
+
                         </MDBCol>
                     </MDBRow>
                     <Collapse isOpen={this.state.collapse}>
@@ -418,7 +434,7 @@ class Descriptive extends React.Component {
             Card_Body = <CardBody style={{ marginLeft: '10%', marginRight: '10%' }}>
                 <Container >
                     <MDBRow className="mx-auto" >
-                        <MDBCol >
+                        {/* <MDBCol >
                             <CardTitle>Variável estudada: <b>{this.state.Var}</b></CardTitle>
                             <TagInput placeholder="Valores da variável" addTagOnEnterKeyPressed={false} tagStyle={`
                             background: linear-gradient(to bottom left, #550300, #d32a23, #550300);`} inputStyle={`
@@ -427,7 +443,7 @@ class Descriptive extends React.Component {
                             display: none;
                             `} tags={this.state.tags} /><br />
                             <br />
-                        </MDBCol>
+                        </MDBCol> */}
                         <MDBCol >
                             <CardTitle>Tipo de distribuição de dados: <b>{this.state.PopAmost}</b></CardTitle>
                             <CardTitle>Tipo de análise de dados desejada: <b>{this.state.rSelected}</b></CardTitle>

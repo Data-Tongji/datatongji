@@ -16448,16 +16448,22 @@ code {
   padding: 2%;
 }
 
+.card label {
+  color: #ffffff !important;
+}
+
 /* style 1 */
 .inputfile-1 + label {
-  color: #f1e5e6;
-  background-color: #d3394c;
+  color: #ffffff;
+  border-radius: 20px;
+  background-image: -webkit-gradient(linear, right top, left bottom, from(#550300), color-stop(#d32a23), to(#550300));
+  background-image: linear-gradient(to bottom left, #550300, #d32a23, #550300);
 }
 
 .inputfile-1:focus + label,
 .inputfile-1.has-focus + label,
 .inputfile-1 + label:hover {
-  background-color: #722040;
+  background-color: #ffffff;
 }
 
 input[type="file"] {

@@ -19,7 +19,7 @@ import {
   Container,
   Modal
 } from "reactstrap";
-const user = localStorage.getItem('UserName');
+const user = localStorage.getItem('userName');
 
 class AdminNavbar extends React.Component {
   constructor(props) {
@@ -84,6 +84,10 @@ class AdminNavbar extends React.Component {
   logout = () => {
     localStorage.setItem('token', undefined);
     localStorage.setItem('valid', undefined);
+    localStorage.setItem('userUrl', undefined);
+    localStorage.setItem('defaultLanguage', undefined);
+    localStorage.setItem('UserName', undefined);
+   
     this.props.history.push("/auth/login");
   };
   // eslint-disable-next-line no-dupe-class-members
@@ -92,18 +96,22 @@ class AdminNavbar extends React.Component {
 
     const response = await fetch(`https://datatongji-backend.herokuapp.com/auth/get_user?token=${token}`)
     const responseJson = await response.json()
+    const userImag = responseJson.userImg;
+    const user = responseJson.user;
 
-    this.setState({ data: responseJson.user });
-    if(responseJson.userImg != null){
-      this.setState({ userUrl: responseJson.userImg });
+    localStorage.setItem('email', user.email);
+    localStorage.setItem('userName', user.name);
+    if (userImag != null) {
+      localStorage.setItem('userUrl', userImag.url);
     }
   };
 
   render() {
     let photo = <img alt="..." className="avatar" src={require("assets/img/user.svg")} />
+    var url = localStorage.getItem('userUrl');
+    console.log(url,"url" )
 
-    if (this.state.userUrl.url != "" && this.state.userUrl.url != null) {
-      var url = this.state.userUrl.url;
+    if (url !== 'undefined' && url !== '' && url !== null) {
       photo = <img alt="..." className="avatar" src={url} />
     }
 
