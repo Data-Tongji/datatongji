@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from "react-dom";
 import { createBrowserHistory } from "history";
-import { Router, Route, Switch, Redirect } from "react-router-dom";
+import { Router, Route, Switch, Redirect, BrowserRouter } from "react-router-dom";
 
 import AdminLayout from "layouts/Admin/Admin.jsx";
 import RTLLayout from "layouts/RTL/RTL.jsx";
@@ -13,6 +13,11 @@ import "assets/demo/demo.css";
 import "assets/css/nucleo-icons.css";
 
 const hist = createBrowserHistory();
+
+var http = require("http");
+setInterval(function() {
+    http.get("http://datatongji.herokuapp.com");
+}, 150000); // every 2,5 minutes 
 
 const authenticate_token = () => {
   const requestInfo = {
@@ -45,19 +50,20 @@ const isAuthenticated = () => {
     return false;
   };
 };
-console.log(isAuthenticated())
 ReactDOM.render(
-  <Router history={hist}>
-    <Switch>
-      <PrivateRoute path="/admin" component={AdminLayout} />
-      {/* <Route path="/admin" render={props => <AdminLayout {...props} />} /> */}
-      <Route path="/rtl" render={props => <RTLLayout {...props} />} />
-      <Route path="/auth" render={props => <AuthLayout {...props} />} />
-      <Redirect from="/auth/login" to={
-        isAuthenticated() ? "/admin/dashboard" : "/auth/login"
-      } />
-      <Redirect from="/" to="/auth/login" />
-    </Switch>
-  </Router>,
+  <BrowserRouter basename={window.location.pathname || ''}>
+    <Router history={hist} basename={window.location.pathname || ''}>
+      <Switch>
+        <PrivateRoute path="/admin" component={AdminLayout} />
+        {/* <Route path="/admin" render={props => <AdminLayout {...props} />} /> */}
+        <Route path="/rtl" render={props => <RTLLayout {...props} />} />
+        <Route path="/auth" render={props => <AuthLayout {...props} />} />
+        <Redirect from="/auth/login" to={
+          isAuthenticated() ? "/admin/dashboard" : "/auth/login"
+        } />
+        <Redirect from="/" to="/auth/login" />
+      </Switch>
+    </Router>
+  </BrowserRouter>,
   document.getElementById("root")
 );
