@@ -68,7 +68,7 @@ export class Login extends React.Component {
     const token = localStorage.getItem('token');
     const response = await fetch(`https://datatongji-backend.herokuapp.com/auth/get_user?token=${token}`)
     const responseJson = await response.json()
-    localStorage.setItem('UserName', responseJson.name);
+    localStorage.setItem('UserName', responseJson.user.name);
   };
 
   register = () => {

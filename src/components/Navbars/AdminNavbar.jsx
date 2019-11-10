@@ -28,8 +28,9 @@ class AdminNavbar extends React.Component {
       collapseOpen: false,
       modalSearch: false,
       color: "navbar-transparent",
-      classes: "dropdown show-dropdown"
-
+      classes: "dropdown show-dropdown",
+      data: {},
+      userUrl: {},
     };
   }
 
@@ -81,11 +82,31 @@ class AdminNavbar extends React.Component {
   };
   // this function is to exit dashboard
   logout = () => {
-    localStorage.setItem('token', undefined);  
-    localStorage.setItem('valid', undefined);  
+    localStorage.setItem('token', undefined);
+    localStorage.setItem('valid', undefined);
     this.props.history.push("/auth/login");
   };
+  // eslint-disable-next-line no-dupe-class-members
+  async componentDidMount() {
+    const token = localStorage.getItem('token');
+
+    const response = await fetch(`https://datatongji-backend.herokuapp.com/auth/get_user?token=${token}`)
+    const responseJson = await response.json()
+
+    this.setState({ data: responseJson.user });
+    if(responseJson.userImg != null){
+      this.setState({ userUrl: responseJson.userImg });
+    }
+  };
+
   render() {
+    let photo = <img alt="..." className="avatar" src={require("assets/img/user.svg")} />
+
+    if (this.state.userUrl.url != "" && this.state.userUrl.url != null) {
+      var url = this.state.userUrl.url;
+      photo = <img alt="..." className="avatar" src={url} />
+    }
+
     return (
       <>
         <Navbar
@@ -189,16 +210,16 @@ class AdminNavbar extends React.Component {
                     onClick={e => e.preventDefault()}
                   >
                     <div className="photo">
-                      <img alt="..." src={require("assets/img/user.svg")} />
+                      {photo}
                     </div>
                     <b className="caret d-none d-lg-block d-xl-block" />
                     <p className="d-lg-none">{user}</p>
                   </DropdownToggle>
                   <DropdownMenu className="dropdown-navbar" right tag="ul">
                     <NavLink tag="li">
-                    <Link to="/admin/user-profile">
-                    <DropdownItem hclassName="nav-item" >Profile</DropdownItem>
-                    </Link>
+                      <Link to="/admin/user-profile">
+                        <DropdownItem hclassName="nav-item" >Profile</DropdownItem>
+                      </Link>
                     </NavLink>
                     <NavLink onClick={this.handleClick} tag="li">
                       <DropdownItem className="nav-item">Settings</DropdownItem>

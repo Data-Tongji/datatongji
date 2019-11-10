@@ -91,6 +91,7 @@ class Admin extends React.Component {
     }
     return "Brand";
   };
+  // eslint-disable-next-line no-dupe-class-members
   async componentDidMount() {
     const token = localStorage.getItem('token');
 
