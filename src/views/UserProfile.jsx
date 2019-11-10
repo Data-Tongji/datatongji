@@ -25,7 +25,7 @@ class UserProfile extends React.Component {
   async componentDidMount() {
     const token = localStorage.getItem('token');
 
-    const response = await fetch(`http://localhost:8080/auth/get_user?token=${token}`);
+    const response = await fetch(`https://datatongji-backend.herokuapp.com/auth/get_user?token=${token}`);
     const responseJson = await response.json();
 
     this.setState({ data: responseJson.user });
@@ -56,7 +56,7 @@ class UserProfile extends React.Component {
     data.append('file', this.state.image);
     data.append('token', localStorage.getItem('token'))
 
-    fetch("http://localhost:8080/upload/posts", {
+    fetch("https://datatongji-backend.herokuapp.com/upload/posts", {
       mode: 'no-cors',
       method: "POST",
       headers: {

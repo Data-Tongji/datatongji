@@ -106,7 +106,7 @@ class Descriptive extends React.Component {
             }),
         };
 
-        fetch('http://localhost:8080/descriptive/simple_frequency', requestInfo)
+        fetch('https://datatongji-backend.herokuapp.com/descriptive/simple_frequency', requestInfo)
             .then(response => {
                 if (response.ok) {
                     this.setState({ message: '' });
