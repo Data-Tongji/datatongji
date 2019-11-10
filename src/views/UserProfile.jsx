@@ -136,8 +136,13 @@ class UserProfile extends React.Component {
     setTimeout(
       function () {
         window.location.reload();
+<<<<<<< HEAD
       }.bind(this),
       1800
+=======
+      },
+      1300
+>>>>>>> 21cead97d774c24e97e23638fd617e5cd9f8d054
     );
   };
 

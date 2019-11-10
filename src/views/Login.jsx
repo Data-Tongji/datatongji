@@ -118,12 +118,12 @@ export class Login extends React.Component {
     this.setState({ visible: true });
     if (this.state.register === true) {
       if (this.state.name == null || this.state.name.trim() === "") {
-        return this.setState({ message: 'Fill the name field correctly' });
+        return this.setState({ message: 'Name field cannot be blank' });
       }
     }
 
     if (this.state.email == null || this.state.email.trim() === "") {
-      return this.setState({ message: 'E-mail field cannot be blank' });
+      return this.setState({ message: 'Email field cannot be blank' });
     }
     else if (this.state.password == null || this.state.password.trim() === "") {
       return this.setState({ message: 'Password field cannot be blank' });
@@ -165,11 +165,11 @@ export class Login extends React.Component {
   render() {
     let register;
     let colorAlert;
-    let actionLoginText = 'Login';
+    let actionLoginText = 'Log in';
     let nameLabel;
     document.body.classList.remove("white-content")
     if (this.state.register === true) {
-      actionLoginText = "Cadastrar"
+      actionLoginText = "Sign Up"
       nameLabel = <Label for="exampleEmail">User Name</Label>
       register = <InputGroup className={this.state.focused}>
         <InputGroupAddon addonType="prepend">
@@ -201,13 +201,11 @@ export class Login extends React.Component {
                   <div className="block block-two" />
                   <div className="block block-three" />
                   <div className="block block-four" />
-                  <a href="#pablo" onClick={e => e.preventDefault()}>
                     <img
                       alt="..."
                       className="avatar-logo"
                       src={require("assets/img/logoTong.png")}
                     />
-                  </a>
                 </div>
                 <FormGroup>
                   {
