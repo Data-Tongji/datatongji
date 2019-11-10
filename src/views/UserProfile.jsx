@@ -90,7 +90,7 @@ class UserProfile extends React.Component {
     setTimeout(
       function () {
         window.location.reload();
-      }.bind(this),
+      },
       1300
     );
   }

@@ -1,6 +1,7 @@
 
 import React from "react";
 import Stepper from 'react-stepper-horizontal';
+import { Link } from "react-router-dom";
 import {
   InputGroup,
   InputGroupAddon,
@@ -12,19 +13,14 @@ import {
   Col,
   Row,
   CardText,
+  Label,
   Nav,
   NavItem,
-  NavLink,
   CardHeader,
   CardBody
 } from "reactstrap";
 
 export class ForgotPassword extends React.Component {
-  state = {
-    email: '',
-    token: '',
-    password: '',
-  };
 
   constructor(props) {
     super(props)
@@ -82,7 +78,7 @@ export class ForgotPassword extends React.Component {
           this.setState({ message: '' });
           return response.json();
         }
-        throw new Error("login e/ou senha incorretos!");
+        throw new Error("Wrong credentials!");
       })
       .then(token => {
         console.log(token);
@@ -110,7 +106,7 @@ export class ForgotPassword extends React.Component {
           this.setState({ message: '' });
           return response.json();
         }
-        throw new Error("token incorreto ou expirado!");
+        throw new Error("Invalid token!");
       })
       .then(token => {
         console.log(token);
@@ -124,9 +120,8 @@ export class ForgotPassword extends React.Component {
   }
 
   ResetPass = () => {
-    // console.log(JSON.stringify({ "email": this.state.email, "token": this.state.token, "password": this.state.password }));
     const requestInfo = {
-      method: 'POST',
+      method: 'PUT',
       body: JSON.stringify({ "email": this.state.email, "token": this.state.token, "password": this.state.password }),
       headers: new Headers({
         'Content-Type': 'application/json'
@@ -139,11 +134,12 @@ export class ForgotPassword extends React.Component {
           this.setState({ message: '' });
           return response.json();
         }
-        throw new Error("erro ao alterar senha!");
+        throw new Error("Error when changing the password");
       })
       .then(valid => {
-        console.log(valid);
         this.positionStep(1);
+        this.colorAlert = 'success';
+        this.setState({ message: 'Success!' });
         return;
       })
       .catch(e => {
@@ -152,10 +148,12 @@ export class ForgotPassword extends React.Component {
 
   }
 
-  valida = () => {
+  inputValidation = () => {
+    this.colorAlert = 'danger';
+    this.setState({ visible: true });
     if (this.state.stepPosition === 0) {
       if (this.state.email == null || this.state.email.trim() === "") {
-        this.setState({ message: 'preencha o campo e-mail' });
+        return this.setState({ message: 'Email field cannot be blank' });
       }
       else {
         this.setState({ message: '' });
@@ -164,7 +162,7 @@ export class ForgotPassword extends React.Component {
     }
     else if (this.state.stepPosition === 1) {
       if (this.state.token == null || this.state.token.trim() === "") {
-        this.setState({ message: 'preencha o campo token' });
+        return this.setState({ message: 'Token field cannot be blank' });
       }
       else {
         this.setState({ message: '' });
@@ -173,15 +171,20 @@ export class ForgotPassword extends React.Component {
     }
     else if (this.state.stepPosition === 2) {
       if (this.state.password == null || this.state.password.trim() === "") {
-        this.setState({ message: 'preencha o campo senha' });
+        return this.setState({ message: 'Password field cannot be blank' });
       }
       else {
         this.setState({ message: '' });
         this.ResetPass();
       }
     }
+  };
 
-
+  onDismiss = () => {
+    this.setState({
+      visible: false,
+      message: ''
+    });
   };
 
   handleChange = e => {
@@ -192,12 +195,13 @@ export class ForgotPassword extends React.Component {
     let button = [];
     let Position = this.state.stepPosition;
     let Card_Body;
+    let colorAlert;
 
 
     if (Position === 0) {
       Card_Body =
         <CardBody>
-          <CardHeader style={{ textAlign: 'center' }} >Informe o e-mail cadastrado:</CardHeader><br />
+        <CardHeader >Email address</CardHeader><br />
           <InputGroup className={this.state.focused}>
             <InputGroupAddon addonType="prepend">
               <InputGroupText><i className="fas fa-at" style={{ marginRight: '10px' }}></i></InputGroupText>
@@ -205,22 +209,26 @@ export class ForgotPassword extends React.Component {
             <Input
               type="text"
               name="email"
-              placeholder="E-mail"
+              placeholder="Email"
               onFocus={this.onFocus}
               onBlur={this.onBlur}
               onChange={this.handleChange}
             />
-          </InputGroup>{
-            this.state.message !== '' ? (
-              <Alert color='danger' className="text-center">{this.state.message}</Alert>
-            ) : ''}
-          <Button style={{ width: '100%' }} color="orange" type="button" onClick={this.valida}>
-            Enviar
-           </Button>
+          </InputGroup>
+
+          <Button
+            style={{ width: '100%' }}
+            color="primary"
+            block
+            className="btn-round"
+            type="button"
+            onClick={this.inputValidation}
+          >Send
+          </Button>
         </CardBody>
     } else if (Position === 1) {
       Card_Body = <CardBody>
-        <CardHeader style={{ textAlign: 'center' }} >Informe o token recebido no seu e-mail.</CardHeader><br />
+        <CardHeader >Check your email and inform us the token you received</CardHeader><br />
         <fieldset disabled>
           <InputGroup>
             <InputGroupAddon addonType="prepend">
@@ -241,17 +249,18 @@ export class ForgotPassword extends React.Component {
             onBlur={this.onBlur}
             onChange={this.handleChange}
           />
-        </InputGroup>{
-          this.state.message !== '' ? (
-            <Alert color='danger' className="text-center">{this.state.message}</Alert>
-          ) : ''}
-        <Button style={{ width: '100%' }} color="orange" type="button" onClick={this.valida}>
-          Enviar
-          </Button>
+        </InputGroup>
+        <Button
+          style={{ width: '100%' }}
+          color="primary"
+          block
+          className="btn-round"
+          type="button"
+          onClick={this.inputValidation}>Send</Button>
       </CardBody>
     } else if (Position === 2) {
       Card_Body = <CardBody>
-        <CardHeader style={{ textAlign: 'center' }} >Informe a nova senha.</CardHeader><br />
+        <CardHeader >Inform the new password</CardHeader><br />
         <fieldset disabled>
           <InputGroup>
             <InputGroupAddon addonType="prepend">
@@ -274,23 +283,20 @@ export class ForgotPassword extends React.Component {
             type="password"
             name="password"
             id="password"
-            placeholder="Senha"
+            placeholder="Password"
             onFocus={this.onFocus}
             onBlur={this.onBlur}
             onChange={this.handleChange}
           />
-        </InputGroup>{
-          this.state.message !== '' ? (
-            <Alert color='danger' className="text-center">{this.state.message}</Alert>
-          ) : ''}
-        <Button style={{ width: '100%' }} color="primary" type="button" onClick={this.ResetPass}>
-          Alterar Senha
+        </InputGroup>
+        <Button style={{ width: '100%' }} color="primary" type="button" onClick={this.inputValidation}>
+          Change Password
         </Button>
 
       </CardBody>
     } else {
       Card_Body = <CardBody>
-        <CardHeader style={{ textAlign: 'center' }} >Senha alterada com sucesso!</CardHeader> <br />
+        <CardHeader >Your Password has been changed! You can log in now.</CardHeader> <br />
       </CardBody>
     }
 
@@ -308,7 +314,7 @@ export class ForgotPassword extends React.Component {
                   <div className="block block-two" />
                   <div className="block block-three" />
                   <div className="block block-four" />
-                  <a href="#pablo" onClick={e => e.preventDefault()}>
+                  <a href="/#/" >
                     <img
                       alt="..."
                       className="avatar-logo"
@@ -323,14 +329,25 @@ export class ForgotPassword extends React.Component {
                       completeColor={"#c45858"}
                       steps={this.state.steps}
                       activeStep={this.state.stepPosition} />
-                    <CardBody>
+                    <CardBody>{
+                      this.state.message !== '' ? (
+                        <Alert
+                          isOpen={this.state.visible}
+                          toggle={this.onDismiss}
+                          color={this.colorAlert}
+                          className="text-center">{this.state.message}</Alert>
+                      ) : ''}
                       {Card_Body}
                       {button[0]}
                       {button[1]}
                       {button[2]}
                       <Nav style={{ justifyContent: 'center' }}>
                         <NavItem >
-                          <NavLink href="/#/"><i className="fas fa-home" style={{ marginRight: '10px' }}></i></NavLink>
+                          <Link to="/#/">
+                            <Button className="btn-icon btn-round" color="primary">
+                              <i className="fas fa-home"></i>
+                            </Button>
+                          </Link>
                         </NavItem>
                       </Nav>
                     </CardBody>

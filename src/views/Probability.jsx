@@ -129,8 +129,8 @@ class Probability extends React.Component {
   }
 
   ResultCollapse() {
-    this.setState(state => ({ collapse: !this.state.collapse }));
     this.SendData();
+    this.setState(state => ({ collapse: !this.state.collapse }));
   }
 
   SendData = () => {
@@ -224,7 +224,7 @@ class Probability extends React.Component {
       if (this.state.activeTab === '1') {
         body = {
           "name": this.state.Name,
-          "type": "normal",
+          "type": "Normal",
           "data": {
             "Mean": parseFloat(this.state.Mean),
             "stdDev": parseFloat(this.state.stdDev),
@@ -239,7 +239,7 @@ class Probability extends React.Component {
       } else if (this.state.activeTab === '2') {
         body = {
           "name": this.state.Name,
-          "type": "uniform",
+          "type": "Uniform",
           "data": {
             "PMin": parseFloat(this.state.PMin),
             "PMax": parseFloat(this.state.PMax),
@@ -263,7 +263,7 @@ class Probability extends React.Component {
         };
         body = {
           "name": this.state.Name,
-          "type": "binomial",
+          "type": "Binomial",
           "data": {
             "k": k,
             "n": parseFloat(this.state.spn),

@@ -33,7 +33,7 @@ var routes = [
   },
   {
     path: "/CorrelationRegression",
-    name: "Correlation and Regression",
+    name: "Correlation / Regression",
     icon: "tim-icons icon-vector",
     component: CorrelationRegression,
     layout: "/admin"

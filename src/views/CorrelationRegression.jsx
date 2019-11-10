@@ -5,6 +5,8 @@ import { Save, AddCircle } from 'grommet-icons';
 import { Line, Scatter } from 'react-chartjs-2';
 import { Row, Col } from 'react-bootstrap';
 import Papa from 'papaparse';
+import Highcharts from 'highcharts'
+import HighchartsReact from 'highcharts-react-official'
 import {
   Alert,
   Badge,
@@ -15,7 +17,6 @@ import {
   CardTitle,
   Collapse,
   Container,
-  FormGroup,
   Input,
   Label,
   ListGroup,
@@ -25,44 +26,10 @@ import {
   ModalFooter,
   Nav,
   NavItem,
-  NavLink,
   Table,
 } from "reactstrap";
-// import {
-//   ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip
-// } from 'recharts';
 import csvicon from '../assets/img/csv.svg';
 import '../assets/css/csv.css';
-
-const data = {
-  labels: ['Scatter'],
-  datasets: [
-    {
-      label: 'My First dataset',
-      fill: false,
-      backgroundColor: 'rgba(75,192,192,0.4)',
-      pointBorderColor: 'rgba(75,192,192,1)',
-      pointBackgroundColor: '#fff',
-      pointBorderWidth: 3,
-      pointHoverRadius: 8,
-      pointHoverBackgroundColor: 'rgba(75,192,192,1)',
-      pointHoverBorderColor: 'rgba(220,220,220,1)',
-      pointHoverBorderWidth: 5,
-      pointRadius: 4,
-      pointHitRadius: 13,
-      data: [
-        { x: 65, y: 75 },
-        { x: 59, y: 49 },
-        { x: 80, y: 90 },
-        { x: 81, y: 29 },
-        { x: 56, y: 36 },
-        { x: 55, y: 25 },
-        { x: 40, y: 18 },
-      ]
-    }
-  ]
-};
-
 
 class CorrelationRegression extends React.Component {
   constructor(props) {
@@ -75,11 +42,15 @@ class CorrelationRegression extends React.Component {
         { title: '' }],
       tagsX: [],
       tagsY: [],
+      data: [],
+      line: [],
       focused: '',
       collapse: false,
       VarX: '',
       VarY: '',
       body: '',
+      xProj: '',
+      yProj: '',
       modalDemo: false,
       modalHelp: false,
       btnSave: true,
@@ -123,7 +94,34 @@ class CorrelationRegression extends React.Component {
   };
 
   handleChange = e => {
-    this.setState({ [e.target.name]: e.target.value });
+    if (e.target.name === 'xProj' || e.target.name === 'yProj') {
+      var value = e.target.value;
+      var t = 0;
+      value = value.replace(/[^0-9,.]/g, '');
+      value = value.replace(/,{1,}/g, '.');
+      value = value.replace(/\.{1,}/g, '.');
+      value = value.replace(/\./g, function (match) {
+        t++;
+        return (t >= 2) ? '' : match;
+      });
+      if (value === '') {
+        value = 0;
+      };
+      if (e.target.name === 'xProj') {
+        this.setState({
+          [e.target.name]: value,
+          yProj: parseFloat(this.state.regression.aCoef) + (parseFloat(this.state.regression.iPoint) * parseFloat(value))
+        });
+      }
+      else if (e.target.name === 'yProj') {
+        this.setState({
+          [e.target.name]: (value),
+          xProj: (parseFloat(value) - parseFloat(this.state.regression.aCoef)) / (parseFloat(this.state.regression.iPoint))
+        });
+      }
+    } else {
+      this.setState({ [e.target.name]: e.target.value });
+    }
   };
 
   toggleModalDemo() {
@@ -139,17 +137,27 @@ class CorrelationRegression extends React.Component {
   };
 
   ResultCollapse() {
-    this.setState(state => ({ collapse: !this.state.collapse }));
     this.SendData();
+
+    this.setState(state => ({
+      collapse: !this.state.collapse
+    }));
   };
 
   SendData = () => {
     var tagsx = [];
     var tagsy = [];
+    var data = [];
+
     for (var i = 0; i < this.state.tagsX.length; i++) {
       tagsx.splice(i, 0, this.state.tagsX[i].displayValue);
       tagsy.splice(i, 0, this.state.tagsY[i].displayValue);
+      data.push(
+        [tagsx[i],
+        tagsy[i]]
+      );
     };
+    console.log(data)
     this.setState({
       body: {
         "X": {
@@ -160,7 +168,8 @@ class CorrelationRegression extends React.Component {
           "name": this.state.VarY,
           "values": tagsy
         }
-      }
+      },
+      data: data
     })
     const requestInfo = {
       method: 'POST',
@@ -184,7 +193,8 @@ class CorrelationRegression extends React.Component {
         this.setState({
           btnSave: false,
           correlation: result.distribution.correlation,
-          regression: result.distribution.regression
+          regression: result.distribution.regression,
+          line: result.distribution.line
         });
       })
       .catch(e => {
@@ -405,6 +415,122 @@ class CorrelationRegression extends React.Component {
     const fileInputKey = this.state.acceptedFiles.value ? '' : +new Date();
     let tagcsvX = null;
     let tagcsvY = null;
+    let options = {
+      chart: {
+        type: 'scatter',
+        zoomType: 'xy',
+        // backgroundColor: 'transparent',
+        style: {
+          fontFamily: 'Dosis, sans-serif'
+        }
+      },
+      accessibility: {
+        description: `A scatter plot compares the data between ${this.state.VarX} and ${this.state.VarY}`
+      },
+      title: {
+        style: {
+          fontSize: '16px',
+          fontWeight: 'bold'
+        },
+        text: `Scatter Chart (${this.state.VarX} x ${this.state.VarY})`,
+        backgroundColor: '#F0F0EA',
+      },
+      xAxis: {
+        title: {
+          enabled: true,
+          text: this.state.VarX
+        },
+        startOnTick: true,
+        endOnTick: true,
+        showLastLabel: true,
+        gridLineWidth: 1,
+        labels: {
+          style: {
+            fontSize: '12px'
+          }
+        }
+      },
+      yAxis: {
+        title: {
+          text: this.state.VarY
+        },
+        minorTickInterval: 'auto',
+        labels: {
+          style: {
+            fontSize: '12px'
+          }
+        }
+      },
+      // legend: {
+      //   backgroundColor: '#F0F0EA',
+      //   itemStyle: {
+      //     fontWeight: 'bold',
+      //     fontSize: '13px'
+      //   },
+      //   layout: 'horizontal',
+      //   align: 'left',
+      //   verticalAlign: 'center',
+      //   floating: true,
+      //   borderWidth: 1,
+      //   x: 70, // = marginLeft - default spacingLeft
+      // },
+      plotOptions: {
+        candlestick: {
+          lineColor: '#404048'
+        },
+        scatter: {
+          marker: {
+            radius: 5,
+            states: {
+              hover: {
+                enabled: true,
+                lineColor: 'rgb(100,100,100)'
+              }
+            }
+          },
+          states: {
+            hover: {
+              marker: {
+                enabled: true
+              }
+            }
+          },
+          tooltip: {
+            headerFormat: '<b>{series.name}</b><br>',
+            pointFormat: '{point.x}; {point.y}'
+          }
+        }
+      },
+      series: [{
+        regression: true,
+        type: 'line',
+        name: 'Regression line',
+        data: this.state.line,
+        marker: {
+          enabled: true
+        },
+        states: {
+          hover: {
+            lineWidth: 1
+          }
+        },
+        enableMouseTracking: false
+      }, {
+        type: 'scatter',
+        name: `${this.state.VarX} x ${this.state.VarY}`,
+        data: this.state.data,
+        color: 'rgba(223, 83, 83, .5)',
+        marker: {
+          radius: 4
+        }
+      }],
+      tooltip: {
+        borderWidth: 0,
+        backgroundColor: 'rgba(219,219,216,0.8)',
+        shadow: true
+      },
+    };
+
     if (this.state.dispcsv) {
       tagcsvX =
         (
@@ -583,7 +709,6 @@ class CorrelationRegression extends React.Component {
                           </Button>
                         </NavItem>
                       </Nav>
-                      {/* <Scatter data={data} /> */}
                     </Container>
                     <Nav style={{ justifyContent: 'center' }}>
                       <NavItem >
@@ -642,56 +767,41 @@ class CorrelationRegression extends React.Component {
                           <ListGroup>
                             <ListGroupItem style={{ backgroundColor: 'transparent' }} className="justify-content-between">Linear Correlation Coefficient: <Badge pill>{this.state.correlation}</Badge></ListGroupItem>
                             <ListGroupItem style={{ backgroundColor: 'transparent' }} className="justify-content-between">
-                              Equation: <Badge pill> y<sub>1</sub> ={this.state.regression.aCoef}+{this.state.regression.iPoint}x<sub>1</sub></Badge>
+                              Equation: <Badge pill> y<sub>1</sub> =({this.state.regression.aCoef})+({this.state.regression.iPoint}x<sub>1</sub>)</Badge>
                             </ListGroupItem>
-                          </ListGroup><br /><br />
+                            <ListGroupItem style={{ backgroundColor: 'transparent' }} className="justify-content-between">
+                              <Row>
+                                <Col sm>
+                                  <CardTitle>Projeções de X:</CardTitle>
+
+                                  <Input type="text"
+                                    pattern="[^0-9,.]"
+                                    onInput={this.handleChange.bind(this)}
+                                    value={this.state.xProj}
+                                    name='xProj'
+                                    placeholder="0.00" />
+                                </Col>
+                                <Col sm>
+                                  <CardTitle>Projeções de Y:</CardTitle>
+
+                                  <Input type="text"
+                                    pattern="[^0-9,.]"
+                                    onInput={this.handleChange.bind(this)}
+                                    value={this.state.yProj}
+                                    name='yProj'
+                                    placeholder="0.00" /></Col>
+                              </Row>
+                            </ListGroupItem>
+                          </ListGroup><br />
                         </NavItem>
                       </Nav>
+                      <CardBody >
+                          <HighchartsReact
+                            highcharts={Highcharts}
+                            options={options}
+                          />
+                      </CardBody>
                     </Collapse>
-                    {/* <TagInputNaN
-                addTagOnEnterKeyPressed={false}
-                tagStyle={`background: linear-gradient(to bottom left, #550300, #d32a23, #550300);`}
-                inputStyle={`display: none;`}
-                tagDeleteStyle={`display: none;`}
-                tags={this.state.tagsX}
-                onTagsChanged={this.onTagsChangedX} /><br /><br />
-              <CardTitle>Y<sub>i</sub>  - {this.state.VarY}:</CardTitle>
-              <TagInputNaN
-                addTagOnEnterKeyPressed={false}
-                tagStyle={`background: linear-gradient(to bottom left, #550300, #d32a23, #550300);`}
-                inputStyle={`display: none;`}
-                tagDeleteStyle={`display: none;`}
-                tags={this.state.tagsY}
-                onTagsChanged={this.onTagsChangedY} /> */}
-                    {/* <Collapse isOpen={this.state.collapse}>
-                      <Table responsive>
-
-                        <thead>
-                          <tr>
-                            <th>#</th>
-                            <th>Table heading</th>
-                            <th>Table heading</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <th scope="row">1</th>
-                            <td>Table cell</td>
-                            <td>Table cell</td>
-                          </tr>
-                          <tr>
-                            <th scope="row">2</th>
-                            <td>Table cell</td>
-                            <td>Table cell</td>
-                          </tr>
-                          <tr>
-                            <th scope="row">3</th>
-                            <td>Table cell</td>
-                            <td>Table cell</td>
-                          </tr>
-                        </tbody>
-                      </Table>
-                    </Collapse> */}
                   </Card>
                 </CardBody>
               </Card>
