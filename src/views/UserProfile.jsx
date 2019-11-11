@@ -29,7 +29,7 @@ class UserProfile extends React.Component {
   // async componentDidMount() {
   //   const token = localStorage.getItem('token');
 
-  //   const response = await fetch(`https://datatongji-backend.herokuapp.com/auth/get_user?token=${token}`);
+  //   const response = await fetch(`http://localhost:8080/auth/get_user?token=${token}`);
   //   const responseJson = await response.json();
 
   //   this.setState({ data: responseJson.user });
@@ -73,7 +73,7 @@ class UserProfile extends React.Component {
 
       data.append('file', this.state.image);
       data.append('token', localStorage.getItem('token'));
-        fetch("https://datatongji-backend.herokuapp.com/upload/posts", {
+        fetch("http://localhost:8080/upload/posts", {
           mode: 'no-cors',
           method: "POST",
           headers: {
@@ -86,7 +86,6 @@ class UserProfile extends React.Component {
               "--AaB03x--",
             "Accept": "application/json",
             "type": "formData",
-
           },
           body: data
         }).then(response => {
@@ -114,7 +113,7 @@ class UserProfile extends React.Component {
         }),
       };
 
-      fetch('https://datatongji-backend.herokuapp.com/auth/updateuser', requestInfo)
+      fetch('http://localhost:8080/auth/updateuser', requestInfo)
         .then(response => {
           if (response.ok) {
             this.setState({ message: '' });
@@ -136,13 +135,8 @@ class UserProfile extends React.Component {
     setTimeout(
       function () {
         window.location.reload();
-<<<<<<< HEAD
       }.bind(this),
       1800
-=======
-      },
-      1300
->>>>>>> 21cead97d774c24e97e23638fd617e5cd9f8d054
     );
   };
 

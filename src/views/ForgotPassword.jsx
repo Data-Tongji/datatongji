@@ -72,7 +72,7 @@ export class ForgotPassword extends React.Component {
       }),
     };
 
-    fetch('https://datatongji-backend.herokuapp.com/auth/forgot_password', requestInfo)
+    fetch('http://localhost:8080/auth/forgot_password', requestInfo)
       .then(response => {
         if (response.ok) {
           this.setState({ message: '' });
@@ -100,7 +100,7 @@ export class ForgotPassword extends React.Component {
       }),
     };
 
-    fetch('https://datatongji-backend.herokuapp.com/auth/valid_token', requestInfo)
+    fetch('http://localhost:8080/auth/valid_token', requestInfo)
       .then(response => {
         if (response.ok) {
           this.setState({ message: '' });
@@ -128,7 +128,7 @@ export class ForgotPassword extends React.Component {
       }),
     };
 
-    fetch('https://datatongji-backend.herokuapp.com/auth/reset_password', requestInfo)
+    fetch('http://localhost:8080/auth/reset_password', requestInfo)
       .then(response => {
         if (response.ok) {
           this.setState({ message: '' });

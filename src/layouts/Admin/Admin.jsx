@@ -20,12 +20,17 @@ class Admin extends React.Component {
     super(props);
     this.state = {
       data: {},
-      backgroundColor: "primary",
+      backgroundColor: '',
       sidebarOpened:
         document.documentElement.className.indexOf("nav-open") !== -1
     };
   }
   componentDidMount() {
+    // const colorbg = localStorage.getItem('backgroundColor');
+    this.setState({backgroundColor: 'blue'}) 
+    
+  //  this.setState({backgroundColor: localStorage.getItem('sidebarColor')}) 
+    // this.setState({ backgroundColor: color });
     if (navigator.platform.indexOf("Win") > -1) {
       document.documentElement.className += " perfect-scrollbar-on";
       document.documentElement.classList.remove("perfect-scrollbar-off");
@@ -62,6 +67,7 @@ class Admin extends React.Component {
     this.setState({ sidebarOpened: !this.state.sidebarOpened });
   };
   getRoutes = routes => {
+
     return routes.map((prop, key) => {
       if (prop.layout === "/admin") {
         return (
@@ -79,6 +85,7 @@ class Admin extends React.Component {
   handleBgClick = color => {
     this.setState({ backgroundColor: color });
   };
+  
   getBrandText = path => {
     for (let i = 0; i < routes.length; i++) {
       if (
@@ -95,13 +102,16 @@ class Admin extends React.Component {
   async componentDidMount() {
     const token = localStorage.getItem('token');
 
-    const response = await fetch(`https://datatongji-backend.herokuapp.com/auth/get_user?token=${token}`)
+    const response = await fetch(`http://localhost:8080/auth/get_user?token=${token}`)
     const responseJson = await response.json()
 
     this.setState({ data: responseJson})
-  };
+   
 
+  };
   render() {
+
+
     return (
       <>
       

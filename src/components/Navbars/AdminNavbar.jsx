@@ -94,7 +94,7 @@ class AdminNavbar extends React.Component {
   async componentDidMount() {
     const token = localStorage.getItem('token');
 
-    const response = await fetch(`https://datatongji-backend.herokuapp.com/auth/get_user?token=${token}`)
+    const response = await fetch(`http://localhost:8080/auth/get_user?token=${token}`)
     const responseJson = await response.json()
     const userImag = responseJson.userImg;
     const user = responseJson.user;
@@ -226,7 +226,7 @@ class AdminNavbar extends React.Component {
                   <DropdownMenu className="dropdown-navbar" right tag="ul">
                     <NavLink tag="li">
                       <Link to="/admin/user-profile">
-                        <DropdownItem hclassName="nav-item" >Profile</DropdownItem>
+                        <DropdownItem className="nav-item" >Profile</DropdownItem>
                       </Link>
                     </NavLink>
                     <NavLink onClick={this.handleClick} tag="li">
