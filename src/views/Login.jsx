@@ -41,7 +41,7 @@ export class Login extends React.Component {
         'Content-Type': 'application/json'
       }),
     };
-    fetch('http://localhost:8080/auth/authenticate', requestInfo)
+    fetch('https://datatongji-backend.herokuapp.com/auth/authenticate', requestInfo)
       .then(response => {
         if (response.ok) {
           this.setState({ message: '' });
@@ -66,7 +66,7 @@ export class Login extends React.Component {
 
   async getUserConfig() {
     const token = localStorage.getItem('token');
-    const response = await fetch(`http://localhost:8080/auth/get_user_cofig?token=${token}`);
+    const response = await fetch(`https://datatongji-backend.herokuapp.com/auth/get_user_cofig?token=${token}`);
     const responseJson = await response.json();
 
     localStorage.setItem('background', responseJson.backgroundColor );
@@ -83,7 +83,7 @@ export class Login extends React.Component {
       }),
     };
 
-    fetch('http://localhost:8080/auth/register', requestInfo)
+    fetch('https://datatongji-backend.herokuapp.com/auth/register', requestInfo)
       .then(response => {
         if (response.ok) {
           this.colorAlert = 'success';

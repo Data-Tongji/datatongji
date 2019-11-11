@@ -178,7 +178,7 @@ class Probability extends React.Component {
         'Authorization': localStorage.getItem('token')
       }),
     };
-    fetch(`http://localhost:8080/probability/${type}`, requestInfo)
+    fetch(`https://datatongji-backend.herokuapp.com/probability/${type}`, requestInfo)
       .then(response => {
         if (response.ok) {
           this.setState({ message: '' });
@@ -287,7 +287,7 @@ class Probability extends React.Component {
           'Authorization': localStorage.getItem('token')
         }),
       };
-      fetch(`http://localhost:8080/probability/save`, requestInfo)
+      fetch(`https://datatongji-backend.herokuapp.com/probability/save`, requestInfo)
         .then(response => {
           if (response.ok) {
             this.setState({ message: '' });
