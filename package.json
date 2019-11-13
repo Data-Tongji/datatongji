@@ -9,6 +9,7 @@
   "dependencies": {
     "@babel/runtime": "^7.6.0",
     "@blueprintjs/core": "^3.18.0",
+    "@emotion/core": "^10.0.22",
     "@material-ui/core": "^4.4.0",
     "@progress/kendo-data-query": "^1.5.2",
     "@progress/kendo-react-dateinputs": "^3.4.1",
@@ -52,8 +53,11 @@
     "react-movable": "^2.2.0",
     "react-notification-alert": "0.0.8",
     "react-numeric-input": "^2.2.3",
+    "react-png-flipcard": "^1.0.1",
     "react-router-dom": "^5.0.1",
     "react-scripts": "3.0.1",
+    "react-social-icons": "^4.1.0",
+    "react-spinners": "^0.6.1",
     "react-stepper-horizontal": "^1.0.11",
     "react-table": "^6.10.3",
     "react-tag-autocomplete": "^5.11.2",
@@ -84,5 +88,8 @@
   ],
   "devDependencies": {
     "typescript": "^3.6.3"
-  }
+  },
+  "plugins": [
+    "emotion"
+  ]
 }

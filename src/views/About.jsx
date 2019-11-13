@@ -1,20 +1,20 @@
 import React from "react";
-import { MDBBtn, MDBCard, MDBCardBody, MDBCardImage, MDBCardTitle, MDBRow, MDBCol } from 'mdbreact';
-import { Github, Linkedin } from 'grommet-icons';
+import { MDBCardImage } from 'mdbreact';
 import {
   Row,
   Col,
   CardText,
   Container,
   Card,
+  CardBody,
+  CardTitle,
   Nav,
-  CardBody
+  NavItem,
+  Table
 } from "reactstrap";
-
-
+import { SocialIcon } from 'react-social-icons';
 
 export class About extends React.Component {
-
   onFocus = () => {
     this.setState({
       focused: "input-group-focus"
@@ -61,44 +61,39 @@ export class About extends React.Component {
                   salvos em um banco de dados para serem reaproveitados em cálculos futuros.</span>
                 </div>
               </CardBody ><br /><br />
-              <Container style={{ width: '70%' }}>
-                <MDBRow className="mx-auto" >
-                  {/* style={{height:'300px'}} */}
-                  <MDBCol >
-                    <MDBCard style={{ height: '65%' }} cascade>
-                      <MDBCardImage cascade className="img-fluid" src={require("assets/img/Lucas.jpg")} />
-                      <MDBCardBody cascade>
-                        <MDBCardTitle style={{ textAlign: 'center' }}> Lucas Damas</MDBCardTitle> 
-                        <Nav style={{ justifyContent: 'center', alignItems: 'center' }}>
-                          <MDBBtn circle size="lg" tag="a" floating social="li" href="https://linkedin.com/in/lucas-damas-corr%C3%AAa-882806176/" target="_blank">
-                            <Linkedin color='plain' />
-                          </MDBBtn>
-                          <MDBBtn circle size="lg" tag="a" floating social="git" href="https://github.com/lucasdcorrea1" target="_blank">
-                            <Github color='brand' />
-                          </MDBBtn>
-                        </Nav>
-                      </MDBCardBody>
-                    </MDBCard>
-                  </MDBCol>
-                  <MDBCol>
-                    <MDBCard style={{ height: '65%' }} cascade >
-                      <MDBCardImage cascade className="img-fluid" src={require("assets/img/Leonardo.jpg")} />
-                      <MDBCardBody cascade>
-                        <MDBCardTitle style={{ textAlign: 'center' }}> Leonardo Ronne</MDBCardTitle>
-                        <Nav style={{ justifyContent: 'center', alignItems: 'center' }}>
-                          <MDBBtn circle size="lg" tag="a" floating social="li" href="https://linkedin.com/in/leoronne" target="_blank">
-                            <Linkedin color='plain' />
-                          </MDBBtn>
-                          <MDBBtn circle size="lg" tag="a" floating social="git" href="https://github.com/leoronne" target="_blank">
-                            <Github color='brand' />
-                          </MDBBtn>
-                        </Nav>
-                      </MDBCardBody>
-                    </MDBCard>
-                  </MDBCol>
-                </MDBRow>
-              </Container>
+              <div class="react-card"></div>
 
+              <Container style={{ justifyContent: 'center', width: '90%' }}>
+                <Table responsive>
+                  <thead>
+                    <tr>
+                      <th><MDBCardImage cascade className="img-fluid" src={require("assets/img/Lucas.jpg")} />
+                        <br /><CardTitle style={{ textAlign: 'center' }}>Lucas Damas</CardTitle>
+                        <Nav style={{ justifyContent: 'center', alignItems: 'center' }}>
+                          <NavItem>
+                            <SocialIcon sm url="https://linkedin.com/in/lucas-damas-corr%C3%AAa-882806176/" target="_blank" style={{ height: 30, width: 30 }} />
+                          </NavItem>
+                          <NavItem ><span>&nbsp;&nbsp;</span></NavItem >
+                          <NavItem>
+                            <SocialIcon sm url="https://github.com/lucasdcorrea1" target="_blank" style={{ height: 30, width: 30 }} fgColor="#000" />
+                          </NavItem>
+                        </Nav>
+                      </th>
+                      <th><MDBCardImage cascade className="img-fluid" src={require("assets/img/Leonardo.jpg")} />
+                        <br /><CardTitle style={{ textAlign: 'center' }}>Leonardo Ronne</CardTitle>
+                        <Nav style={{ justifyContent: 'center', alignItems: 'center' }}>
+                          <NavItem>
+                            <SocialIcon sm url="https://linkedin.com/in/leoronne" target="_blank" style={{ height: 30, width: 30 }} />
+                          </NavItem>
+                          <NavItem ><span>&nbsp;&nbsp;</span></NavItem >
+                          <NavItem>
+                            <SocialIcon sm url="https://github.com/leoronne" target="_blank" style={{ height: 30, width: 30 }} fgColor="#000" />
+                          </NavItem>
+                        </Nav>
+                      </th>
+                    </tr>
+                  </thead>
+                </Table></Container>
             </Card>
           </Col>
         </Row>

@@ -17,51 +17,55 @@ import {
   InputGroupAddon,
   InputGroupText
 } from "reactstrap";
+import { DotLoader } from 'react-spinners';
 
 export class Login extends React.Component {
 
-  state = {
-    name: '',
-    email: '',
-    password: '',
-    register: false
-  };
   constructor(props) {
     super(props)
     this.state = {
+      name: '',
+      email: '',
+      password: '',
+      register: false,
+      loading: false,
       message: this.props.location.state ? this.props.location.state.message : '',
     };
+    this.signIn = this.signIn.bind(this);
   };
 
-  signIn = () => {
+  async signIn() {
+    this.setState({ loading: true });
     const requestInfo = {
       method: 'POST',
       body: JSON.stringify({ "email": this.state.email, "password": this.state.password }),
       headers: new Headers({
         'Content-Type': 'application/json'
       }),
-    };
-    fetch('https://datatongji-backend.herokuapp.com/auth/authenticate', requestInfo)
-      .then(response => {
-        if (response.ok) {
-          this.setState({ message: '' });
-          return response.json();
-        }
-        this.colorAlert = 'danger';
-        throw new Error(response.status === 400 ? 'User not found' : 'Invalid credentials');
-      })
-      .then(token => {
+    }
+    try {
+      const response = await fetch('https://datatongji-backend.herokuapp.com/auth/authenticate', requestInfo);
+      var token = await response.json();
+      if (response.ok) {
         localStorage.setItem('token', token);
         localStorage.setItem('valid', "OK");
         this.getUserConfig(token);
+        this.setState({
+          message: '',
+          loading: false
+        });
         this.props.history.push("/admin/dashboard");
         return;
-      })
-      .catch(e => {
-        this.colorAlert = 'danger';
-        this.setState({ message: e.message });
+      } else {
+        throw new Error(response.status === 400 ? 'User not found' : 'Invalid credentials');
+      }
+    } catch (e) {
+      this.colorAlert = 'danger';
+      this.setState({
+        message: e.message,
+        loading: false
       });
-
+    }
   };
 
   async getUserConfig() {
@@ -69,12 +73,13 @@ export class Login extends React.Component {
     const response = await fetch(`https://datatongji-backend.herokuapp.com/auth/get_user_cofig?token=${token}`);
     const responseJson = await response.json();
 
-    localStorage.setItem('background', responseJson.backgroundColor );
-    localStorage.setItem('sidebarColor', responseJson.sidebarColor );
+    localStorage.setItem('background', responseJson.backgroundColor);
+    localStorage.setItem('sidebarColor', responseJson.sidebarColor);
     localStorage.setItem('defaultLanguage', responseJson.defaultLanguage);
   };
 
-  register = () => {
+  async register() {
+    this.setState({ loading: true });
     const requestInfo = {
       method: 'POST',
       body: JSON.stringify({ "name": this.state.name, "email": this.state.email, "password": this.state.password }),
@@ -82,28 +87,27 @@ export class Login extends React.Component {
         'Content-Type': 'application/json'
       }),
     };
-
-    fetch('https://datatongji-backend.herokuapp.com/auth/register', requestInfo)
-      .then(response => {
-        if (response.ok) {
-          this.colorAlert = 'success';
-          this.setState({ message: 'You have successfully registered, please sign in' });
-          return response.json();
-        }
-        this.colorAlert = 'danger';
-        throw new Error("User has already been registered");
-      })
-      .then(token => {
-        localStorage.setItem('token', token);
-        localStorage.setItem('valid', "OK");
-        this.setState({ register: false });
+    try {
+      const response = await fetch('https://datatongji-backend.herokuapp.com/auth/register', requestInfo);
+      if (response.ok) {
+        this.colorAlert = 'success';
+        this.setState({
+          message: 'You have successfully registered, please sign in',
+          register: false,
+          loading: false
+        });
         return;
-      })
-      .catch(e => {
-        this.colorAlert = 'danger'
-        this.setState({ message: e.message });
+      } else {
+        throw new Error("User has already been registered");
+      }
+    }
+    catch (e) {
+      this.colorAlert = 'danger';
+      this.setState({
+        message: e.message,
+        loading: false
       });
-
+    }
   };
 
   userRegister = () => {
@@ -188,9 +192,22 @@ export class Login extends React.Component {
       </InputGroup>
     }
 
+    if (this.state.loading === true) {
+      actionLoginText = <DotLoader
+        css={`
+                      display: block;
+                      margin: 0 auto;
+                      border-color: red;
+                      `}
+        sizeUnit={"px"}
+        size={20}
+        color={'#fff'}
+        loading={this.state.loading}
+      />
+    }
+
     return (
       <>
-
         <Row>
           <Col className="col_center_login" md="4">
             <Card className="card-user">
@@ -201,11 +218,11 @@ export class Login extends React.Component {
                   <div className="block block-two" />
                   <div className="block block-three" />
                   <div className="block block-four" />
-                    <img
-                      alt="..."
-                      className="avatar-logo"
-                      src={require("assets/img/logoTong.png")}
-                    />
+                  <img
+                    alt="..."
+                    className="avatar-logo"
+                    src={require("assets/img/logoTong.png")}
+                  />
                 </div>
                 <FormGroup>
                   {
@@ -239,6 +256,7 @@ export class Login extends React.Component {
                   />
                 </FormGroup>
                 <Button
+                  disabled={this.state.loading}
                   color="primary"
                   block
                   className="btn-round"

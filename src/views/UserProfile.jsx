@@ -1,6 +1,5 @@
 import React from "react";
 import api from '../services/api';
-// reactstrap components
 import {
   Button,
   Card,
@@ -8,7 +7,6 @@ import {
   CardFooter,
   CardText,
   Row,
-  Input,
   Col
 } from "reactstrap";
 
@@ -73,36 +71,36 @@ class UserProfile extends React.Component {
 
       data.append('file', this.state.image);
       data.append('token', localStorage.getItem('token'));
-        fetch("https://datatongji-backend.herokuapp.com/upload/posts", {
-          mode: 'no-cors',
-          method: "POST",
-          headers: {
-            "Content-Type": "multipart/form-data; boundary=AaB03x" +
-              "--AaB03x" +
-              "Content-Disposition: file" +
-              "Content-Type: png" +
-              "Content-Transfer-Encoding: binary" +
-              "...data... " +
-              "--AaB03x--",
-            "Accept": "application/json",
-            "type": "formData",
+      fetch("https://datatongji-backend.herokuapp.com/upload/posts", {
+        mode: 'no-cors',
+        method: "POST",
+        headers: {
+          "Content-Type": "multipart/form-data; boundary=AaB03x" +
+            "--AaB03x" +
+            "Content-Disposition: file" +
+            "Content-Type: png" +
+            "Content-Transfer-Encoding: binary" +
+            "...data... " +
+            "--AaB03x--",
+          "Accept": "application/json",
+          "type": "formData",
 
-          },
-          body: data
-        }).then(response => {
-          if (response.ok) {
-            this.setState({ message: '' });
-            return response.json();
-          }
-          throw new Error("Failure!");
-        }).then(result => {
-          this.colorAlert = 'success';
-          this.setState({ message: 'Saved' });
-          this.toggleModalDemo();
-        }).catch(e => {
-          this.colorAlert = 'danger';
-          this.setState({ message: e.message });
-        });
+        },
+        body: data
+      }).then(response => {
+        if (response.ok) {
+          this.setState({ message: '' });
+          return response.json();
+        }
+        throw new Error("Failure!");
+      }).then(result => {
+        this.colorAlert = 'success';
+        this.setState({ message: 'Saved' });
+        this.toggleModalDemo();
+      }).catch(e => {
+        this.colorAlert = 'danger';
+        this.setState({ message: e.message });
+      });
     };
     if (this.state.sidebarColor !== '' || this.state.backgroundColor !== '') {
 
@@ -136,13 +134,8 @@ class UserProfile extends React.Component {
     setTimeout(
       function () {
         window.location.reload();
-<<<<<<< HEAD
-      }.bind(this),
-      1800
-=======
       },
       1300
->>>>>>> 21cead97d774c24e97e23638fd617e5cd9f8d054
     );
   };
 
