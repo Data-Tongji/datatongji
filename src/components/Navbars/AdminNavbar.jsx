@@ -226,7 +226,7 @@ class AdminNavbar extends React.Component {
                   <DropdownMenu className="dropdown-navbar" right tag="ul">
                     <NavLink tag="li">
                       <Link to="/admin/user-profile">
-                        <DropdownItem hclassName="nav-item" >Profile</DropdownItem>
+                        <DropdownItem className="nav-item" >Profile</DropdownItem>
                       </Link>
                     </NavLink>
                     <NavLink onClick={this.handleClick} tag="li">

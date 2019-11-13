@@ -191,7 +191,6 @@ export class Login extends React.Component {
         />
       </InputGroup>
     }
-
     if (this.state.loading === true) {
       actionLoginText = <DotLoader
         css={`

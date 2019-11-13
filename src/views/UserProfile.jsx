@@ -9,6 +9,7 @@ import {
   Row,
   Col
 } from "reactstrap";
+import { DotLoader } from 'react-spinners';
 
 class UserProfile extends React.Component {
   constructor(props) {
@@ -20,6 +21,7 @@ class UserProfile extends React.Component {
       backgroundColor: '',
       defaultLanguage: '',
       change: false,
+      loading: false,
       img: false,
     }
   };
@@ -66,44 +68,57 @@ class UserProfile extends React.Component {
       localStorage.setItem('defaultLanguage', this.state.defaultLanguage);
     };
 
+    this.SaveChanges()
+
+    // this.setState({ change: false })
+    setTimeout(
+      function () {
+        window.location.reload();
+      },
+      900
+    );
+  };
+
+  async SaveChanges() {
+    this.setState({ loading: true });
     if (this.state.defaultLanguage !== false) {
       const data = new FormData();
-
       data.append('file', this.state.image);
       data.append('token', localStorage.getItem('token'));
-      fetch("https://datatongji-backend.herokuapp.com/upload/posts", {
-        mode: 'no-cors',
-        method: "POST",
-        headers: {
-          "Content-Type": "multipart/form-data; boundary=AaB03x" +
-            "--AaB03x" +
-            "Content-Disposition: file" +
-            "Content-Type: png" +
-            "Content-Transfer-Encoding: binary" +
-            "...data... " +
-            "--AaB03x--",
-          "Accept": "application/json",
-          "type": "formData",
-
-        },
-        body: data
-      }).then(response => {
+      try {
+        const response = await fetch('https://datatongji-backend.herokuapp.com/upload/posts', {
+          mode: 'no-cors',
+          method: "POST",
+          headers: {
+            "Content-Type": "multipart/form-data; boundary=AaB03x" +
+              "--AaB03x" +
+              "Content-Disposition: file" +
+              "Content-Type: png" +
+              "Content-Transfer-Encoding: binary" +
+              "...data... " +
+              "--AaB03x--",
+            "Accept": "application/json",
+            "type": "formData",
+          },
+          body: data
+        });
         if (response.ok) {
-          this.setState({ message: '' });
-          return response.json();
+          this.colorAlert = 'success';
+          this.setState({
+            message: 'Saved'
+          });
+        } else {
+          throw new Error("Failure!");
         }
-        throw new Error("Failure!");
-      }).then(result => {
-        this.colorAlert = 'success';
-        this.setState({ message: 'Saved' });
-        this.toggleModalDemo();
-      }).catch(e => {
+      } catch (e) {
         this.colorAlert = 'danger';
-        this.setState({ message: e.message });
-      });
+        this.setState({
+          message: e.message,
+          loading: false
+        });
+      }
     };
     if (this.state.sidebarColor !== '' || this.state.backgroundColor !== '') {
-
       const requestInfo = {
         method: 'PUT',
         body: JSON.stringify({ "token": localStorage.getItem('token'), "sidebarColor": this.state.sidebarColor, "backgroundColor": this.state.backgroundColor }),
@@ -111,33 +126,26 @@ class UserProfile extends React.Component {
           'Content-Type': 'application/json'
         }),
       };
-
-      fetch('https://datatongji-backend.herokuapp.com/auth/updateuser', requestInfo)
-        .then(response => {
-          if (response.ok) {
-            this.setState({ message: '' });
-            return response.json();
-          }
-          throw new Error("erro ao alterar senha!");
+      try {
+        const response = await fetch('https://datatongji-backend.herokuapp.com/auth/updateuser', requestInfo);
+        if (response.ok) {
+          this.colorAlert = 'success';
+          this.setState({
+            message: 'Saved'
+          });
+        } else {
+          throw new Error("Error when updating user colors");
+        }
+      }
+      catch (e) {
+        this.colorAlert = 'danger';
+        this.setState({
+          message: e.message,
+          loading: false
         })
-        .then(valid => {
-          console.log(valid);
-          this.positionStep(1);
-          return;
-        })
-        .catch(e => {
-          this.setState({ message: e.message });
-        });
-    };
-
-    this.setState({ change: false })
-    setTimeout(
-      function () {
-        window.location.reload();
-      },
-      1300
-    );
-  };
+      }
+    }
+  }
 
   handleImagechenge = e => {
     this.setState({ image: e.target.files[0] });
@@ -147,6 +155,20 @@ class UserProfile extends React.Component {
 
   render() {
     let btnSave;
+    let bntsavetext = 'Save';
+    if (this.state.loading === true) {
+      bntsavetext = <DotLoader
+        css={`
+                      display: block;
+                      margin: 0 auto;
+                      border-color: red;
+                      `}
+        sizeUnit={"px"}
+        size={20}
+        color={'#fff'}
+        loading={this.state.loading}
+      />
+    }
     // onChange={this.handleImagechenge}
 
     let upload = <div class="box">
@@ -158,11 +180,9 @@ class UserProfile extends React.Component {
     let photo = <img alt="..." className="avatar" src={require("assets/img/user.svg")} />
 
     if (this.state.change) {
-      btnSave = <Button className="btn-round" type="submit" style={{ top: '-30px', float: 'right' }} color="primary">Save</Button>
+      btnSave = <Button disabled={this.state.loading} className="btn-round" type="submit" style={{ top: '-30px', float: 'right' }} color="primary" onClick={this.handleSubmit}>{bntsavetext}</Button>
     }
-
     var url = localStorage.getItem('userUrl');
-    console.log(url)
 
     if (url !== "" && url !== null && url !== 'undefined') {
       photo = <img alt="..." className="avatar" src={url} />
@@ -173,7 +193,6 @@ class UserProfile extends React.Component {
       <>
         <div className="content">
           <form id="new-post" onSubmit={this.handleSubmit}>
-
             <Row>
               <Col md="12">
                 <Card className="card-user">
@@ -191,16 +210,12 @@ class UserProfile extends React.Component {
                       </a>
                       <p className="description">{userEmail}</p>
                     </div>
-
-
                     <div className="fixed-plugin">
                       <div className={this.state.classes}>
-
                         <ul
                           style={{ padding: '3%', marginRight: '10%' }}
                           className="config-color show">
                           {upload}
-
                           <li className="header-title">SIDEBAR BACKGROUND</li>
                           <li className="adjustments-line">
                             <div className="badge-colors text-center">
@@ -251,50 +266,13 @@ class UserProfile extends React.Component {
                               onClick={() => this.activateMode("dark")}
                             />{" "}
                             <span className="color-label">DARK MODE</span>{" "}
-
                           </li>
-                          {/* <li className="button-container"> */}
-                          {/* <Button
-                href="https://www.creative-tim.com/product/black-dashboard-react"
-                color="primary"
-                block
-                className="btn-round"
-              >
-                Download Now
-              </label>
-                  <Button
-                              color="default"
-                              block
-                              className="btn-round"
-                              outline
-                              href="https://demos.creative-tim.com/black-dashboard-react/#/documentation/tutorial"
-                            >
-                              Documentation
-              </Button>
-                  </li>
-                  <li className="header-title">Want more components?</li> */}
-                          {/* <li className="button-container">
-              <Button
-                href="https://www.creative-tim.com/product/black-dashboard-pro-react"
-                className="btn-round"
-                disabled
-                block
-                color="danger"
-              >
-                Get pro version
-              </Button>
-            </li> */}
-
                         </ul>
                       </div>
                     </div>
-
-
                   </CardBody>
-
                   <CardFooter>
                     {btnSave}
-
                     {/* <div className="button-container">
                       <Button className="btn-icon btn-round" color="facebook">
                         <i className="fab fa-facebook" />
