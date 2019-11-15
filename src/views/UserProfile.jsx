@@ -68,7 +68,7 @@ class UserProfile extends React.Component {
       localStorage.setItem('defaultLanguage', this.state.defaultLanguage);
     };
 
-    if (this.state.defaultLanguage !== false) {
+    if (this.state.img) {
       const data = new FormData();
 
       data.append('file', this.state.image);
@@ -159,7 +159,7 @@ class UserProfile extends React.Component {
     let photo = <img alt="..." className="avatar" src={require("assets/img/user.svg")} />
 
     if (this.state.change) {
-      btnSave = <Button className="btn-round" type="submit" style={{ top: '-30px', float: 'right' }} color="primary">Save</Button>
+      btnSave = <Button className="btn-round" type="submit" style={{ top: '-43px', float: 'right' }} color="primary">Save</Button>
     }
 
     var url = localStorage.getItem('userUrl');
