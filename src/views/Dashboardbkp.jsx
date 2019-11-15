@@ -19,7 +19,7 @@ import React from "react";
 // nodejs library that concatenates classes
 import classNames from "classnames";
 // react plugin used to create charts
-import { Line } from "react-chartjs-2";
+import { Line, Bar } from "react-chartjs-2";
 
 // reactstrap components
 import {
@@ -45,6 +45,9 @@ import {
 // core components
 import {
   chartExample1,
+  chartExample2,
+  chartExample3,
+  chartExample4
 } from "variables/charts.jsx";
 
 class Dashboard extends React.Component {
@@ -161,115 +164,100 @@ class Dashboard extends React.Component {
             </Col>
           </Row>
           <Row>
+            <Col lg="4">
+              <Card className="card-chart">
+                <CardHeader>
+                  <h5 className="card-category">Total Shipments</h5>
+                  <CardTitle tag="h3">
+                    <i className="tim-icons icon-bell-55 text-info" />{" "}
+                    763,215
+                  </CardTitle>
+                </CardHeader>
+                <CardBody>
+                  <div className="chart-area">
+                    <Line
+                      data={chartExample2.data}
+                      options={chartExample2.options}
+                    />
+                  </div>
+                </CardBody>
+              </Card>
+            </Col>
+            <Col lg="4">
+              <Card className="card-chart">
+                <CardHeader>
+                  <h5 className="card-category">Daily Sales</h5>
+                  <CardTitle tag="h3">
+                    <i className="tim-icons icon-delivery-fast text-primary" />{" "}
+                    3,500€
+                  </CardTitle>
+                </CardHeader>
+                <CardBody>
+                  <div className="chart-area">
+                    <Bar
+                      data={chartExample3.data}
+                      options={chartExample3.options}
+                    />
+                  </div>
+                </CardBody>
+              </Card>
+            </Col>
+            <Col lg="4">
+              <Card className="card-chart">
+                <CardHeader>
+                  <h5 className="card-category">Completed Tasks</h5>
+                  <CardTitle tag="h3">
+                    <i className="tim-icons icon-send text-success" /> 12,100K
+                  </CardTitle>
+                </CardHeader>
+                <CardBody>
+                  <div className="chart-area">
+                    <Line
+                      data={chartExample4.data}
+                      options={chartExample4.options}
+                    />
+                  </div>
+                </CardBody>
+              </Card>
+            </Col>
+          </Row>
+          <Row>
             <Col lg="6" md="12">
               <Card className="card-tasks">
                 <CardHeader>
-                  <Col sm>
-                    <ButtonGroup
-                      className="btn-group-toggle float-left"
-                      data-toggle="buttons"
+                  <h6 className="title d-inline">Tasks(5)</h6>
+                  <p className="card-category d-inline"> today</p>
+                  <UncontrolledDropdown>
+                    <DropdownToggle
+                      caret
+                      className="btn-icon"
+                      color="link"
+                      data-toggle="dropdown"
+                      type="button"
                     >
-                      <Button
-                        tag="label"
-                        className={classNames("btn-simple", {
-                          active: this.state.bigChartData === "data1"
-                        })}
-                        color="primary"
-                        id="0"
-                        size="sm"
-                        onClick={() => this.setBgChartData("data1")}
+                      <i className="tim-icons icon-settings-gear-63" />
+                    </DropdownToggle>
+                    <DropdownMenu aria-labelledby="dropdownMenuLink" right>
+                      <DropdownItem
+                        href="#pablo"
+                        onClick={e => e.preventDefault()}
                       >
-                        <input
-                          defaultChecked
-                          className="d-none"
-                          name="options"
-                          type="radio"
-                        />
-                        <span className="d-none d-sm-block d-md-block d-lg-block d-xl-block">
-                          Descriptive
-                          </span>
-                        <span className="d-block d-sm-none">
-                          <i className="tim-icons icon-notes" />
-                        </span>
-                      </Button>
-                      <Button
-                        color="primary"
-                        id="1"
-                        size="sm"
-                        tag="label"
-                        className={classNames("btn-simple", {
-                          active: this.state.bigChartData === "data2"
-                        })}
-                        onClick={() => this.setBgChartData("data2")}
-                      >
-                        <input
-                          className="d-none"
-                          name="options"
-                          type="radio"
-                        />
-                        <span className="d-none d-sm-block d-md-block d-lg-block d-xl-block">
-                          Probability
-                          </span>
-                        <span className="d-block d-sm-none">
-                          <i className="tim-icons icon-chart-bar-32" />
-                        </span>
-                      </Button>
-                      <Button
-                        color="primary"
-                        id="2"
-                        size="sm"
-                        tag="label"
-                        className={classNames("btn-simple", {
-                          active: this.state.bigChartData === "data3"
-                        })}
-                        onClick={() => this.setBgChartData("data3")}
-                      >
-                        <input
-                          className="d-none"
-                          name="options"
-                          type="radio"
-                        />
-                        <span className="d-none d-sm-block d-md-block d-lg-block d-xl-block">
-                          Corr. and Reg.
-                          </span>
-                        <span className="d-block d-sm-none">
-                          <i className="tim-icons icon-vector" />
-                        </span>
-                      </Button>
-                    </ButtonGroup>
-                  </Col><Col sm>
-                    <UncontrolledDropdown>
-                      <DropdownToggle
-                        caret
-                        className="btn-icon"
-                        color="link"
-                        data-toggle="dropdown"
-                        type="button"
-                      >
-                        <i className="tim-icons icon-settings-gear-63" />
-                      </DropdownToggle>
-                      <DropdownMenu aria-labelledby="dropdownMenuLink" right>
-                        <DropdownItem
-                          href="#pablo"
-                          onClick={e => e.preventDefault()}
-                        >
-                          Action
+                        Action
                       </DropdownItem>
-                        <DropdownItem
-                          href="#pablo"
-                          onClick={e => e.preventDefault()}
-                        >
-                          Another action
+                      <DropdownItem
+                        href="#pablo"
+                        onClick={e => e.preventDefault()}
+                      >
+                        Another action
                       </DropdownItem>
-                        <DropdownItem
-                          href="#pablo"
-                          onClick={e => e.preventDefault()}
-                        >
-                          Something else
+                      <DropdownItem
+                        href="#pablo"
+                        onClick={e => e.preventDefault()}
+                      >
+                        Something else
                       </DropdownItem>
-                      </DropdownMenu>
-                    </UncontrolledDropdown></Col>
-
+                    </DropdownMenu>
+                  </UncontrolledDropdown>
                 </CardHeader>
                 <CardBody>
                   <div className="table-full-width table-responsive">

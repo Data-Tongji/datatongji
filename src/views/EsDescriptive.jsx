@@ -17,11 +17,9 @@ import {
     CardBody,
     CardHeader,
     CardTitle,
-    Collapse,
     Container,
     Row,
     Col,
-    FormGroup,
     InputGroup,
     InputGroupAddon,
     InputGroupText,
@@ -30,33 +28,25 @@ import {
     ListGroupItem,
 } from "reactstrap";
 import { Table } from 'antd';
-// import ReactTable from "react-table";
 import "react-table/react-table.css";
-import Demo from '../components/Table/draggableTable'
+
 const closest = function (el, selector, rootNode) {
     rootNode = rootNode || document.body;
-    console.log('rootNode:', rootNode);
     const matchesSelector =
         el.matches ||
         el.webkitMatchesSelector ||
         el.mozMatchesSelector ||
         el.msMatchesSelector;
-    //   console.log('matchesSelector:', matchesSelector);
     while (el) {
         const flagRoot = el === rootNode;
-        //     console.log('flagRoot:', flagRoot);
         if (flagRoot || matchesSelector.call(el, selector)) {
             if (flagRoot) {
                 el = null;
-                //         console.log('flagRoot set el to null:', el);
             }
-            //       console.log('break!');
             break;
         }
         el = el.parentElement;
-        //     console.log('el = el.parentElement:', el);
     }
-    //   console.log('closest:', el);
     el.setAttribute('style', 'border: 50px solid red;');
     return el;
 };
@@ -196,6 +186,16 @@ class Descriptive extends React.Component {
     };
 
     onRadioBtnClick(categ, rSelected) {
+        if (rSelected !== 'Ordinal') {
+            this.setState({
+                collapse: false
+            });
+        }else{
+            this.setState({
+                collapse: true
+            });
+        }
+
         if (categ === 'QntQuali') {
             this.setState({ rSelected });
         } else if (categ === 'PopAmost') {
@@ -271,82 +271,73 @@ class Descriptive extends React.Component {
         // this.ResultCollapse();
     };
     onMouseDown(e) {
-        console.log('onMouseDown');
         const target = this.getTrNode(e.target);
         if (target) {
-          target.setAttribute('draggable', true);
-          target.ondragstart = this.onDragStart;
-          target.ondragend = this.onDragEnd;
+            target.setAttribute('draggable', true);
+            target.ondragstart = this.onDragStart;
+            target.ondragend = this.onDragEnd;
         }
-      }
-    
-      onDragStart(e) {
-        console.log('onDragStart');
+    }
+
+    onDragStart(e) {
         const target = this.getTrNode(e.target);
         if (target) {
-          //       e.dataTransfer.setData('Text', '');
-          e.dataTransfer.effectAllowed = 'move';
-          console.log('target.parentElement:', target.parentElement);
-          target.parentElement.ondragenter = this.onDragEnter;
-          target.parentElement.ondragover = function (ev) {
-            //         console.log('Tbody ondragover:',ev)
-            //         ev.target.dataTransfer.effectAllowed = 'none'
-            ev.preventDefault();
-            return true;
-          };
-          const dragIndex = target.rowIndex - 1;
-          console.log('dragIndex:', dragIndex);
-          this.setState({ dragIndex, draggedIndex: dragIndex });
+            //       e.dataTransfer.setData('Text', '');
+            e.dataTransfer.effectAllowed = 'move';
+            target.parentElement.ondragenter = this.onDragEnter;
+            target.parentElement.ondragover = function (ev) {
+                //         ev.target.dataTransfer.effectAllowed = 'none'
+                ev.preventDefault();
+                return true;
+            };
+            const dragIndex = target.rowIndex - 1;
+            this.setState({ dragIndex, draggedIndex: dragIndex });
         }
-      }
-    
-      onDragEnter(e) {
+    }
+
+    onDragEnter(e) {
         const target = this.getTrNode(e.target);
-        console.log('onDragEnter TR index:', target.rowIndex - 1);
         this.setState({
-          draggedIndex: target ? target.rowIndex - 1 : -1,
+            draggedIndex: target ? target.rowIndex - 1 : -1,
         });
-      }
-    
-      onDragEnd(e) {
-        console.log('onDragEnd');
+    }
+
+    onDragEnd(e) {
         const target = this.getTrNode(e.target);
         if (target) {
-          target.setAttribute('draggable', false);
-          target.ondragstart = null;
-          target.ondragend = null;
-          target.parentElement.ondragenter = null;
-          target.parentElement.ondragover = null;
-          this.changeRowIndex();
+            target.setAttribute('draggable', false);
+            target.ondragstart = null;
+            target.ondragend = null;
+            target.parentElement.ondragenter = null;
+            target.parentElement.ondragover = null;
+            this.changeRowIndex();
         }
-      }
-    
-      getTrNode(target) {
-        //     console.log('dragContainer:', this.refs.dragContainer)
-        //     return closest(target, 'tr', this.refs.dragContainer.tableNode);
+    }
+
+    getTrNode(target) {
         return closest(target, 'tr');
-      }
-    
-      changeRowIndex() {
+    }
+
+    changeRowIndex() {
         const result = {};
         const currentState = this.state;
         result.dragIndex = result.draggedIndex = -1;
         if (
-          currentState.dragIndex >= 0 &&
-          currentState.dragIndex !== currentState.draggedIndex
+            currentState.dragIndex >= 0 &&
+            currentState.dragIndex !== currentState.draggedIndex
         ) {
-          const { dragIndex, draggedIndex, vet: oldData } = currentState;
-          const vet = [...oldData];
-          //       const data = oldData;
-          const item = vet.splice(dragIndex, 1)[0];
-          vet.splice(draggedIndex, 0, item);
-          result.vet = vet;
-          result.dragIndex = -1;
-          result.draggedIndex = -1;
+            const { dragIndex, draggedIndex, vet: oldData } = currentState;
+            const vet = [...oldData];
+            //       const data = oldData;
+            const item = vet.splice(dragIndex, 1)[0];
+            vet.splice(draggedIndex, 0, item);
+            result.vet = vet;
+            result.dragIndex = -1;
+            result.draggedIndex = -1;
         }
         this.setState(result);
-      }
-    
+    }
+
     renderTableHeader() {
         let header = Object.keys(
             { Variável: 'se', Fi: '2', Fac: 2, 'Fr%': '25.00', 'Fac%': '25.00' }
@@ -431,23 +422,21 @@ class Descriptive extends React.Component {
         this.setState({ [e.target.name]: e.target.value });
     };
 
-    ResultCollapse() {
+    ResultCollapse = e => {
         this.setState(state => ({ collapse: !this.state.collapse }));
-        if (this.state.stepPosition === 1) {
+        if (this.state.stepPosition === 2) {
             this.SendArray();
         }
     };
 
     positionStep = (steps) => {
         var Position = this.state.stepPosition;
-        this.setState({
-            collapse: false,
-        });
         if (steps === 1 && Position < this.state.steps.length - 1)
             if (this.valida()) {
                 return this.setState({ stepPosition: Position += + 1 });
             }
         if (steps !== 1 && Position > 0)
+            this.SendArray();
             return this.setState({ stepPosition: Position += - 1 });
     };
 
@@ -511,7 +500,7 @@ class Descriptive extends React.Component {
         let Position = this.state.stepPosition;
         let Card_Body;
         let ButtonType;
-        console.log("teste", this.state.vet)
+        let table;
 
         button.push(
             <Button
@@ -570,17 +559,20 @@ class Descriptive extends React.Component {
             </CardBody>
         } else if (Position === 1) {
             button = []
-            let table = <div style={{ margin: 20 }}>
-            <h2>Table row dragging</h2>
-            <Table
-                id='students'
-                className={(this.state.dragIndex >= 0 && 'dragging-container') || ''}
-                //           ref="dragContainer"
-                columns={this.columns}
-                pagination={false}
-                dataSource={this.state.vet}
-            />
-        </div>
+            if (this.state.collapse) {
+                table = <div style={{ margin: 20 }}>
+                    <h2>Table row dragging</h2>
+                    <Table
+                        id='students'
+                        className={(this.state.dragIndex >= 0 && 'dragging-container') || ''}
+                        //           ref="dragContainer"
+                        columns={this.columns}
+                        pagination={false}
+                        dataSource={this.state.vet}
+                    />
+                </div>
+            }
+
 
             button.push(
                 <Button
@@ -616,16 +608,7 @@ class Descriptive extends React.Component {
             Card_Body = <CardBody style={{ marginLeft: '10%', marginRight: '10%' }}>
                 <Container >
                     <MDBRow className="mx-auto" >
-                        <MDBCol >
-                            <CardTitle>Variável estudada: <b>{this.state.Var}</b></CardTitle>
-                            <TagInput placeholder="Valores da variável" addTagOnEnterKeyPressed={false} tagStyle={`
-                            background: linear-gradient(to bottom left, #550300, #d32a23, #550300);`} inputStyle={`
-                            display: none;
-                            `} tagDeleteStyle={`
-                            display: none;
-                            `} tags={this.state.tags} /><br />
-                            <br />
-                        </MDBCol>
+
                         <MDBCol >
                             <CardTitle>Tipo de distribuição de dados: <b>{this.state.PopAmost}</b></CardTitle>
                             <CardTitle>Tipo de análise de dados desejada:</CardTitle>
@@ -636,12 +619,22 @@ class Descriptive extends React.Component {
                             </Button> */}
 
                         </MDBCol>
+                        <MDBCol >
+                            {table}
+
+                            {/* <CardTitle>Variável estudada: <b>{this.state.Var}</b></CardTitle>
+                            <TagInput placeholder="Valores da variável" addTagOnEnterKeyPressed={false} tagStyle={`
+                            background: linear-gradient(to bottom left, #550300, #d32a23, #550300);`} inputStyle={`
+                            display: none;
+                            `} tagDeleteStyle={`
+                            display: none;
+                            `} tags={this.state.tags} /><br />
+                            <br /> */}
+                        </MDBCol>
+
+
                     </MDBRow>
-                    <Collapse isOpen={this.state.collapse}>
-                        <div><br /><br />
-                        {table}
-                        </div>
-                    </Collapse>
+
                 </Container>
 
             </CardBody>

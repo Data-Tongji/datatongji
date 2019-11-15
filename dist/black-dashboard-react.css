@@ -14789,11 +14789,6 @@ hr {
   top: -1px;
 }
 
-.dragging-container .ant-table-tbody > tr.ant-table-row-hover > td,
-.dragging-container .ant-table-tbody > tr > td .dragging-container .ant-table-tbody > tr:hover > td {
-  background: transparent;
-}
-
 .table > tbody > tr > td {
   color: rgba(255, 255, 255, 0.7) !important;
 }

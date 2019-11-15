@@ -4,28 +4,21 @@ import 'antd/dist/antd.css';
 
 const closest = function (el, selector, rootNode) {
   rootNode = rootNode || document.body;
-  console.log('rootNode:', rootNode);
   const matchesSelector =
     el.matches ||
     el.webkitMatchesSelector ||
     el.mozMatchesSelector ||
     el.msMatchesSelector;
-  //   console.log('matchesSelector:', matchesSelector);
   while (el) {
     const flagRoot = el === rootNode;
-    //     console.log('flagRoot:', flagRoot);
     if (flagRoot || matchesSelector.call(el, selector)) {
       if (flagRoot) {
         el = null;
-        //         console.log('flagRoot set el to null:', el);
       }
-      //       console.log('break!');
       break;
     }
     el = el.parentElement;
-    //     console.log('el = el.parentElement:', el);
   }
-  //   console.log('closest:', el);
   el.setAttribute('style', 'border: 50px solid red;');
   return el;
 };
@@ -148,7 +141,6 @@ class Demo extends PureComponent {
   }
 
   onMouseDown(e) {
-    console.log('onMouseDown');
     const target = this.getTrNode(e.target);
     if (target) {
       target.setAttribute('draggable', true);
@@ -158,35 +150,28 @@ class Demo extends PureComponent {
   }
 
   onDragStart(e) {
-    console.log('onDragStart');
     const target = this.getTrNode(e.target);
     if (target) {
       //       e.dataTransfer.setData('Text', '');
       e.dataTransfer.effectAllowed = 'move';
-      console.log('target.parentElement:', target.parentElement);
       target.parentElement.ondragenter = this.onDragEnter;
       target.parentElement.ondragover = function (ev) {
-        //         console.log('Tbody ondragover:',ev)
-        //         ev.target.dataTransfer.effectAllowed = 'none'
         ev.preventDefault();
         return true;
       };
       const dragIndex = target.rowIndex - 1;
-      console.log('dragIndex:', dragIndex);
       this.setState({ dragIndex, draggedIndex: dragIndex });
     }
   }
 
   onDragEnter(e) {
     const target = this.getTrNode(e.target);
-    console.log('onDragEnter TR index:', target.rowIndex - 1);
     this.setState({
       draggedIndex: target ? target.rowIndex - 1 : -1,
     });
   }
 
   onDragEnd(e) {
-    console.log('onDragEnd');
     const target = this.getTrNode(e.target);
     if (target) {
       target.setAttribute('draggable', false);
@@ -199,8 +184,6 @@ class Demo extends PureComponent {
   }
 
   getTrNode(target) {
-    //     console.log('dragContainer:', this.refs.dragContainer)
-    //     return closest(target, 'tr', this.refs.dragContainer.tableNode);
     return closest(target, 'tr');
   }
 
@@ -225,8 +208,6 @@ class Demo extends PureComponent {
   }
 
   render() {
-  console.log('currentState:', this.state.data);
-
     return (
       <div style={{ margin: 20 }}>
         <h2>Table row dragging</h2>

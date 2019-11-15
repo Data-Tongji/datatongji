@@ -13,12 +13,12 @@ import {
   Col,
   Row,
   CardText,
-  Label,
   Nav,
   NavItem,
   CardHeader,
   CardBody
 } from "reactstrap";
+import { DotLoader } from 'react-spinners';
 
 export class ForgotPassword extends React.Component {
 
@@ -32,17 +32,11 @@ export class ForgotPassword extends React.Component {
         { title: '' },
         { title: '' }],
       stepPosition: 0,
-      focused: "",
-      modalDemo: false
+      loading: false,
+      focused: ""
     };
-    this.toggleModalDemo = this.toggleModalDemo.bind(this);
   }
 
-  toggleModalDemo() {
-    this.setState({
-      modalDemo: !this.state.modalDemo
-    });
-  }
   onFocus = () => {
     this.setState({
       focused: "input-group-focus"
@@ -63,7 +57,8 @@ export class ForgotPassword extends React.Component {
       return this.setState({ stepPosition: Position += - 1 });
   };
 
-  ForgotPass = () => {
+  async ForgotPass() {
+    this.setState({ loading: true });
     const requestInfo = {
       method: 'POST',
       body: JSON.stringify({ "email": this.state.email }),
@@ -71,27 +66,29 @@ export class ForgotPassword extends React.Component {
         'Content-Type': 'application/json'
       }),
     };
-
-    fetch('https://datatongji-backend.herokuapp.com/auth/forgot_password', requestInfo)
-      .then(response => {
-        if (response.ok) {
-          this.setState({ message: '' });
-          return response.json();
-        }
-        throw new Error("Wrong credentials!");
-      })
-      .then(token => {
-        console.log(token);
+    try {
+      const response = await fetch('https://datatongji-backend.herokuapp.com/auth/forgot_password', requestInfo);
+      if (response.ok) {
+        this.setState({
+          message: '',
+          loading: false
+        });
         this.positionStep(1);
         return;
-      })
-      .catch(e => {
-        this.setState({ message: e.message });
+      } else {
+        throw new Error("User not found");
+      }
+    } catch (err) {
+      this.colorAlert = 'danger';
+      this.setState({
+        message: err.message,
+        loading: false
       });
-
+    }
   }
 
-  ValidToken = () => {
+  async ValidToken() {
+    this.setState({ loading: true });
     const requestInfo = {
       method: 'POST',
       body: JSON.stringify({ "email": this.state.email, "token": this.state.token }),
@@ -99,27 +96,29 @@ export class ForgotPassword extends React.Component {
         'Content-Type': 'application/json'
       }),
     };
-
-    fetch('https://datatongji-backend.herokuapp.com/auth/valid_token', requestInfo)
-      .then(response => {
-        if (response.ok) {
-          this.setState({ message: '' });
-          return response.json();
-        }
-        throw new Error("Invalid token!");
-      })
-      .then(token => {
-        console.log(token);
+    try {
+      const response = await fetch('https://datatongji-backend.herokuapp.com/auth/valid_token', requestInfo);
+      if (response.ok) {
+        this.setState({
+          message: '',
+          loading: false
+        });
         this.positionStep(1);
         return;
-      })
-      .catch(e => {
-        this.setState({ message: e.message });
+      } else {
+        throw new Error("Invalid token!");
+      }
+    } catch (err) {
+      this.colorAlert = 'danger';
+      this.setState({
+        message: err.message,
+        loading: false
       });
-
+    }
   }
 
-  ResetPass = () => {
+  async ResetPass() {
+    this.setState({ loading: true });
     const requestInfo = {
       method: 'PUT',
       body: JSON.stringify({ "email": this.state.email, "token": this.state.token, "password": this.state.password }),
@@ -127,25 +126,27 @@ export class ForgotPassword extends React.Component {
         'Content-Type': 'application/json'
       }),
     };
-
-    fetch('https://datatongji-backend.herokuapp.com/auth/reset_password', requestInfo)
-      .then(response => {
-        if (response.ok) {
-          this.setState({ message: '' });
-          return response.json();
-        }
-        throw new Error("Error when changing the password");
-      })
-      .then(valid => {
+    try {
+      const response = await fetch('https://datatongji-backend.herokuapp.com/auth/reset_password', requestInfo);
+      // var valid = await response.json();
+      if (response.ok) {
         this.positionStep(1);
         this.colorAlert = 'success';
-        this.setState({ message: 'Success!' });
+        this.setState({
+          message: 'Success!',
+          loading: false
+        });
         return;
-      })
-      .catch(e => {
-        this.setState({ message: e.message });
+      } else {
+        throw new Error("Error when changing the password!");
+      }
+    } catch (err) {
+      this.colorAlert = 'danger';
+      this.setState({
+        message: err.message,
+        loading: false
       });
-
+    }
   }
 
   inputValidation = () => {
@@ -192,16 +193,52 @@ export class ForgotPassword extends React.Component {
   };
 
   render() {
-    let button = [];
     let Position = this.state.stepPosition;
     let Card_Body;
     let colorAlert;
 
+    let buttontext = 'Send';
+    if (Position === 2) {
+      buttontext = 'Change Password'
+    };
+    if (this.state.loading === true) {
+      buttontext = <DotLoader
+        css={`
+              display: block;
+              margin: 0 auto;
+              border-color: red;
+              `}
+        sizeUnit={"px"}
+        size={20}
+        color={'#fff'}
+        loading={this.state.loading}
+      />
+    }
+
+    let sendButton = <Button
+      disabled={this.state.loading}
+      style={{ width: '100%' }}
+      color="primary"
+      block
+      className="btn-round"
+      type="button"
+      onClick={this.inputValidation}
+    >{buttontext}
+    </Button>;
+    let homeButton = <Nav style={{ justifyContent: 'center' }}>
+      <NavItem >
+        <Link to="/#/">
+          <Button className="btn-icon btn-round" color="primary">
+            <i className="fas fa-home"></i>
+          </Button>
+        </Link>
+      </NavItem>
+    </Nav>;
 
     if (Position === 0) {
       Card_Body =
         <CardBody>
-        <CardHeader >Email address</CardHeader><br />
+          <CardHeader >Email address</CardHeader><br />
           <InputGroup className={this.state.focused}>
             <InputGroupAddon addonType="prepend">
               <InputGroupText><i className="fas fa-at" style={{ marginRight: '10px' }}></i></InputGroupText>
@@ -214,17 +251,9 @@ export class ForgotPassword extends React.Component {
               onBlur={this.onBlur}
               onChange={this.handleChange}
             />
-          </InputGroup>
-
-          <Button
-            style={{ width: '100%' }}
-            color="primary"
-            block
-            className="btn-round"
-            type="button"
-            onClick={this.inputValidation}
-          >Send
-          </Button>
+          </InputGroup><br />
+          {sendButton}
+          <br />{homeButton}
         </CardBody>
     } else if (Position === 1) {
       Card_Body = <CardBody>
@@ -249,14 +278,9 @@ export class ForgotPassword extends React.Component {
             onBlur={this.onBlur}
             onChange={this.handleChange}
           />
-        </InputGroup>
-        <Button
-          style={{ width: '100%' }}
-          color="primary"
-          block
-          className="btn-round"
-          type="button"
-          onClick={this.inputValidation}>Send</Button>
+        </InputGroup><br />
+        {sendButton}
+        <br />{homeButton}
       </CardBody>
     } else if (Position === 2) {
       Card_Body = <CardBody>
@@ -288,21 +312,19 @@ export class ForgotPassword extends React.Component {
             onBlur={this.onBlur}
             onChange={this.handleChange}
           />
-        </InputGroup>
-        <Button style={{ width: '100%' }} color="primary" type="button" onClick={this.inputValidation}>
-          Change Password
-        </Button>
-
+        </InputGroup><br />
+        {sendButton}
+        <br />{homeButton}
       </CardBody>
     } else {
       Card_Body = <CardBody>
-        <CardHeader >Your Password has been changed! You can log in now.</CardHeader> <br />
+        <CardHeader >Your Password has been changed, you can log in now!</CardHeader> <br />
+        <br />{homeButton}
       </CardBody>
     }
 
     return (
       <>
-
         <Row>
           <Col className="col_center_login" md="4">
 
@@ -338,18 +360,6 @@ export class ForgotPassword extends React.Component {
                           className="text-center">{this.state.message}</Alert>
                       ) : ''}
                       {Card_Body}
-                      {button[0]}
-                      {button[1]}
-                      {button[2]}
-                      <Nav style={{ justifyContent: 'center' }}>
-                        <NavItem >
-                          <Link to="/#/">
-                            <Button className="btn-icon btn-round" color="primary">
-                              <i className="fas fa-home"></i>
-                            </Button>
-                          </Link>
-                        </NavItem>
-                      </Nav>
                     </CardBody>
                   </Card>
                 </form>

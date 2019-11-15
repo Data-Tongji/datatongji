@@ -109,7 +109,6 @@ class AdminNavbar extends React.Component {
   render() {
     let photo = <img alt="..." className="avatar" src={require("assets/img/user.svg")} />
     var url = localStorage.getItem('userUrl');
-    console.log(url,"url" )
 
     if (url !== 'undefined' && url !== '' && url !== null) {
       photo = <img alt="..." className="avatar" src={url} />

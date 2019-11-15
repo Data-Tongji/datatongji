@@ -2,7 +2,6 @@ import React from "react";
 import { TagInputNaN } from '../components/reactjs-tag-input';
 
 import { Save, AddCircle } from 'grommet-icons';
-import { Line, Scatter } from 'react-chartjs-2';
 import { Row, Col } from 'react-bootstrap';
 import Papa from 'papaparse';
 import Highcharts from 'highcharts'
@@ -157,7 +156,6 @@ class CorrelationRegression extends React.Component {
         tagsy[i]]
       );
     };
-    console.log(data)
     this.setState({
       body: {
         "X": {
@@ -190,6 +188,7 @@ class CorrelationRegression extends React.Component {
         }
         throw new Error("Failure!");
       }).then(result => {
+        
         this.setState({
           btnSave: false,
           correlation: result.distribution.correlation,
@@ -263,7 +262,7 @@ class CorrelationRegression extends React.Component {
         csvfile: event.target.files[0],
         csv: 'has-csv',
         acceptedFiles: event.target.files[0].name,
-        dispcsv: false,
+        dispcsv: false
       });
     } else {
       this.colorAlert = 'danger';
@@ -461,19 +460,6 @@ class CorrelationRegression extends React.Component {
           }
         }
       },
-      // legend: {
-      //   backgroundColor: '#F0F0EA',
-      //   itemStyle: {
-      //     fontWeight: 'bold',
-      //     fontSize: '13px'
-      //   },
-      //   layout: 'horizontal',
-      //   align: 'left',
-      //   verticalAlign: 'center',
-      //   floating: true,
-      //   borderWidth: 1,
-      //   x: 70, // = marginLeft - default spacingLeft
-      // },
       plotOptions: {
         candlestick: {
           lineColor: '#404048'
@@ -796,10 +782,10 @@ class CorrelationRegression extends React.Component {
                         </NavItem>
                       </Nav>
                       <CardBody >
-                          <HighchartsReact
-                            highcharts={Highcharts}
-                            options={options}
-                          />
+                        <HighchartsReact
+                          highcharts={Highcharts}
+                          options={options}
+                        />
                       </CardBody>
                     </Collapse>
                   </Card>
