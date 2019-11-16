@@ -32,6 +32,7 @@ export class Login extends React.Component {
       message: this.props.location.state ? this.props.location.state.message : '',
     };
     this.signIn = this.signIn.bind(this);
+    this.register = this.register.bind(this);
   };
 
   async signIn() {

@@ -356,8 +356,6 @@ class Descriptive extends React.Component {
                         placeholder="Values" />
                 </MDBCol>
                 </Container>
-
-
             </CardBody>
         } else if (Position === 1) {
             button = []

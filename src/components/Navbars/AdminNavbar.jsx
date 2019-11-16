@@ -1,5 +1,4 @@
 import React from "react";
-// nodejs library that concatenates classes
 import classNames from "classnames";
 import { Link } from "react-router-dom";
 // reactstrap components
@@ -20,6 +19,7 @@ import {
   Modal
 } from "reactstrap";
 const user = localStorage.getItem('userName');
+var defaultMessage = localStorage.getItem('defaultLanguage') !== 'pt-br' ? require('../../locales/en.js') : require('../../locales/pt.js');
 
 class AdminNavbar extends React.Component {
   constructor(props) {
@@ -159,56 +159,7 @@ class AdminNavbar extends React.Component {
             <Collapse navbar isOpen={this.state.collapseOpen}>
               <Nav className="ml-auto" navbar>
                 <InputGroup className="search-bar">
-                  {/* <Button
-                    color="link"
-                    data-target="#searchModal"
-                    data-toggle="modal"
-                    id="search-button"
-                    onClick={this.toggleModalSearch}
-                  >
-                    <i className="tim-icons icon-zoom-split" />
-                    <span className="d-lg-none d-md-block">Search</span>
-                  </Button> */}
-                </InputGroup>
-                <UncontrolledDropdown nav>
-                  {/* <DropdownToggle
-                    caret
-                    color="default"
-                    data-toggle="dropdown"
-                    nav
-                  >
-                    <div className="notification d-none d-lg-block d-xl-block" />
-                    <i className="tim-icons icon-sound-wave" />
-                    <p className="d-lg-none">Notifications</p>
-                  </DropdownToggle> */}
-                  <DropdownMenu className="dropdown-navbar" right tag="ul">
-                    <NavLink tag="li">
-                      <DropdownItem className="nav-item">
-                        Mike John responded to your email
-                      </DropdownItem>
-                    </NavLink>
-                    <NavLink tag="li">
-                      <DropdownItem className="nav-item">
-                        You have 5 more tasks
-                      </DropdownItem>
-                    </NavLink>
-                    <NavLink tag="li">
-                      <DropdownItem className="nav-item">
-                        Your friend Michael is in town
-                      </DropdownItem>
-                    </NavLink>
-                    <NavLink tag="li">
-                      <DropdownItem className="nav-item">
-                        Another notification
-                      </DropdownItem>
-                    </NavLink>
-                    <NavLink tag="li">
-                      <DropdownItem className="nav-item">
-                        Another one
-                      </DropdownItem>
-                    </NavLink>
-                  </DropdownMenu>
-                </UncontrolledDropdown>
+                </InputGroup>               
                 <UncontrolledDropdown nav>
                   <DropdownToggle
                     caret
@@ -226,14 +177,11 @@ class AdminNavbar extends React.Component {
                   <DropdownMenu className="dropdown-navbar" right tag="ul">
                     <NavLink tag="li">
                       <Link to="/admin/user-profile">
-                        <DropdownItem className="nav-item" >Profile</DropdownItem>
+                        <DropdownItem className="nav-item" >{defaultMessage.NavBar.ac1}</DropdownItem>
                       </Link>
                     </NavLink>
-                    <NavLink onClick={this.handleClick} tag="li">
-                      <DropdownItem className="nav-item">Settings</DropdownItem>
-                    </NavLink>
                     <NavLink tag="li">
-                      <DropdownItem className="nav-item" onClick={this.logout}>Log out</DropdownItem>
+                      <DropdownItem className="nav-item" onClick={this.logout}>{defaultMessage.NavBar.ac2}</DropdownItem>
                     </NavLink>
                   </DropdownMenu>
                 </UncontrolledDropdown>

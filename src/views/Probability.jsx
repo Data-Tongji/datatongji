@@ -1,5 +1,10 @@
+
 import React from "react";
 import { Save } from 'grommet-icons';
+import { FormControl, FormControlLabel, Radio, RadioGroup } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import clsx from 'clsx';
+
 import {
   Alert,
   Badge,
@@ -27,9 +32,67 @@ import {
   TabPane
 } from "reactstrap";
 import classnames from 'classnames';
+import { DotLoader } from 'react-spinners';
+const useStyles = makeStyles({
+  root: {
+    '&:hover': {
+      backgroundColor: 'transparent',
+    },
+  },
+  icon: {
+    marginTop: '-10px',
+    borderRadius: '50%',
+    width: 16,
+    height: 16,
+    boxShadow: 'inset 0 0 0 1px 	rgb(128,128,128), inset 0 -1px 0 	rgb(128,128,128,.2)',
+    backgroundColor: 'transparent',
+    backgroundImage: 'transparent',
+    '$root.Mui-focusVisible &': {
+      outline: '2px auto rgba(211, 42, 35)',
+      outlineOffset: 2,
+    },
+    'input:hover ~ &': {
+      boxShadow: 'inset 0 0 0 1px 	rgb(85, 3, 0), inset 0 -1px 0 	rgb(85, 3, 0,.5)',
+    },
+    'input:disabled ~ &': {
+      boxShadow: 'none',
+      background: 'rgba(206,217,224,.5)',
+    },
+  },
+  checkedIcon: {
+    backgroundColor: 'linear-gradient(to bottom right, #550300, #d32a23, #550300)',
+    boxShadow: 'inset 0 0 0 1px 	rgb(85, 3, 0), inset 0 -1px 0 	rgb(85, 3, 0,.5)',
+    backgroundImage: 'linear-gradient(to bottom right, #550300, #d32a23, #550300)',//'linear-gradient(180deg,hsla(0,0%,100%,.1),hsla(0,0%,100%,0))',
+    '&:before': {
+      display: 'block',
+      width: 16,
+      height: 16,
+      backgroundImage: 'radial-gradient(#fff,#fff 28%,transparent 32%)',
+      content: '""',
+    },
+    'input:hover ~ &': {
+      backgroundColor: '#d32a23',
+    },
+  },
+});
+
+function StyledRadio(props) {
+  const classes = useStyles();
+  return (
+    <Radio
+      className={classes.root}
+      disableRipple
+      color="default"
+      checkedIcon={<span className={clsx(classes.icon, classes.checkedIcon)} />}
+      icon={<span className={classes.icon} />}
+      {...props}
+    />
+  );
+};
+
+var defaultMessage = localStorage.getItem('defaultLanguage') !== 'pt-br' ? require('../locales/en.js') : require('../locales/pt.js');
 
 class Probability extends React.Component {
-
   constructor(props) {
     super(props);
     this.state = {
@@ -52,7 +115,6 @@ class Probability extends React.Component {
   };
 
   toggle(tab) {
-    // if (this.state.activeTab !== tab) {
     this.setState({
       collapseint: false,
       activeTab: tab,
@@ -60,9 +122,21 @@ class Probability extends React.Component {
       selectedOption: "",
       message: '',
       prob: "",
-      btnSave: true
+      btnSave: true,
+      loading: false,
+      loadingsv: false,
+      Mean: '',
+      stdDev: '',
+      Min: '',
+      Max: '',
+      PMin: '',
+      PMax: '',
+      BMin: '',
+      spn: '',
+      p: '',
+      q: ''
     });
-    // }
+    this.SendData = this.SendData.bind(this);
   };
 
   toggleModalDemo() {
@@ -86,7 +160,7 @@ class Probability extends React.Component {
         return (t >= 2) ? '' : match;
       });
 
-      if (e.target.name === 'spn' || e.target.name === 'BMin' || e.target.name === 'Bmax') {
+      if (e.target.name === 'spn' || e.target.name === 'BMin' || e.target.name === 'BMax') {
         value = value.replace('.', '');
         this.setState({ [e.target.name]: value });
       }
@@ -95,6 +169,9 @@ class Probability extends React.Component {
           value = 100;
         }
         else if (parseFloat(value) < 0 || value === '') {
+          value = 0;
+        }
+        else if (isNaN(value)) {
           value = 0;
         };
         if (e.target.name === 'p') {
@@ -128,12 +205,11 @@ class Probability extends React.Component {
     this.setState(state => ({ selectedOption: opt }));
   }
 
-  ResultCollapse() {
-    this.SendData();
-    this.setState(state => ({ collapse: !this.state.collapse }));
-  }
-
-  SendData = () => {
+  async SendData() {
+    this.setState({
+      loading: true,
+      collapse: false
+    });
     var body, type, k;
 
     if (this.state.activeTab === '1') {
@@ -157,11 +233,7 @@ class Probability extends React.Component {
 
     } else if (this.state.activeTab === '3') {
       type = 'binomial';
-      if (this.state.selectedOption === '2') {
-        k = [parseFloat(this.state.BMin), parseFloat(this.state.BMax)];
-      } else {
-        k = parseFloat(this.state.BMin);
-      }
+      k = parseInt(this.state.selectedOption) === 2 ? [parseFloat(this.state.BMin), parseFloat(this.state.BMax)] : parseFloat(this.state.BMin);
       body = {
         "k": k,
         "n": parseFloat(this.state.spn),
@@ -178,15 +250,21 @@ class Probability extends React.Component {
         'Authorization': localStorage.getItem('token')
       }),
     };
-    fetch(`https://datatongji-backend.herokuapp.com/probability/${type}`, requestInfo)
-      .then(response => {
-        if (response.ok) {
-          this.setState({ message: '' });
-          return response.json();
-        }
-        throw new Error("Failure!");
-      }).then(result => {
-        this.setState({ btnSave: false });
+
+    try {
+      const response = await fetch(`https://datatongji-backend.herokuapp.com/probability/${type}`, requestInfo)
+      var result = await response.json();
+      if (response.ok) {
+        this.setState({
+          message: '',
+          btnSave: false,
+          correlation: result.distribution.correlation,
+          regression: result.distribution.regression,
+          line: result.distribution.line,
+          collapse: true,
+          loading: false
+        });
+
         if (this.state.activeTab === '1') {
           this.setState({ prob: result.distribution })
         } else if (this.state.activeTab === '2') {
@@ -205,26 +283,32 @@ class Probability extends React.Component {
             stdDev: result.distribution.stdDev
           });
         }
-      })
-      .catch(e => {
-        this.setState({
-          message: e.message,
-          btnSave: true
-        });
+      } else {
+        throw new Error(result.error);
+      }
+    } catch (e) {
+      this.colorAlert = 'danger';
+      this.setState({
+        message: e.message,
+        btnSave: true,
+        loading: false,
+        collapse: false
       });
+    }
   };
 
-  saveChanges = () => {
+  saveValidation = () => {
+    this.setState({ loadingsv: true });
     if (this.state.Name === '') {
       this.Name.focus();
     }
     else {
-      this.setState({ visible: true });
       var body, k;
+      this.setState({ visible: true });
       if (this.state.activeTab === '1') {
         body = {
           "name": this.state.Name,
-          "type": "Normal",
+          "type": defaultMessage.Probability.Normal.title,
           "data": {
             "Mean": parseFloat(this.state.Mean),
             "stdDev": parseFloat(this.state.stdDev),
@@ -239,7 +323,7 @@ class Probability extends React.Component {
       } else if (this.state.activeTab === '2') {
         body = {
           "name": this.state.Name,
-          "type": "Uniform",
+          "type": defaultMessage.Probability.Uniform.title,
           "data": {
             "PMin": parseFloat(this.state.PMin),
             "PMax": parseFloat(this.state.PMax),
@@ -256,14 +340,10 @@ class Probability extends React.Component {
           }
         };
       } else if (this.state.activeTab === '3') {
-        if (this.state.selectedOption === '2') {
-          k = [parseFloat(this.state.BMin), parseFloat(this.state.BMax)];
-        } else {
-          k = parseFloat(this.state.BMin);
-        };
+        k = parseInt(this.state.selectedOption) === 2 ? [parseFloat(this.state.BMin), parseFloat(this.state.BMax)] : parseFloat(this.state.BMin);
         body = {
           "name": this.state.Name,
-          "type": "Binomial",
+          "type": defaultMessage.Probability.Binomial.title,
           "data": {
             "k": k,
             "n": parseFloat(this.state.spn),
@@ -279,32 +359,40 @@ class Probability extends React.Component {
           }
         };
       };
-      const requestInfo = {
-        method: 'POST',
-        body: JSON.stringify(body),
-        headers: new Headers({
-          'Content-Type': 'application/json',
-          'Authorization': localStorage.getItem('token')
-        }),
-      };
-      fetch(`https://datatongji-backend.herokuapp.com/probability/save`, requestInfo)
-        .then(response => {
-          if (response.ok) {
-            this.setState({ message: '' });
-            return response.json();
-          }
-          throw new Error("Failure!");
-        }).then(result => {
-          this.colorAlert = 'success';
-          this.setState({ message: 'Saved' });
-          this.toggleModalDemo();
-        })
-        .catch(e => {
-          this.colorAlert = 'danger';
-          this.setState({ message: e.message });
-        });
+      this.saveChanges(body)
     }
   };
+
+  async saveChanges(body) {
+    const requestInfo = {
+      method: 'POST',
+      body: JSON.stringify(body),
+      headers: new Headers({
+        'Content-Type': 'application/json',
+        'Authorization': localStorage.getItem('token')
+      }),
+    };
+    try {
+      const response = await fetch('https://datatongji-backend.herokuapp.com/probability/save', requestInfo);
+      if (response.ok) {
+        this.colorAlert = 'success';
+        this.setState({
+          message: defaultMessage.Modal.save.message,
+          loadingsv: false
+        });
+        this.toggleModalDemo();
+      } else {
+        throw new Error("Failure!");
+      }
+    } catch (e) {
+      this.colorAlert = 'danger';
+      this.setState({
+        message: e.message,
+        loading: false
+      });
+    }
+  };
+
 
   onDismiss = () => {
     this.setState({
@@ -317,174 +405,158 @@ class Probability extends React.Component {
     this.colorAlert = 'danger';
     this.setState({
       visible: true,
-      btnSave: true
+      btnSave: true,
+      collapse: false
     });
     if (this.state.activeTab === '1') {
       if (this.state.Mean == null ||
         this.state.Mean.trim() === "" ||
         parseFloat(this.state.Mean) === 0) {
-        this.setState({ message: 'Invalid Mean value' });
+        this.setState({ message: defaultMessage.Probability.Normal.mean.error, });
         return false;
       }
       else if (this.state.stdDev == null ||
         this.state.stdDev.trim() === "" ||
         parseFloat(this.state.stdDev) === 0) {
-        this.setState({ message: 'Invalid standard devation value' });
+        this.setState({ message: defaultMessage.Probability.Normal.std.error });
         return false;
       }
       else if (this.state.selectedOption === "") {
-        this.setState({ message: 'Select an interval type' });
+        this.setState({ message: defaultMessage.Probability.interval.error1 });
         return false;
       }
       else if (this.state.Min == null ||
         this.state.Min.trim() === "" ||
         parseFloat(this.state.Min) === 0) {
-        this.setState({ message: 'Invalid minimum point value' });
+        this.setState({ message: defaultMessage.Probability.interval.erroroptmin });
         return false;
       }
       else if (this.state.collapseint === true) {
         if (this.state.Max == null ||
           this.state.Max.trim() === "" ||
           parseFloat(this.state.Max) === 0) {
-          this.setState({ message: 'Invalid maximum point value' });
+          this.setState({ message: defaultMessage.Probability.interval.erroroptmax });
           return false;
         }
         else if (parseFloat(this.state.Max) < this.state.Min) {
-          this.setState({ message: 'Maximum point must be higher than minimum point' });
+          this.setState({ message: defaultMessage.Probability.interval.error2 });
           return false;
         }
         else {
           this.setState({ message: '' });
-          if (!this.state.collapse) {
-            this.ResultCollapse();
-          } else {
-            this.SendData();
-          }
+          this.SendData();
         }
       }
       else {
         this.setState({ message: '' });
-        if (!this.state.collapse) {
-          this.ResultCollapse();
-        } else {
-          this.SendData();
-        }
+        this.SendData();
       }
     }
     else if (this.state.activeTab === '2') {
       if (this.state.PMin == null ||
         this.state.PMin.trim() === "" ||
         parseFloat(this.state.PMin) === 0) {
-        this.setState({ message: 'Invalid initial value' });
+        this.setState({ message: defaultMessage.Probability.Uniform.initial.error });
         return false;
       }
       else if (this.state.PMax == null ||
         this.state.PMax.trim() === "" ||
         parseFloat(this.state.PMax) === 0) {
-        this.setState({ message: 'Invalid final value' });
+        this.setState({ message: defaultMessage.Probability.Uniform.final.error });
         return false;
       }
       else if (parseFloat(this.state.PMax) < parseFloat(this.state.PMin)) {
-        this.setState({ message: 'Final value must be higher than initial value' });
+        this.setState({ message: defaultMessage.Probability.Uniform.error1 });
         return false;
       }
       else if (this.state.selectedOption === "") {
-        this.setState({ message: 'Select an interval type' });
+        this.setState({ message: defaultMessage.Probability.interval.error1 });
         return false;
       }
       else if (this.state.Min == null ||
         this.state.Min.trim() === "" ||
         parseFloat(this.state.Min) === 0) {
-        this.setState({ message: 'Invalid minimum point value' });
+        this.setState({ message: defaultMessage.Probability.interval.erroroptmin });
         return false;
       }
       else if (this.state.collapseint === true) {
         if (this.state.Max == null ||
           this.state.Max.trim() === "" ||
           parseFloat(this.state.Max) === 0) {
-          this.setState({ message: 'Invalid maximum point value' });
+          this.setState({ message: defaultMessage.Probability.interval.erroroptmax });
           return false;
         }
         else if (parseFloat(this.state.Max) < this.state.Min) {
-          this.setState({ message: 'Maximum point must be higher than minimum point' });
+          this.setState({ message: defaultMessage.Probability.interval.error2 });
           return false;
         }
         else {
           this.setState({ message: '' });
-          if (!this.state.collapse) {
-            this.ResultCollapse();
-          } else {
-            this.SendData();
-          }
+          this.SendData();
         }
       }
       else {
         this.setState({ message: '' });
-        if (!this.state.collapse) {
-          this.ResultCollapse();
-        } else {
-          this.SendData();
-        }
+        this.SendData();
       }
     }
     else if (this.state.activeTab === '3') {
       if (this.state.spn == null ||
         this.state.spn.trim() === "" ||
         parseFloat(this.state.spn) === 0) {
-        this.setState({ message: 'Invalid sample size (n) value' });
+        this.setState({ message: defaultMessage.Probability.Binomial.sample.error });
         return false;
       }
       else if (this.state.p == null ||
         this.state.p === "") {
-        this.setState({ message: 'Invalid success (p) value' });
+        this.setState({ message: defaultMessage.Probability.Binomial.p.error });
         return false;
       }
       else if (this.state.q == null ||
         this.state.q === "") {
-        this.setState({ message: 'Invalid failure (q) value' });
-        return false;
-      }
-      else if ((parseFloat(this.state.p) + parseFloat(this.state.q)) > 100 || (parseFloat(this.state.p) + parseFloat(this.state.q)) < 0) {
-        this.setState({ message: 'The sum between failure (q) and success (p) values must be between 0% and 100%' });
+        this.setState({ message: defaultMessage.Probability.Binomial.q.error });
         return false;
       }
       else if (this.state.selectedOption === "") {
-        this.setState({ message: 'Select an interval type' });
+        this.setState({ message: defaultMessage.Probability.interval.error1 });
         return false;
       }
       else if (this.state.BMin == null ||
-        this.state.BMin.trim() === "" ||
-        parseFloat(this.state.BMin) === 0) {
-        this.setState({ message: 'Invalid minimum point value' });
+        this.state.BMin.trim() === "") {
+        this.setState({ message: defaultMessage.Probability.Binomial.event.error1 });
+        return false;
+      }
+      else if (parseFloat(this.state.selectedOption) !== 1 &&
+        (parseFloat(this.state.BMin) > parseFloat(this.state.spn))
+      ) {
+        this.setState({ message: defaultMessage.Probability.Binomial.event.error2 });
         return false;
       }
       else if (this.state.collapseint === true) {
         if (this.state.BMax == null ||
-          this.state.BMax.trim() === "" ||
-          parseFloat(this.state.BMax) === 0) {
-          this.setState({ message: 'Invalid maximum point value' });
+          this.state.BMax.trim() === "") {
+          this.setState({ message: defaultMessage.Probability.Binomial.event.error1 });
           return false;
         }
         else if (parseFloat(this.state.BMax) < this.state.BMin) {
-          this.setState({ message: 'Maximum point must be higher than minimum point' });
+          this.setState({ message: defaultMessage.Probability.Binomial.event.error3 });
+          return false;
+        }
+        else if (parseFloat(this.state.selectedOption) !== 1 &&
+          (parseFloat(this.state.BMin) > parseFloat(this.state.spn) ||
+            parseFloat(this.state.BMax) > parseFloat(this.state.spn))
+        ) {
+          this.setState({ message: defaultMessage.Probability.Binomial.event.error2 });
           return false;
         }
         else {
           this.setState({ message: '' });
-          if (!this.state.collapse) {
-            this.ResultCollapse();
-          } else {
-            this.SendData();
-          }
+          this.SendData();
         }
       }
       else {
         this.setState({ message: '' });
-        if (!this.state.collapse) {
-          this.ResultCollapse();
-        } else {
-          this.SendData();
-        }
+        this.SendData();
       }
     }
   };
@@ -500,16 +572,15 @@ class Probability extends React.Component {
       modalHelp: !this.state.modalHelp
     });
   };
-  
+
   render() {
     let colorAlert;
-    let Results;
     var TableResults;
     let Position = this.state.activeTab;
     let ModalHelp = (<Modal isOpen={this.state.modalHelp} toggle={this.toggleModalHelp}>
       <div className="modal-header">
         <h5 className="modal-title" id="exampleModalLongTitle">
-          Need information?
+          <b>{defaultMessage.Modal.info.title}</b>
         </h5>
         <button
           type="button"
@@ -522,69 +593,174 @@ class Probability extends React.Component {
         </button>
       </div>
       <ModalBody style={{ textAlign: 'justify' }}>
-      <b>Normal distribution</b> is a probability distribution that is symmetric about the mean, 
-      showing that data near the mean are more frequent in occurrence than data far from the mean. 
-      In graph form, normal distribution will appear as a bell curve. The standard normal distribution has two parameters: 
-      the <b>mean</b> and the <b>standard deviation</b>.<br/>
-      A <b>uniform distribution</b> it's a type of probability distribution in which all outcomes 
-      are equally likely, each variable has the same probability that it will be the outcome. This distribution is defined by two parameters:
-      the <b>minimum point (initial)</b> and the <b>maximum point (final)</b>.<br/>
-      The <b>binomial distribution</b> summarizes the likelihood that a value will take one of two 
-      independent values under a given set of parameters or assumptions. The underlying assumptions 
-      of the binomial distribution are that there is only one outcome for each trial, 
-      that each trial has the same probability of success, and that each trial is mutually 
-      exclusive, or independent of each other. Therefore, represents 
-      the probability for <b><i>k</i> events </b> in <b><i>n</i> trials</b>, given a <b>success (<i>p</i>)</b> or <b>failure (<i>q</i>) </b> 
-       probability for each trial.      
+        <div dangerouslySetInnerHTML={{ __html: defaultMessage.Modal.info.probabilityText }} />
       </ModalBody>
       <ModalFooter>
         <Button color="secondary" onClick={this.toggleModalHelp}>
-          Close
-          </Button>
+          {defaultMessage.Modal.btn1}
+        </Button>
       </ModalFooter>
     </Modal>)
+    let intervaltag = <CardBody>
+      <FormControl component="fieldset">
+        <RadioGroup aria-label="position" name="position" value={this.state.selectedOption} onChange={this.interval} row>
+          <FormControlLabel
+            value="1"
+            control={<StyledRadio />}
+            label={<CardTitle style={{}}>{defaultMessage.Probability.interval.opt1}: </CardTitle>}
+            labelPlacement="end" />
+          <FormControlLabel
+            value="2"
+            control={<StyledRadio />}
+            label={<CardTitle style={{}}>{defaultMessage.Probability.interval.opt2}: </CardTitle>}
+            labelPlacement="end" />
+          <FormControlLabel
+            value="3"
+            control={<StyledRadio />}
+            label={<CardTitle style={{}}>{defaultMessage.Probability.interval.opt4}: </CardTitle>}
+            labelPlacement="end" />
+        </RadioGroup>
+      </FormControl>
+      <form>
+        <Row>
+          <Col sm>
+            <Input type="text"
+              pattern="[^0-9,.]"
+              onInput={this.handleChange.bind(this)}
+              value={this.state.Min}
+              name='Min'
+              placeholder="0.00" />
+          </Col><br /><br />
+          <Col sm>
+            <Collapse isOpen={this.state.collapseint}>
+              <Input type="text"
+                pattern="[^0-9,.]"
+                onInput={this.handleChange.bind(this)}
+                value={this.state.Max}
+                name='Max'
+                placeholder="0.00" />
+            </Collapse>
+          </Col>
+        </Row>
+      </form></CardBody>;
 
+    let resultsbtn = defaultMessage.resultsBtn;
+    if (this.state.loading === true) {
+      resultsbtn = <DotLoader
+        css={`
+                      display: block;
+                      margin: 0 auto;
+                      border-color: red;
+                      `}
+        sizeUnit={"px"}
+        size={20}
+        color={'#fff'}
+        loading={this.state.loading}
+      />
+    };
+    let saveBtn = defaultMessage.Modal.btn2;
+    if (this.state.loadingsv === true) {
+      saveBtn = <DotLoader
+        css={`
+                      display: block;
+                      margin: 0 auto;
+                      border-color: red;
+                      `}
+        sizeUnit={"px"}
+        size={20}
+        color={'#fff'}
+        loading={this.state.loadingsv}
+      />
+    };
 
     if (Position === '1') {
       TableResults =
         <ListGroup>
           <ListGroupItem style={{ backgroundColor: 'transparent' }}
-            className="justify-content-between">Probability:  <Badge pill>{this.state.prob}%</Badge></ListGroupItem>
+            className="justify-content-between">{defaultMessage.Probability.title}:  <Badge pill>{this.state.prob}%</Badge></ListGroupItem>
         </ListGroup>
     }
     else if (Position === '2') {
       TableResults =
         <ListGroup>
           <ListGroupItem style={{ backgroundColor: 'transparent' }}
-            className="justify-content-between">Probability:  <Badge pill>{this.state.prob}%</Badge></ListGroupItem>
+            className="justify-content-between">{defaultMessage.Probability.title}:  <Badge pill>{this.state.prob}%</Badge></ListGroupItem>
           <ListGroupItem style={{ backgroundColor: 'transparent' }}
-            className="justify-content-between">Mean:  <Badge pill>{this.state.Mean}</Badge></ListGroupItem>
+            className="justify-content-between">{defaultMessage.Probability.Results.mean}:  <Badge pill>{this.state.Mean}</Badge></ListGroupItem>
           <ListGroupItem style={{ backgroundColor: 'transparent' }}
-            className="justify-content-between">Variance:  <Badge pill>{this.state.variance}</Badge></ListGroupItem>
+            className="justify-content-between">{defaultMessage.Probability.Results.var}:  <Badge pill>{this.state.variance}</Badge></ListGroupItem>
           <ListGroupItem style={{ backgroundColor: 'transparent' }}
-            className="justify-content-between">Standard Deviation:  <Badge pill>{this.state.stdDev}</Badge></ListGroupItem>
+            className="justify-content-between">{defaultMessage.Probability.Results.std}:  <Badge pill>{this.state.stdDev}</Badge></ListGroupItem>
           <ListGroupItem style={{ backgroundColor: 'transparent' }}
-            className="justify-content-between">Coefficient of Variation:  <Badge pill>{this.state.sdCoef}%</Badge></ListGroupItem>
+            className="justify-content-between">{defaultMessage.Probability.Results.coef}:  <Badge pill>{this.state.sdCoef}%</Badge></ListGroupItem>
         </ListGroup>
     }
     else if (Position === '3') {
       TableResults =
         <ListGroup>
           <ListGroupItem style={{ backgroundColor: 'transparent' }}
-            className="justify-content-between">Probability:  <Badge pill>{this.state.prob}%</Badge></ListGroupItem>
+            className="justify-content-between">{defaultMessage.Probability.title}:  <Badge pill>{this.state.prob}%</Badge></ListGroupItem>
           <ListGroupItem style={{ backgroundColor: 'transparent' }}
-            className="justify-content-between">Mean:  <Badge pill>{this.state.Mean}</Badge></ListGroupItem>
+            className="justify-content-between">{defaultMessage.Probability.Results.mean}:  <Badge pill>{this.state.Mean}</Badge></ListGroupItem>
           <ListGroupItem style={{ backgroundColor: 'transparent' }}
-            className="justify-content-between">Variance:  <Badge pill>{this.state.variance}</Badge></ListGroupItem>
+            className="justify-content-between">{defaultMessage.Probability.Results.var}:  <Badge pill>{this.state.variance}</Badge></ListGroupItem>
           <ListGroupItem style={{ backgroundColor: 'transparent' }}
-            className="justify-content-between">Standard Deviation:  <Badge pill>{this.state.stdDev}</Badge></ListGroupItem>
+            className="justify-content-between">{defaultMessage.Probability.Results.std}:  <Badge pill>{this.state.stdDev}</Badge></ListGroupItem>
         </ListGroup>
+      intervaltag = <CardBody>
+        <FormControl component="fieldset">
+          <RadioGroup aria-label="position" name="position" value={this.state.selectedOption} onChange={this.interval} row>
+            <FormControlLabel
+              value="1"
+              control={<StyledRadio />}
+              label={<CardTitle style={{}}>{defaultMessage.Probability.interval.opt1}: </CardTitle>}
+              labelPlacement="end" />
+            <FormControlLabel
+              value="2"
+              control={<StyledRadio />}
+              label={<CardTitle style={{}}>{defaultMessage.Probability.interval.opt2}: </CardTitle>}
+              labelPlacement="end" />
+            <FormControlLabel
+              value="3"
+              control={<StyledRadio />}
+              label={<CardTitle style={{}}>{defaultMessage.Probability.interval.opt3}: </CardTitle>}
+              labelPlacement="end" />
+            <FormControlLabel
+              value="4"
+              control={<StyledRadio />}
+              label={<CardTitle style={{}}>{defaultMessage.Probability.interval.opt4}: </CardTitle>}
+              labelPlacement="end" />
+          </RadioGroup>
+        </FormControl>
+        <form>
+          <Row>
+            <Col sm>
+              <Input type="text"
+                pattern="[^0-9,.]"
+                onInput={this.handleChange.bind(this)}
+                value={this.state.BMin}
+                name='BMin'
+                placeholder="0" />
+            </Col><br /><br />
+            <Col sm>
+              <Collapse isOpen={this.state.collapseint}>
+                <Input type="text"
+                  pattern="[^0-9,.]"
+                  onInput={this.handleChange.bind(this)}
+                  value={this.state.BMax}
+                  name='BMax'
+                  placeholder="0" />
+              </Collapse>
+            </Col>
+          </Row>
+        </form>
+      </CardBody>
     }
-    Results = <CardBody><Nav style={{ justifyContent: 'center' }}>
+    let Results = <CardBody><Nav style={{ justifyContent: 'center' }}>
       <NavItem >
-        <Button className="btn-round animation-on-hover" style={{ width: '100%' }} color="primary" type="button" onClick={this.inputValidation}>
-          Show Results
-      </Button>
+        <Button disabled={this.state.loading} className="btn-round animation-on-hover" style={{ width: '100%' }} color="primary" type="button" onClick={this.inputValidation}>
+          {resultsbtn}
+        </Button>
       </NavItem><NavItem ><span>&nbsp;&nbsp;</span></NavItem >
       <NavItem >
         <Button
@@ -598,7 +774,7 @@ class Probability extends React.Component {
         <Modal isOpen={this.state.modalDemo} toggle={this.toggleModalDemo}>
           <div className="modal-header">
             <h5 className="modal-title" id="exampleModalLabel">
-              Save Analysis
+             <b>{defaultMessage.Modal.save.title}</b>
           </h5>
             <button
               type="button"
@@ -611,9 +787,9 @@ class Probability extends React.Component {
             </button>
           </div>
           <ModalBody>
-            <p>Do you wish to save the analysis?</p>
-            <Label for="error" className="control-label">Name:</Label>
-            <Input type="text" name="Name" placeholder="Analysis name"
+            <p>{defaultMessage.Modal.save.text}</p>
+            <Label for="error" className="control-label">{defaultMessage.Modal.save.input1}:</Label>
+            <Input type="text" name="Name" placeholder={defaultMessage.Modal.save.lbl1}
               autoFocus
               onFocus={this.onFocus}
               ref={(input) => { this.Name = input; }}
@@ -622,11 +798,11 @@ class Probability extends React.Component {
           </ModalBody>
           <ModalFooter>
             <Button className="btn-round animation-on-hover" color="secondary" onClick={this.toggleModalDemo}>
-              Close
+            {defaultMessage.Modal.btn1}
           </Button>
-            <Button className="btn-round animation-on-hover" color="primary" onClick={this.saveChanges}>
-              Save
-          </Button>
+            <Button disabled={this.state.loadingsv} className="btn-round animation-on-hover" color="primary" onClick={this.saveValidation}>
+              {saveBtn}
+            </Button>
           </ModalFooter>
         </Modal>
       </NavItem>
@@ -646,8 +822,7 @@ class Probability extends React.Component {
           <Row>
             <Col md="12">
               <Card>
-                <CardHeader>Probability<span>&nbsp;&nbsp;</span>
-
+                <CardHeader>{defaultMessage.Probability.title}<span>&nbsp;&nbsp;</span>
                   <Button
                     className="btn-round btn-icon animation-on-hover"
                     color="info"
@@ -665,15 +840,15 @@ class Probability extends React.Component {
                           className={classnames({ active: this.state.activeTab === '1' })}
                           onClick={() => { this.toggle('1'); }}
                         >
-                          Normal
-                         </NavLink>
+                          {defaultMessage.Probability.Normal.title}
+                        </NavLink>
                       </NavItem>
                       <NavItem>
                         <NavLink
                           className={classnames({ active: this.state.activeTab === '2' })}
                           onClick={() => { this.toggle('2'); }}
                         >
-                          Uniform
+                          {defaultMessage.Probability.Uniform.title}
                         </NavLink>
                       </NavItem>
                       <NavItem>
@@ -681,27 +856,26 @@ class Probability extends React.Component {
                           className={classnames({ active: this.state.activeTab === '3' })}
                           onClick={() => { this.toggle('3'); }}
                         >
-                          Binomial
+                          {defaultMessage.Probability.Binomial.title}
                         </NavLink>
                       </NavItem>
                     </Nav>
-                    <TabContent activeTab={this.state.activeTab}>
+                    <TabContent activeTab={this.state.activeTab}><br />
+                      {this.state.message !== '' ? (
+                        <Alert
+                          isOpen={this.state.visible}
+                          toggle={this.onDismiss}
+                          color={this.colorAlert} className="text-center">{this.state.message}</Alert>
+                      ) : ''}
                       <TabPane tabId="1">
                         <Row>
                           <Col sm="12">
-                            <br /><CardBody>
-                              {
-                                this.state.message !== '' ? (
-                                  <Alert
-                                    isOpen={this.state.visible}
-                                    toggle={this.onDismiss}
-                                    color={this.colorAlert} className="text-center">{this.state.message}</Alert>
-                                ) : ''}
+                            <CardBody>
                               <Container >
                                 <Row>
                                   <Col sm>
                                     <FormGroup inline >
-                                      <CardTitle>Mean value:</CardTitle>
+                                      <CardTitle>{defaultMessage.Probability.Normal.mean.title}:</CardTitle>
                                       <Input type="text"
                                         pattern="[^0-9,.]"
                                         onInput={this.handleChange.bind(this)}
@@ -709,7 +883,7 @@ class Probability extends React.Component {
                                         name='Mean'
                                         placeholder="0.00" />
                                       <br /><br />
-                                      <CardTitle>Standard Deviation value:</CardTitle>
+                                      <CardTitle>{defaultMessage.Probability.Normal.std.title}:</CardTitle>
                                       <Input type="text"
                                         pattern="[^0-9,.]"
                                         onInput={this.handleChange.bind(this)}
@@ -719,53 +893,8 @@ class Probability extends React.Component {
                                     </FormGroup><br />
                                   </Col>
                                   <Col sm>
-                                    <CardTitle>The interval between values must be</CardTitle>
-                                    <FormGroup check inline className="form-check-radio" >
-                                      <Label className="form-check-label">
-                                        <Input type="radio" name="exampleRadios1" id="exampleRadios11" value="1"
-                                          onClick={this.interval} />
-                                        less than:
-                                          <span className="form-check-sign"></span>
-                                      </Label>
-                                    </FormGroup>
-                                    <FormGroup check inline className="form-check-radio">
-                                      <Label className="form-check-label">
-                                        <Input type="radio" name="exampleRadios1" id="exampleRadios12" value="2"
-                                          onClick={this.interval} />
-                                        between:
-                                         <span className="form-check-sign"></span>
-                                      </Label>
-                                    </FormGroup>
-                                    <FormGroup check inline className="form-check-radio">
-                                      <Label className="form-check-label">
-                                        <Input type="radio" name="exampleRadios1" id="exampleRadios13" value="3"
-                                          onClick={this.interval} />
-                                        higher than:
-                                          <span className="form-check-sign"></span>
-                                      </Label>
-                                    </FormGroup><br /><br />
-                                    <form>
-                                      <Row>
-                                        <Col sm>
-                                          <Input type="text"
-                                            pattern="[^0-9,.]"
-                                            onInput={this.handleChange.bind(this)}
-                                            value={this.state.Min}
-                                            name='Min'
-                                            placeholder="0.00" />
-                                        </Col>
-                                        <Col sm>
-                                          <Collapse isOpen={this.state.collapseint}>
-                                            <Input type="text"
-                                              pattern="[^0-9,.]"
-                                              onInput={this.handleChange.bind(this)}
-                                              value={this.state.Max}
-                                              name='Max'
-                                              placeholder="0.00" />
-                                          </Collapse>
-                                        </Col>
-                                      </Row>
-                                    </form>
+                                    <CardTitle>{defaultMessage.Probability.interval.title}</CardTitle>
+                                    {intervaltag}
                                     <br />
                                   </Col>
                                 </Row>
@@ -778,17 +907,11 @@ class Probability extends React.Component {
                       <TabPane tabId="2">
                         <Row>
                           <Col sm="12">
-                            <br /><CardBody>
-                              {this.state.message !== '' ? (
-                                <Alert
-                                  isOpen={this.state.visible}
-                                  toggle={this.onDismiss}
-                                  color={this.colorAlert} className="text-center">{this.state.message}</Alert>
-                              ) : ''}
+                            <CardBody>
                               <Container >
                                 <Row>
                                   <Col sm> <FormGroup inline >
-                                    <CardTitle>Initial value:</CardTitle>
+                                    <CardTitle>{defaultMessage.Probability.Uniform.initial.title}:</CardTitle>
                                     <Input type="text"
                                       pattern="[^0-9,.]"
                                       onInput={this.handleChange.bind(this)}
@@ -796,7 +919,7 @@ class Probability extends React.Component {
                                       name='PMin'
                                       placeholder="0.00" />
                                     <br /><br />
-                                    <CardTitle>Final value:</CardTitle>
+                                    <CardTitle>{defaultMessage.Probability.Uniform.final.title}:</CardTitle>
                                     <Input type="text"
                                       pattern="[^0-9,.]"
                                       onInput={this.handleChange.bind(this)}
@@ -804,53 +927,8 @@ class Probability extends React.Component {
                                       name='PMax'
                                       placeholder="0.00" />
                                   </FormGroup><br /></Col>
-                                  <Col sm><CardTitle>The interval between values must be</CardTitle>
-                                    <FormGroup check inline className="form-check-radio" >
-                                      <Label className="form-check-label">
-                                        <Input type="radio" name="exampleRadios1" id="exampleRadios11" value="1"
-                                          onClick={this.interval} />
-                                        less than:
-                                          <span className="form-check-sign"></span>
-                                      </Label>
-                                    </FormGroup>
-                                    <FormGroup check inline className="form-check-radio">
-                                      <Label className="form-check-label">
-                                        <Input type="radio" name="exampleRadios1" id="exampleRadios12" value="2"
-                                          onClick={this.interval} />
-                                        between:
-                                         <span className="form-check-sign"></span>
-                                      </Label>
-                                    </FormGroup>
-                                    <FormGroup check inline className="form-check-radio">
-                                      <Label className="form-check-label">
-                                        <Input type="radio" name="exampleRadios1" id="exampleRadios13" value="3"
-                                          onClick={this.interval} />
-                                        higher than:
-                                          <span className="form-check-sign"></span>
-                                      </Label>
-                                    </FormGroup><br /><br />
-                                    <form>
-                                      <Row>
-                                        <Col sm>
-                                          <Input type="text"
-                                            pattern="[^0-9,.]"
-                                            onInput={this.handleChange.bind(this)}
-                                            value={this.state.Min}
-                                            name='Min'
-                                            placeholder="0.00" />
-                                        </Col>
-                                        <Col sm>
-                                          <Collapse isOpen={this.state.collapseint}>
-                                            <Input type="text"
-                                              pattern="[^0-9,.]"
-                                              onInput={this.handleChange.bind(this)}
-                                              value={this.state.Max}
-                                              name='Max'
-                                              placeholder="0.00" />
-                                          </Collapse>
-                                        </Col>
-                                      </Row>
-                                    </form>
+                                  <Col sm><CardTitle>{defaultMessage.Probability.interval.title}</CardTitle>
+                                    {intervaltag}
                                     <br /></Col>
                                 </Row>
                               </Container>
@@ -862,17 +940,11 @@ class Probability extends React.Component {
                       <TabPane tabId="3">
                         <Row>
                           <Col sm="12">
-                            <br /><CardBody>
-                              {this.state.message !== '' ? (
-                                <Alert
-                                  isOpen={this.state.visible}
-                                  toggle={this.onDismiss}
-                                  color={this.colorAlert} className="text-center">{this.state.message}</Alert>
-                              ) : ''}
+                            <CardBody>
                               <Container >
                                 <Row>
-                                  <Col sm>  <FormGroup inline >
-                                    <CardTitle>Sample size (<i>n</i>):</CardTitle>
+                                  <Col sm="5">  <FormGroup inline >
+                                    <CardTitle>{defaultMessage.Probability.Binomial.sample.title}:</CardTitle>
                                     <Input type="text"
                                       pattern="[^0-9,.]"
                                       onInput={this.handleChange.bind(this)}
@@ -883,7 +955,7 @@ class Probability extends React.Component {
                                     <form>
                                       <Row>
                                         <Col sm>
-                                          <CardTitle>Success (<i>p</i>):</CardTitle>
+                                          <CardTitle>{defaultMessage.Probability.Binomial.p.title}:</CardTitle>
                                           <Input type="text"
                                             onInput={this.handleChange.bind(this)}
                                             value={this.state.p}
@@ -891,7 +963,7 @@ class Probability extends React.Component {
                                             placeholder="0.00%" /><br />
                                         </Col>
                                         <Col sm>
-                                          <CardTitle>Failure (<i>q</i>):</CardTitle>
+                                          <CardTitle>{defaultMessage.Probability.Binomial.q.title}:</CardTitle>
                                           <Input type="text"
                                             onInput={this.handleChange.bind(this)}
                                             value={this.state.q}
@@ -903,61 +975,8 @@ class Probability extends React.Component {
                                   </FormGroup><br />
                                   </Col>
                                   <Col sm>
-                                    <CardTitle>The Event (<i>k</i>)  must be</CardTitle>
-                                    <FormGroup check inline className="form-check-radio" >
-                                      <Label className="form-check-label">
-                                        <Input type="radio" name="exampleRadios1" id="exampleRadios11" value="1"
-                                          onClick={this.interval} />
-                                        less than:
-                                          <span className="form-check-sign"></span>
-                                      </Label>
-                                    </FormGroup>
-                                    <FormGroup check inline className="form-check-radio">
-                                      <Label className="form-check-label">
-                                        <Input type="radio" name="exampleRadios1" id="exampleRadios12" value="2"
-                                          onClick={this.interval} />
-                                        between:
-                                         <span className="form-check-sign"></span>
-                                      </Label>
-                                    </FormGroup>
-                                    <FormGroup check inline className="form-check-radio">
-                                      <Label className="form-check-label">
-                                        <Input type="radio" name="exampleRadios1" id="exampleRadios13" value="3"
-                                          onClick={this.interval} />
-                                        exactly:
-                                          <span className="form-check-sign"></span>
-                                      </Label>
-                                    </FormGroup>
-                                    <FormGroup check inline className="form-check-radio">
-                                      <Label className="form-check-label">
-                                        <Input type="radio" name="exampleRadios1" id="exampleRadios13" value="4"
-                                          onClick={this.interval} />
-                                        higher than:
-                                          <span className="form-check-sign"></span>
-                                      </Label>
-                                    </FormGroup><br /><br />
-                                    <form>
-                                      <Row>
-                                        <Col sm>
-                                          <Input type="text"
-                                            pattern="[^0-9,.]"
-                                            onInput={this.handleChange.bind(this)}
-                                            value={this.state.BMin}
-                                            name='BMin'
-                                            placeholder="0" />
-                                        </Col>
-                                        <Col sm>
-                                          <Collapse isOpen={this.state.collapseint}>
-                                            <Input type="text"
-                                              pattern="[^0-9,.]"
-                                              onInput={this.handleChange.bind(this)}
-                                              value={this.state.BMax}
-                                              name='BMax'
-                                              placeholder="0" />
-                                          </Collapse>
-                                        </Col>
-                                      </Row>
-                                    </form>
+                                    <CardTitle>{defaultMessage.Probability.Binomial.event.title}</CardTitle>
+                                    {intervaltag}
                                     <br />
                                   </Col>
                                 </Row>

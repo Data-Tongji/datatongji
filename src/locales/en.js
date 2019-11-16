@@ -1,0 +1,150 @@
+module.exports = {
+      "resultsBtn": "Show Results",
+      "Menu": {
+            "Correg": "Correlation / Regression",
+            "Dash": "Dashboard",
+            "Talk": "Talk with us",
+            "profile": "User Profile",
+            "lang": {
+                  "pt": "Portuguese",
+                  "en": "English"
+            }
+      },
+      "NavBar": {
+            "ac1": "Profile",
+            "ac2": "Log Out",
+      },
+      "Profile": {
+            "title": "User Profile",
+            "avatar": "Change avatar",
+            "sidecolor": "Sidebar Background",
+            "bgcolor": {
+                  "light": "LIGHT MODE",
+                  "dark": "DARK MODE"
+            },
+
+      },
+      "Modal": {
+            "btn1": "Close",
+            "btn2": "Save",
+            "info": {
+                  "title": "Need Information?",
+                  "probabilityText": "<b>Normal distribution</b> is a probability distribution that is symmetric about the mean, showing that data near the mean are more frequent in occurrence than data far from the mean. In graph form, normal distribution will appear as a bell curve. The standard normal distribution has two parameters: the <b>mean</b> and the <b>standard deviation</b>. <br/>A <b>uniform distribution</b> it's a type of probability distribution in which all outcomes are equally likely, each variable has the same probability that it will be the outcome. This distribution is defined by two parameters: the <b>minimum point (initial)</b> and the <b>maximum point (final)</b>.<br/>The <b>binomial distribution</b> summarizes the likelihood that a value will take one of two independent values under a given set of parameters or assumptions. The underlying assumptions of the binomial distribution are that there is only one outcome for each trial, that each trial has the same probability of success, and that each trial is mutually exclusive, or independent of each other. Therefore, represents the probability for <b><i>k</i> events </b> in <b><i>n</i> trials</b>, given a <b>success  (<i>p</i>)</b> or <b>failure  (<i>q</i>)</b> probability for each trial.",
+                  "corregText": "<b>Correlation</b> is a statistical measure which determines co-relationship or association of two variables, using the <b>correlation coefficient</b>, which indicates the extent to which two variables move together.<br /> <b>Regression</b> describes how an independent variable is numerically related to the dependent variable. It indicates the impact of a unit change in the known variable (x) on the estimated variable (y).<br /> Use the input fields below to insert the data manually or import a <b>.csv </b> file and calculate the results, use <a href='https://raw.githubusercontent.com/leoronne/datatongji/master/src/assets/files/Correlation-Regression.csv' target='_blank'>this</a> as an example file.",
+
+            },
+            "save": {
+                  "title": "Save Analysis",
+                  "text": "Do you wish to save the analysis?",
+                  "message": "Your analysis has been saved!",
+                  "lbl1": "Analysis name",
+                  "input1": "Name",
+                  "validate": "Please, calculate the results first!"
+            }
+      },
+      "Descriptive": {
+            "title": "Descriptive Analysis"
+      },
+      "Probability": {
+            "title": "Probability",
+            "genericError": "Invalid",
+            "interval": {
+                  "title": "The interval between values must be",
+                  "error1": "Select an interval type!",
+                  "error2": "Maximum point must be higher than minimum point!",
+                  "opt1": "less than",
+                  "erroroptmin": "Invalid minimum point value!",
+                  "erroroptmax": "Invalid maximum point value",
+                  "opt2": "between",
+                  "opt3": "exactly",
+                  "opt4": "higher than",
+            },
+            "Normal": {
+                  "title": "Normal",
+                  "mean": {
+                        "title": "Mean value",
+                        "error": "Invalid Mean value!"
+                  },
+                  "std": {
+                        "title": "Standard Deviation value",
+                        "error": "Invalid Standard Deviation value!"
+                  },
+            },
+            "Uniform": {
+                  "title": "Uniform",
+                  "error1": "Final value must be higher than Initial Value!",
+                  "initial": {
+                        "title": "Initial value",
+                        "error": "Invalid Initial value!"
+                  },
+                  "final": {
+                        "title": "Final value",
+                        "error": "Invalid Final value!"
+                  },
+            },
+            "Binomial": {
+                  "title": "Binomial",
+                  "sample": {
+                        "title": "Sample size (n) value",
+                        "error": "Invalid Sample size (n) value!"
+                  },
+                  "p": {
+                        "title": "Success (p) value",
+                        "error": "Invalid Success (p) value!"
+                  },
+                  "q": {
+                        "title": "Failure (q) value",
+                        "error": "Invalid Failure (q) value!"
+                  },
+                  "event": {
+                        "title": "The Event (k) must be",
+                        "error1": "Invalid Event (k) value!",
+                        "error2": "Event (k) value cannot be higher than the sample size!",
+                        "error3": "Invalid Event (k) interval value!",
+                  }
+            },
+            "Results": {
+                  "mean": "Mean",
+                  "var": "Variance",
+                  "std": "Standard Deviation",
+                  "coef": "Coefficient of Variation",
+            }
+      },
+      "Correg": {
+            "title": "Correlation and Regression",
+            "x": {
+                  "title": "Name of the independent variable",
+                  "error": "Name of independent variable cannot be blank!",
+                  "placeholder": "Xi name",
+                  "values": {
+                        "title": "Independent variable values",
+                        "error": "Invalid values for independent variable!"
+                  }
+            },
+            "y": {
+                  "title": "Name of the dependent variable",
+                  "error": "Name of dependent variable cannot be blank!",
+                  "placeholder": "Yi name",
+                  "values": {
+                        "title": "Dependent variable values",
+                        "error": "Invalid values for dependent variable!"
+                  }
+            },
+            "xyerror": "The amount of values of both variables must be the same!",
+            "csv": {
+                  "error1": "Format of file not compatible, please download an example file and try it first!",
+                  "error2": "There is a wrong cell data on your file, please fix it first!",
+                  "error3": "Invalid type of file, only .csv are accepted!"
+            },
+            "chart": {
+                  "title": "Scatter Chart",
+                  "reg": "Regression line",
+            },
+            "results": {
+                  "acoef": "Linear Correlation Coefficient",
+                  "eqt": "Equation",
+                  "projx": "X<sub>i</sub> Projection:",
+                  "projy": "Y<sub>i</sub> Projection:"
+            },
+      }
+};
