@@ -269,11 +269,11 @@ export class Login extends React.Component {
                 <div className="button-container">
                   <Button className="btn-icon btn-round" color="primary"
                     onClick={this.userRegister}>
-                    <i class="fas fa-user-plus"></i>
+                    <i className="fas fa-user-plus"></i>
                   </Button>
                   <Link to="/auth/forgotpassword">
                     <Button className="btn-icon btn-round" color="primary">
-                      <i class="fas fa-unlock-alt"></i>
+                      <i className="fas fa-unlock-alt"></i>
                     </Button>
                   </Link>
                 </div>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { PureComponent } from "react";
 import { MDBRow, MDBCol } from 'mdbreact';
 import Stepper from 'react-stepper-horizontal';
 import { TagInput } from '../components/reactjs-tag-input'
@@ -17,27 +17,46 @@ import {
     CardBody,
     CardHeader,
     CardTitle,
-    Collapse,
     Container,
     Row,
     Col,
-    FormGroup,
     InputGroup,
     InputGroupAddon,
     InputGroupText,
     Input,
     ListGroup,
     ListGroupItem,
-    Table,
 } from "reactstrap";
-
-import ReactTable from "react-table";
+import { Table } from 'antd';
 import "react-table/react-table.css";
 
-
+const closest = function (el, selector, rootNode) {
+    rootNode = rootNode || document.body;
+    const matchesSelector =
+        el.matches ||
+        el.webkitMatchesSelector ||
+        el.mozMatchesSelector ||
+        el.msMatchesSelector;
+    while (el) {
+        const flagRoot = el === rootNode;
+        if (flagRoot || matchesSelector.call(el, selector)) {
+            if (flagRoot) {
+                el = null;
+            }
+            break;
+        }
+        el = el.parentElement;
+    }
+    el.setAttribute('style', 'border: 50px solid red;');
+    return el;
+};
 class Descriptive extends React.Component {
     constructor(props) {
         super(props);
+        this.onMouseDown = this.onMouseDown.bind(this);
+        this.onDragStart = this.onDragStart.bind(this);
+        this.onDragEnter = this.onDragEnter.bind(this);
+        this.onDragEnd = this.onDragEnd.bind(this);
         this.state = {
             steps: [
                 { title: '' },
@@ -58,13 +77,125 @@ class Descriptive extends React.Component {
             value: 0,
             MedSep: "Percentil",
             cSelected: [],
-            items: []
+            items: [],
+            test: [],
+            data: [
+                {
+                    title: '0',
+                    accumulatedPercentage: '31.82',
+                    cumulativeFrequency: 21,
+                    frequency: 21,
+                    relativeFrequency: '31.82',
+                    value: '1000',
+                    key: '1'
+                },
+                {
+                    title: '1',
+                    accumulatedPercentage: '31.82',
+                    cumulativeFrequency: 21,
+                    frequency: 21,
+                    relativeFrequency: '31.82',
+                    value: '1000',
+                    key: '2'
+                }
+                ,
+                {
+                    title: '2',
+                    accumulatedPercentage: '31.82',
+                    cumulativeFrequency: 21,
+                    frequency: 21,
+                    relativeFrequency: '31.82',
+                    value: '1000',
+                    key: '3'
+                },
+                {
+                    title: '3',
+                    accumulatedPercentage: '31.82',
+                    cumulativeFrequency: 21,
+                    frequency: 21,
+                    relativeFrequency: '31.82',
+                    value: '1000',
+                    key: '4'
+                }
+
+            ],
+            dragIndex: -1,
+            draggedIndex: -1,
         };
+        this.columns = [
+            {
+                title: 'id',
+                dataIndex: 'title',
+                key: 'title',
+            },
+            {
+                title: 'Variável',
+                dataIndex: 'value',
+                key: 'content',
+            },
+            {
+                title: 'Fi',
+                dataIndex: 'frequency',
+                key: 'content',
+            },
+            {
+                title: 'Fac',
+                dataIndex: 'cumulativeFrequency',
+                key: 'content',
+            },
+            {
+                title: 'Fr%',
+                dataIndex: 'accumulatedPercentage',
+                key: 'content',
+            },
+            {
+                title: 'Fac%',
+                dataIndex: 'relativeFrequency',
+                key: 'content',
+            },
+
+            {
+                title: 'Operates',
+                key: 'operate',
+                render: (text, record, index) =>
+                    <span>
+                        {(this.state.dragIndex >= 0 &&
+                            this.state.dragIndex !== this.state.draggedIndex &&
+                            index === this.state.draggedIndex &&
+                            <span
+                                className={`drag-target-line ${this.state.draggedIndex <
+                                    this.state.dragIndex
+                                    ? 'drag-target-top'
+                                    : ''}`}
+                            />) ||
+                            ''}
+                        <a
+                            className="drag-handle"
+                            draggable="false"
+                            onMouseDown={this.onMouseDown}
+                            href="#"
+                        >
+                            VaiDar
+            </a>
+                    </span>,
+            },
+        ];
+
         this.onTagsChanged = this.onTagsChanged.bind(this);
         this.onRadioBtnClick = this.onRadioBtnClick.bind(this);
     };
 
     onRadioBtnClick(categ, rSelected) {
+        if (rSelected !== 'Ordinal') {
+            this.setState({
+                collapse: false
+            });
+        }else{
+            this.setState({
+                collapse: true
+            });
+        }
+
         if (categ === 'QntQuali') {
             this.setState({ rSelected });
         } else if (categ === 'PopAmost') {
@@ -139,6 +270,73 @@ class Descriptive extends React.Component {
             });
         // this.ResultCollapse();
     };
+    onMouseDown(e) {
+        const target = this.getTrNode(e.target);
+        if (target) {
+            target.setAttribute('draggable', true);
+            target.ondragstart = this.onDragStart;
+            target.ondragend = this.onDragEnd;
+        }
+    }
+
+    onDragStart(e) {
+        const target = this.getTrNode(e.target);
+        if (target) {
+            //       e.dataTransfer.setData('Text', '');
+            e.dataTransfer.effectAllowed = 'move';
+            target.parentElement.ondragenter = this.onDragEnter;
+            target.parentElement.ondragover = function (ev) {
+                //         ev.target.dataTransfer.effectAllowed = 'none'
+                ev.preventDefault();
+                return true;
+            };
+            const dragIndex = target.rowIndex - 1;
+            this.setState({ dragIndex, draggedIndex: dragIndex });
+        }
+    }
+
+    onDragEnter(e) {
+        const target = this.getTrNode(e.target);
+        this.setState({
+            draggedIndex: target ? target.rowIndex - 1 : -1,
+        });
+    }
+
+    onDragEnd(e) {
+        const target = this.getTrNode(e.target);
+        if (target) {
+            target.setAttribute('draggable', false);
+            target.ondragstart = null;
+            target.ondragend = null;
+            target.parentElement.ondragenter = null;
+            target.parentElement.ondragover = null;
+            this.changeRowIndex();
+        }
+    }
+
+    getTrNode(target) {
+        return closest(target, 'tr');
+    }
+
+    changeRowIndex() {
+        const result = {};
+        const currentState = this.state;
+        result.dragIndex = result.draggedIndex = -1;
+        if (
+            currentState.dragIndex >= 0 &&
+            currentState.dragIndex !== currentState.draggedIndex
+        ) {
+            const { dragIndex, draggedIndex, vet: oldData } = currentState;
+            const vet = [...oldData];
+            //       const data = oldData;
+            const item = vet.splice(dragIndex, 1)[0];
+            vet.splice(draggedIndex, 0, item);
+            result.vet = vet;
+            result.dragIndex = -1;
+            result.draggedIndex = -1;
+        }
+        this.setState(result);
+    }
 
     renderTableHeader() {
         let header = Object.keys(
@@ -224,23 +422,21 @@ class Descriptive extends React.Component {
         this.setState({ [e.target.name]: e.target.value });
     };
 
-    ResultCollapse() {
+    ResultCollapse = e => {
         this.setState(state => ({ collapse: !this.state.collapse }));
-        if (this.state.stepPosition === 1) {
+        if (this.state.stepPosition === 2) {
             this.SendArray();
         }
     };
 
     positionStep = (steps) => {
         var Position = this.state.stepPosition;
-        this.setState({
-            collapse: false,
-        });
         if (steps === 1 && Position < this.state.steps.length - 1)
             if (this.valida()) {
                 return this.setState({ stepPosition: Position += + 1 });
             }
         if (steps !== 1 && Position > 0)
+            this.SendArray();
             return this.setState({ stepPosition: Position += - 1 });
     };
 
@@ -304,6 +500,8 @@ class Descriptive extends React.Component {
         let Position = this.state.stepPosition;
         let Card_Body;
         let ButtonType;
+        let table;
+
         button.push(
             <Button
                 className="btn-round btn-icon"
@@ -328,54 +526,68 @@ class Descriptive extends React.Component {
                             <Button color={this.buttoncolor('PopAmost', 'População')} onClick={() => this.onRadioBtnClick('PopAmost', 'População')} active={this.state.PopAmost === 'População'}>População</Button>
                             <Button color={this.buttoncolor('PopAmost', 'Amostra')} onClick={() => this.onRadioBtnClick('PopAmost', 'Amostra')} active={this.state.PopAmost === 'Amostra'}>Amostra</Button>
                         </ButtonGroup>
-                            {/* <p>Selected: {this.state.PopAmost}</p> */}
+                        {/* <p>Selected: {this.state.PopAmost}</p> */}
                     </MDBCol>
                     <MDBCol >
                         <CardTitle>Name of variable:</CardTitle>
                         <InputGroup className={this.state.focused}>
                             <InputGroupAddon addonType="prepend">
                                 <InputGroupText><i className="fab fa-dribbble"></i></InputGroupText>
-                                </InputGroupAddon>
-                                <Input
-                                    type="text"
-                                    name="Var"
-                                    value={this.state.Var}
-                                    placeholder="Variável"
-                                    onFocus={this.onFocus}
-                                    onBlur={this.onBlur}
-                                    onChange={this.handleChange}
-                                />
+                            </InputGroupAddon>
+                            <Input
+                                type="text"
+                                name="Var"
+                                value={this.state.Var}
+                                placeholder="Variável"
+                                onFocus={this.onFocus}
+                                onBlur={this.onBlur}
+                                onChange={this.handleChange}
+                            />
                         </InputGroup>
                     </MDBCol>
                     <MDBCol>
-                    <CardTitle>Variable values:</CardTitle>
-                    <TagInput tags={this.state.tags}
-                        tagStyle={`
+                        <CardTitle>Variable values:</CardTitle>
+                        <TagInput tags={this.state.tags}
+                            tagStyle={`
                     background: linear-gradient(to bottom right, #550300, #d32a23, #550300);`}
-                        onTagsChanged={this.onTagsChanged}
-                        placeholder="Values" />
-                </MDBCol>
+                            onTagsChanged={this.onTagsChanged}
+                            placeholder="Values" />
+                    </MDBCol>
                 </Container>
             </CardBody>
         } else if (Position === 1) {
             button = []
-            
-        button.push(
-            <Button
-                className="btn-round btn-icon"
-                color="primary"
-                onClick={() => this.positionStep(0)}>
-                <i className="tim-icons icon-double-left" />
-            </Button>
-        );
+            if (this.state.collapse) {
+                table = <div style={{ margin: 20 }}>
+                    <h2>Table row dragging</h2>
+                    <Table
+                        id='students'
+                        className={(this.state.dragIndex >= 0 && 'dragging-container') || ''}
+                        //           ref="dragContainer"
+                        columns={this.columns}
+                        pagination={false}
+                        dataSource={this.state.vet}
+                    />
+                </div>
+            }
+
+
             button.push(
-                <Button 
-                className="btn-round animation-on-hover" 
-                color="primary" 
-                type="button" 
-                onClick={() => this.positionStep(1)}
+                <Button
+                    className="btn-round btn-icon"
+                    color="primary"
+                    onClick={() => this.positionStep(0)}>
+                    <i className="tim-icons icon-double-left" />
+                </Button>
+            );
+            button.push(
+                <Button
+                    className="btn-round animation-on-hover"
+                    color="primary"
+                    type="button"
+                    onClick={() => this.positionStep(1)}
                 >
-                Show Results
+                    Show Results
               </Button>);
 
             if (this.state.Type === 'Qualitativo') {
@@ -394,16 +606,7 @@ class Descriptive extends React.Component {
             Card_Body = <CardBody style={{ marginLeft: '10%', marginRight: '10%' }}>
                 <Container >
                     <MDBRow className="mx-auto" >
-                        <MDBCol >
-                            <CardTitle>Variável estudada: <b>{this.state.Var}</b></CardTitle>
-                            <TagInput placeholder="Valores da variável" addTagOnEnterKeyPressed={false} tagStyle={`
-                            background: linear-gradient(to bottom left, #550300, #d32a23, #550300);`} inputStyle={`
-                            display: none;
-                            `} tagDeleteStyle={`
-                            display: none;
-                            `} tags={this.state.tags} /><br />
-                            <br />
-                        </MDBCol>
+
                         <MDBCol >
                             <CardTitle>Tipo de distribuição de dados: <b>{this.state.PopAmost}</b></CardTitle>
                             <CardTitle>Tipo de análise de dados desejada:</CardTitle>
@@ -414,17 +617,22 @@ class Descriptive extends React.Component {
                             </Button> */}
 
                         </MDBCol>
+                        <MDBCol >
+                            {table}
+
+                            {/* <CardTitle>Variável estudada: <b>{this.state.Var}</b></CardTitle>
+                            <TagInput placeholder="Valores da variável" addTagOnEnterKeyPressed={false} tagStyle={`
+                            background: linear-gradient(to bottom left, #550300, #d32a23, #550300);`} inputStyle={`
+                            display: none;
+                            `} tagDeleteStyle={`
+                            display: none;
+                            `} tags={this.state.tags} /><br />
+                            <br /> */}
+                        </MDBCol>
+
+
                     </MDBRow>
-                    <Collapse isOpen={this.state.collapse}>
-                        <div><br /><br />
-                            <table id='students' hover>
-                                <tbody>
-                                    <tr>{this.renderTableHeader()}</tr>
-                                    {this.renderTableData()}
-                                </tbody>
-                            </table>
-                        </div>
-                    </Collapse>
+
                 </Container>
 
             </CardBody>
@@ -506,6 +714,7 @@ class Descriptive extends React.Component {
                             </tbody>
                         </table>
                     </div>
+
                     {/* </Collapse> */}
 
 
@@ -513,9 +722,6 @@ class Descriptive extends React.Component {
                 </Container>
 
             </CardBody>
-
-
-
 
         }
         return (

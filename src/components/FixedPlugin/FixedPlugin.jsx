@@ -2,7 +2,7 @@
 import React, { Component } from "react";
 
 // reactstrap components
-import { Button } from "reactstrap";
+// import { Button } from "reactstrap";
 
 class FixedPlugin extends Component {
   constructor(props) {

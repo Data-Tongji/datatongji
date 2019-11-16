@@ -109,7 +109,8 @@ class UserProfile extends React.Component {
 
   async SaveChanges() {
     this.setState({ loading: true });
-    if (this.state.img !== false) {
+    if (this.state.img) {
+      this.setState.img = false;
       const data = new FormData();
       data.append('file', this.state.image);
       data.append('token', localStorage.getItem('token'));

@@ -14735,6 +14735,42 @@ hr {
   user-select: none;
 }
 
+.drag-handle {
+  cursor: move !important;
+}
+
+.dragging-container tbody {
+  xposition: relative;
+  xoverflow: hidden;
+}
+
+.dragging-container tbody tr {
+  background: #fff !important;
+  xtransition: none !important;
+}
+
+.dragging-container tbody tr td {
+  position: relative;
+}
+
+.dragging-container .drag-target-line {
+  bottom: -1px;
+  left: -500%;
+  width: 1000%;
+  xleft: 0;
+  xwidth: 100%;
+  height: 0;
+  display: block;
+  position: absolute;
+  border-bottom: dashed 2px red;
+  z-index: 2;
+}
+
+.dragging-container .drag-target-line.drag-target-top {
+  bottom: auto;
+  top: -1px;
+}
+
 .table > tbody > tr > td {
   color: rgba(255, 255, 255, 0.7) !important;
 }
