@@ -19,7 +19,7 @@ import {
   Modal
 } from "reactstrap";
 const user = localStorage.getItem('userName');
-var defaultMessage = localStorage.getItem('defaultLanguage') !== 'pt-br' ? require('../../locales/en.js') : require('../../locales/pt.js');
+var defaultMessage = localStorage.getItem('defaultLanguage') !== 'pt-br' ? require('../../locales/en-us.js') : require('../../locales/pt-br.js');
 
 class AdminNavbar extends React.Component {
   constructor(props) {
@@ -156,9 +156,7 @@ class AdminNavbar extends React.Component {
               <span className="navbar-toggler-bar navbar-kebab" />
             </button>
             <Collapse navbar isOpen={this.state.collapseOpen}>
-              <Nav className="ml-auto" navbar>
-                <InputGroup className="search-bar">
-                </InputGroup>               
+              <Nav className="ml-auto" navbar>         
                 <UncontrolledDropdown nav>
                   <DropdownToggle
                     caret

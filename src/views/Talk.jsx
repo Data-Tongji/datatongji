@@ -1,228 +1,180 @@
 import React from "react";
-// react plugin for creating notifications over the dashboard
 import NotificationAlert from "react-notification-alert";
 
-// reactstrap components
 import {
-  Alert,
-  UncontrolledAlert,
   Button,
+  ButtonGroup,
   Card,
+  CardText,
+  FormGroup,
+  Label,
+  Input,
+  Container,
   CardHeader,
   CardBody,
   CardTitle,
   Row,
-  Col
+  Col,
 } from "reactstrap";
+var defaultMessage = localStorage.getItem('authLanguage') !== 'pt-br' ? require('../locales/en-us.js') : require('../locales/pt-br.js');
+
 
 class Talk extends React.Component {
-  notify = place => {
-    var color = Math.floor(Math.random() * 5 + 1);
-    var type;
-    switch (color) {
-      case 1:
-        type = "primary";
-        break;
-      case 2:
-        type = "success";
-        break;
-      case 3:
-        type = "danger";
-        break;
-      case 4:
-        type = "warning";
-        break;
-      case 5:
-        type = "info";
-        break;
-      default:
-        break;
+  constructor(props) {
+    super(props);
+    this.state = {
+      language: ''
     }
-    var options = {};
-    options = {
+  }
+
+  componentWillMount() {
+    if (localStorage.getItem('authLanguage') !== 'pt-br') {
+      localStorage.setItem('authLanguage', 'en-us');
+      this.setState({ language: 'en-us' });
+    } else { this.setState({ language: 'pt-br' }) }
+  };
+
+  notify = (place, message, icon, color) => {
+    var options = {
       place: place,
       message: (
         <div>
           <div>
-            Welcome to <b>Black Dashboard React</b> - a beautiful freebie for
-            every web developer.
+            {message}
           </div>
         </div>
       ),
-      type: type,
-      icon: "tim-icons icon-bell-55",
+      type: color,
+      icon: icon,
       autoDismiss: 7
     };
     this.refs.notificationAlert.notificationAlert(options);
   };
+
+  changeLanguage(lg) {
+    if (this.state.language !== lg) {
+      localStorage.setItem('authLanguage', lg);
+      this.setState({ language: lg })
+    }
+  };
+
+  buttoncolor(language) {
+    if (language === this.state.language) {
+      return "primary"
+    }
+    else {
+      return "secondary"
+    }
+  };
+
   render() {
+
     return (
-      <>
-        <div className="content">
-          <div className="react-notification-alert-container">
-            <NotificationAlert ref="notificationAlert" />
-          </div>
-          <Row>
-            <Col md="6">
-              <Card>
-                <CardHeader>
-                  <CardTitle tag="h4">Notifications Style</CardTitle>
-                </CardHeader>
-                <CardBody>
-                  <Alert color="info">
-                    <span>This is a plain notification</span>
-                  </Alert>
-                  <UncontrolledAlert color="info">
-                    <span>This is a notification with close button.</span>
-                  </UncontrolledAlert>
-                  <UncontrolledAlert className="alert-with-icon" color="info">
-                    <span
-                      className="tim-icons icon-bell-55"
-                      data-notify="icon"
+      <><Container style={{ justifyContent: 'center', width: '95%' }}>
+        <Row style={{ marginRight: '3%', marginLeft: '3%', marginTop: '2%' }} >
+          <Col md="12">
+            <Card className="card-user">
+              <CardBody >
+                <CardText />
+                <div className="author" onmousedown='return false' onselectstart='return false'>
+                  <div className="block block-one" />
+                  <div className="block block-two" />
+                  <div className="block block-three" />
+                  <div className="block block-four" />
+                  <a href="/#/" class="unselectable">
+                    <img
+                      alt="..."
+                      className="avatar-logo"
+                      style={{ width: '30%' }}
+                      src={require("assets/img/logoTong.png")}
                     />
-                    <span data-notify="message">
-                      This is a notification with close button and icon.
-                    </span>
-                  </UncontrolledAlert>
-                  <UncontrolledAlert className="alert-with-icon" color="info">
-                    <span
-                      className="tim-icons icon-bell-55"
-                      data-notify="icon"
-                    />
-                    <span data-notify="message">
-                      This is a notification with close button and icon and have
-                      many lines. You can see that the icon and the close button
-                      are always vertically aligned. This is a beautiful
-                      notification. So you don't have to worry about the style.
-                    </span>
-                  </UncontrolledAlert>
-                </CardBody>
-              </Card>
-            </Col>
-            <Col md="6">
-              <Card>
-                <CardHeader>
-                  <CardTitle tag="h4">Notification states</CardTitle>
-                </CardHeader>
-                <CardBody>
-                  <UncontrolledAlert color="primary">
-                    <span>
-                      <b>Primary - </b>
-                      This is a regular notification made with ".alert-primary"
-                    </span>
-                  </UncontrolledAlert>
-                  <UncontrolledAlert color="info">
-                    <span>
-                      <b>Info - </b>
-                      This is a regular notification made with ".alert-info"
-                    </span>
-                  </UncontrolledAlert>
-                  <UncontrolledAlert color="success">
-                    <span>
-                      <b>Success - </b>
-                      This is a regular notification made with ".alert-success"
-                    </span>
-                  </UncontrolledAlert>
-                  <UncontrolledAlert color="warning">
-                    <span>
-                      <b>Warning - </b>
-                      This is a regular notification made with ".alert-warning"
-                    </span>
-                  </UncontrolledAlert>
-                  <UncontrolledAlert color="danger">
-                    <span>
-                      <b>Danger - </b>
-                      This is a regular notification made with ".alert-danger"
-                    </span>
-                  </UncontrolledAlert>
-                </CardBody>
-              </Card>
-            </Col>
-            <Col md="12">
-              <Card>
-                <CardBody>
-                  <div className="places-buttons">
-                    <Row>
-                      <Col className="ml-auto mr-auto text-center" md="6">
-                        <CardTitle tag="h4">
-                          Notifications Places<p className="category">
-                            Click to view notifications
-                          </p>
-                        </CardTitle>
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col className="ml-auto mr-auto" lg="8">
-                        <Row>
-                          <Col md="4">
-                            <Button
-                              block
-                              color="primary"
-                              onClick={() => this.notify("tl")}
-                            >
-                              Top Left
+                  </a><br />
+                  <ButtonGroup>
+                    <Button
+                      className="btn-round btn-icon animation-on-hover"
+                      style={{ top: '15px' }}
+                      color={this.buttoncolor('en-us')}
+                      onClick={() => this.changeLanguage('en-us')}
+                      active={this.state.language === 'en-us'}
+                      size="sm">
+                      <span class="flag-icon flag-icon-us flag-icon-squared" style={{ left: '7px' }} />
+                    </Button>
+                    <Button
+                      className="btn-round btn-icon animation-on-hover"
+                      style={{ top: '15px' }}
+                      color={this.buttoncolor('pt-br')}
+                      onClick={() => this.changeLanguage('pt-br')}
+                      active={this.state.language === 'pt-br'}
+                      size="sm">
+                      <span class="flag-icon flag-icon-br flag-icon-squared" style={{ left: '7px' }} />
+                    </Button>
+                  </ButtonGroup>
+                </div>
+
+                <div className="card-description" style={{ marginLeft: '2%', marginRight: '2%', textAlign: 'justify' }}>
+                  <Col className="col_center_login" md="7">
+                    <Card className="card-user">
+                      <CardBody>
+                        <CardText />
+                        <div className="author">
+                        </div>
+                        <FormGroup>
+                          <Label for="exampleEmail">{defaultMessage.Forms.email.title}:</Label>
+                          <Input
+                            type="email"
+                            name="email"
+                            id="exampleEmail"
+                            placeholder={defaultMessage.Forms.email.title}
+                            onChange={this.handleChange}
+                          />
+                        </FormGroup>
+                        <FormGroup>
+                          <Label for="examplePassword">Password</Label>
+                          <Input
+                            type="password"
+                            name="password"
+                            id="examplePassword"
+                            placeholder="Senha"
+                            autoComplete="off"
+                            onChange={this.handleChange}
+                          />
+                        </FormGroup>
+                        <FormGroup>
+                          <Label for="exampleText">Example textarea</Label>
+                          <Input type="textarea" name="text" id="exampleText" />
+                        </FormGroup><br />
+                        <Button
+                          disabled={this.state.loading}
+                          color="primary"
+                          block
+                          className="btn-round"
+                          type="button" onClick={this.inputValidation}
+                        >
+                          Send
+                        </Button>
+                      </CardBody>
+                      {/* <CardFooter>
+                        <div className="button-container">
+                          <Button className="btn-icon btn-round" color="primary"
+                            onClick={this.userRegister}>
+                            <i className="fas fa-user-plus"></i>
+                          </Button>
+                          <Link to="/auth/forgotpassword">
+                            <Button className="btn-icon btn-round" color="primary">
+                              <i className="fas fa-unlock-alt"></i>
                             </Button>
-                          </Col>
-                          <Col md="4">
-                            <Button
-                              block
-                              color="primary"
-                              onClick={() => this.notify("tc")}
-                            >
-                              Top Center
-                            </Button>
-                          </Col>
-                          <Col md="4">
-                            <Button
-                              block
-                              color="primary"
-                              onClick={() => this.notify("tr")}
-                            >
-                              Top Right
-                            </Button>
-                          </Col>
-                        </Row>
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col className="ml-auto mr-auto" lg="8">
-                        <Row>
-                          <Col md="4">
-                            <Button
-                              block
-                              color="primary"
-                              onClick={() => this.notify("bl")}
-                            >
-                              Bottom Left
-                            </Button>
-                          </Col>
-                          <Col md="4">
-                            <Button
-                              block
-                              color="primary"
-                              onClick={() => this.notify("bc")}
-                            >
-                              Bottom Center
-                            </Button>
-                          </Col>
-                          <Col md="4">
-                            <Button
-                              block
-                              color="primary"
-                              onClick={() => this.notify("br")}
-                            >
-                              Bottom Right
-                            </Button>
-                          </Col>
-                        </Row>
-                      </Col>
-                    </Row>
-                  </div>
-                </CardBody>
-              </Card>
-            </Col>
-          </Row>
-        </div>
+                          </Link>
+                        </div>
+                      </CardFooter> */}
+                    </Card>
+                  </Col>
+                </div>
+              </CardBody >
+              <br />
+            </Card>
+          </Col>
+        </Row>
+      </Container>
       </>
     );
   }

@@ -1,20 +1,38 @@
 import React from "react";
-import { Route, Switch } from "react-router-dom";
+import { Link, Route, Switch } from "react-router-dom";
 // javascript plugin used to create scrollbars on windows
 import PerfectScrollbar from "perfect-scrollbar";
-
+import classNames from "classnames";
+import {
+  Collapse,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+  UncontrolledDropdown,
+  InputGroup,
+  NavbarBrand,
+  Navbar,
+  NavbarToggler,
+  NavItem,
+  NavLink,
+  Nav,
+  Container,
+} from "reactstrap";
 // core components
 import Footer from "components/Footer/Footer.jsx";
-
 import routes from '../../routes';
 
 var ps;
+var defaultMessage = localStorage.getItem('authLanguage') !== 'pt-br' ? require('../../locales/en-us.js') : require('../../locales/pt-br.js');
 
 class Auth extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       backgroundColor: "primary",
+      collapseOpen: false,
+      color: "navbar-transparent",
+      classes: "dropdown show-dropdown",
       sidebarOpened:
         document.documentElement.className.indexOf("nav-open") !== -1
     };
@@ -29,6 +47,7 @@ class Auth extends React.Component {
         ps = new PerfectScrollbar(tables[i]);
       }
     }
+    window.addEventListener("resize", this.updateColor);
   }
   componentWillUnmount() {
     if (navigator.platform.indexOf("Win") > -1) {
@@ -36,6 +55,7 @@ class Auth extends React.Component {
       document.documentElement.className += " perfect-scrollbar-off";
       document.documentElement.classList.remove("perfect-scrollbar-on");
     }
+    window.removeEventListener("resize", this.updateColor);
   }
   componentDidUpdate(e) {
     if (e.history.action === "PUSH") {
@@ -50,7 +70,6 @@ class Auth extends React.Component {
       this.refs.mainPanel.scrollTop = 0;
     }
   }
-  // this function opens and closes the sidebar on small devices
   toggleSidebar = () => {
     document.documentElement.classList.toggle("nav-open");
     this.setState({ sidebarOpened: !this.state.sidebarOpened });
@@ -83,22 +102,125 @@ class Auth extends React.Component {
     }
     return "Brand";
   };
+
+
+  handleClick = () => {
+    if (this.state.classes === "dropdown show-dropdown") {
+      this.setState({ classes: "dropdown show-dropdown show" });
+    } else {
+      this.setState({ classes: "dropdown show-dropdown" });
+    }
+  };
+
+  updateColor = () => {
+    if (window.innerWidth < 993 && this.state.collapseOpen) {
+      this.setState({
+        color: "bg-white"
+      });
+    } else {
+      this.setState({
+        color: "navbar-transparent"
+      });
+    }
+  };
+
+  toggleCollapse = () => {
+    if (this.state.collapseOpen) {
+      this.setState({
+        color: "navbar-transparent"
+      });
+    } else {
+      this.setState({
+        color: "bg-white"
+      });
+    }
+    this.setState({
+      collapseOpen: !this.state.collapseOpen
+    });
+  };
+
+
   render() {
     return (
       <>
-         
-          <div
-            className="main-panel"
-            ref="mainPanel"
-            data={this.state.backgroundColor}
+        <div
+          className="main-panel"
+          ref="mainPanel"
+          data={this.state.backgroundColor}
+        >
+          {/* <Navbar expand="lg" color='primary'>
+            <Container>
+              <NavbarToggler onClick={this.toggle}>
+                <span className="navbar-toggler-bar navbar-kebab"></span>
+                <span className="navbar-toggler-bar navbar-kebab"></span>
+                <span className="navbar-toggler-bar navbar-kebab"></span>
+              </NavbarToggler>
+              <Collapse isOpen={this.state.isOpen} navbar>
+                <NavbarBrand>Hidden Brand</NavbarBrand>
+                <Nav navbar>
+                  <NavItem active>
+                    <NavLink to="#pablo">
+                      Link
+                                </NavLink>
+                  </NavItem>
+                  <NavItem>
+                    <NavLink to="#pablo">
+                      Link
+                                </NavLink>
+                  </NavItem>
+                </Nav>
+              </Collapse>
+            </Container>
+          </Navbar>
+
+          <Navbar
+            className={classNames("navbar-absolute", this.state.color)}
+            expand="xl"
           >
-           
-            <Switch>{this.getRoutes(routes)}</Switch>
-            {// we don't want the Footer to be rendered on map page
+            <Container fluid>
+              <div className="navbar-wrapper">
+              </div>
+              <Collapse navbar isOpen={this.state.collapseOpen}>
+              <Nav className="ml-auto" navbar>
+                <UncontrolledDropdown nav>
+                  <DropdownToggle
+                    caret
+                    color="default"
+                    data-toggle="dropdown"
+                    nav
+                    onClick={e => e.preventDefault()}
+                  >
+                    <i class="fas fa-ellipsis-v" />
+                  </DropdownToggle>
+                  <DropdownMenu className="dropdown-navbar" right tag="ul">
+                    <NavLink tag="li">
+                      <Link to="/auth/login">
+                        <DropdownItem className="nav-item" >{defaultMessage.NavBar.auth.ac1}</DropdownItem>
+                      </Link>
+                    </NavLink>
+                    <NavLink tag="li">
+                      <Link to="/auth/talkwithus">
+                        <DropdownItem className="nav-item" >{defaultMessage.NavBar.auth.ac3}</DropdownItem>
+                      </Link>
+                    </NavLink>
+                    <NavLink tag="li">
+                      <Link to="/auth/about">
+                        <DropdownItem className="nav-item" >{defaultMessage.NavBar.auth.ac2}</DropdownItem>
+                      </Link>
+                    </NavLink>
+                  </DropdownMenu>
+                </UncontrolledDropdown>
+                <li className="separator d-lg-none" />
+              </Nav>
+              </Collapse>
+            </Container>
+          </Navbar><br /> */}
+          <Switch>{this.getRoutes(routes)}</Switch>
+          {// we don't want the Footer to be rendered on map page
             this.props.location.pathname.indexOf("maps") !== -1 ? null : (
               <Footer fluid />
             )}
-          </div>
+        </div>
       </>
     );
   }

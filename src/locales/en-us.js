@@ -3,16 +3,52 @@ module.exports = {
       "Menu": {
             "Correg": "Correlation / Regression",
             "Dash": "Dashboard",
-            "Talk": "Talk with us",
+            "Talk": "Contact us",
             "profile": "User Profile",
             "lang": {
                   "pt": "Portuguese",
                   "en": "English"
             }
       },
+      "Forms": {
+            "email": {
+                  "title": "Email adress",
+                  "error": "Email field cannot be blank!"
+            },
+            "name": {
+                  "title": "Name",
+                  "error": "Name field cannot be blank!"
+            },
+            "pass": {
+                  "title": "Password",
+                  "error": "Password field cannot be blank!",
+                  "changed": "Your password has been changed!",
+                  "title2": "Inform the new password"
+            },
+            "token": {
+                  "title": "Authentication Token",
+                  "error": "Token field cannot be blank!",
+                  "msg": "Your token has been sent!",
+                  "valid": "Your token has been validated!",
+                  "info": "Check your email and inform us the token you received"
+            },
+            "btnenv": {
+                  "ac1": "Send",
+                  "ac2": "Change password"
+            },
+            "reg": {
+                  "msg": "You have successfully registered, please sign in!"
+            }
+      },
       "NavBar": {
             "ac1": "Profile",
             "ac2": "Log Out",
+            "auth":{
+                  "ac1": "Log in",
+                  "ac2": "About",
+                  "ac3": "Talk with us",   
+                  "ac4": "Sign Up",         
+            }
       },
       "Profile": {
             "title": "User Profile",

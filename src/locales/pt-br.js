@@ -10,9 +10,45 @@ module.exports = {
                   "en": "Inglês"
             }
       },
+      "Forms": {
+            "email": {
+                  "title": "Endereço de email",
+                  "error": "Insira um endereço de email válido!"
+            },
+            "name": {
+                  "title": "Nome",
+                  "error": "Insira o seu nome!"
+            },
+            "pass": {
+                  "title": "Senha",
+                  "error": "Insira uma senha válida!",
+                  "changed": "Senha alterada com sucesso!",
+                  "title2": "Informe a nova senha"
+            },
+            "token": {
+                  "title": "Token de Autenticação",
+                  "error": "Insira o Token de Autenticação!",
+                  "msg": "O Token de Autenticação foi enviado no seu email!",                  
+                  "valid": "Token validado!",
+                  "info": "Informe o Token de Autenticação que enviamos no seu email"
+            },
+            "btnenv": {
+                  "ac1": "Enviar",
+                  "ac2": "Alterar senha"
+            },
+            "reg": {
+                  "msg": "Usuário cadastrado com sucesso!"
+            }
+      },
       "NavBar": {
             "ac1": "Perfil",
             "ac2": "Sair",
+            "auth": {
+                  "ac1": "Entrar",
+                  "ac2": "Sobre",
+                  "ac3": "Fale com a gente",
+                  "ac4": "Registrar",
+            }
       },
       "Profile": {
             "title": "Perfil do Usuário",

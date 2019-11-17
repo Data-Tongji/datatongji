@@ -90,7 +90,7 @@ function StyledRadio(props) {
   );
 };
 
-var defaultMessage = localStorage.getItem('defaultLanguage') !== 'pt-br' ? require('../locales/en.js') : require('../locales/pt.js');
+var defaultMessage = localStorage.getItem('defaultLanguage') !== 'pt-br' ? require('../locales/en-us.js') : require('../locales/pt-br.js');
 
 class Probability extends React.Component {
   constructor(props) {

@@ -17,7 +17,7 @@ import {
   DropdownItem
 } from "reactstrap";
 import { DotLoader } from 'react-spinners';
-var defaultMessage = localStorage.getItem('defaultLanguage') !== 'pt-br' ? require('../locales/en.js') : require('../locales/pt.js');
+var defaultMessage = localStorage.getItem('defaultLanguage') !== 'pt-br' ? require('../locales/en-us.js') : require('../locales/pt-br.js');
 
 
 class UserProfile extends React.Component {

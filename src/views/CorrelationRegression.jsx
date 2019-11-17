@@ -32,7 +32,7 @@ import csvicon from '../assets/img/csv.svg';
 import '../assets/css/csv.css';
 import { DotLoader } from 'react-spinners';
 
-var defaultMessage = localStorage.getItem('defaultLanguage') !== 'pt-br' ? require('../locales/en.js') : require('../locales/pt.js');
+var defaultMessage = localStorage.getItem('defaultLanguage') !== 'pt-br' ? require('../locales/en-us.js') : require('../locales/pt-br.js');
 
 class CorrelationRegression extends React.Component {
   constructor(props) {
@@ -207,7 +207,7 @@ class CorrelationRegression extends React.Component {
     }
   };
 
-  notify = (place, message, icon) => {
+  notify = (place, message, icon, color) => {
     var options = {
       place: place,
       message: (
@@ -217,7 +217,7 @@ class CorrelationRegression extends React.Component {
           </div>
         </div>
       ),
-      type: this.colorAlert,
+      type: color,
       icon: icon,
       autoDismiss: 7
     };
@@ -281,8 +281,7 @@ class CorrelationRegression extends React.Component {
         dispcsv: false
       });
     } else {
-      this.colorAlert = 'danger';
-      this.notify('br', defaultMessage.Correg.csv.error3, 'fas fa-exclamation-triangle');
+      this.notify('br', defaultMessage.Correg.csv.error3, 'fas fa-exclamation-triangle', 'danger');
     }
   };
 
@@ -296,8 +295,7 @@ class CorrelationRegression extends React.Component {
 
   saveValidation = () => {
     if (this.state.body === '') {
-      this.colorAlert = 'danger';
-      this.notify('tc', defaultMessage.Modal.save.validate, 'fas fa-exclamation-triangle');
+      this.notify('tc', defaultMessage.Modal.save.validate, 'fas fa-exclamation-triangle', 'danger');
     }
     else if (this.state.Name === '') {
       this.Name.focus();
@@ -331,8 +329,7 @@ class CorrelationRegression extends React.Component {
     try {
       const response = await fetch('https://datatongji-backend.herokuapp.com/correlation/save', requestInfo);
       if (response.ok) {
-        this.colorAlert = 'success';
-        this.notify('br', defaultMessage.Modal.save.message, 'fas fa-check');
+        this.notify('br', defaultMessage.Modal.save.message, 'fas fa-check', 'success');
         this.setState({
           loadingsv: false
         });
@@ -342,8 +339,8 @@ class CorrelationRegression extends React.Component {
       }
     } catch (e) {
       this.colorAlert = 'danger';
+      this.notify('tc', e.message, 'fas fa-exclamation-triangle', 'danger');
       this.setState({
-        message: e.message,
         loading: false
       });
     }
@@ -355,8 +352,7 @@ class CorrelationRegression extends React.Component {
     var arrfull = [];
     var pass = true;
     if (keys.length !== 2) {
-      this.colorAlert = 'danger';
-      this.notify('tc', defaultMessage.Correg.csv.error1, 'fas fa-exclamation-triangle');
+      this.notify('br', defaultMessage.Correg.csv.error1, 'fas fa-exclamation-triangle', 'danger');
     } else {
       for (var i = 0; i < data.length; i++) {
         Object.keys(data[0]).forEach(function (key) {
@@ -419,8 +415,7 @@ class CorrelationRegression extends React.Component {
         });
       }
       else {
-        this.colorAlert = 'danger';
-        this.notify('tc', defaultMessage.Correg.csv.error2, 'fas fa-exclamation-triangle');
+        this.notify('br', defaultMessage.Correg.csv.error2, 'fas fa-exclamation-triangle', 'danger');
       }
     };
   };

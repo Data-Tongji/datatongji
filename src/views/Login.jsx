@@ -1,8 +1,10 @@
 
 import React from "react";
 import { Link } from "react-router-dom";
+import NotificationAlert from "react-notification-alert";
 import {
   Row,
+  ButtonGroup,
   Col,
   CardText,
   CardFooter,
@@ -12,7 +14,6 @@ import {
   FormGroup,
   Label,
   Input,
-  Alert,
   InputGroup,
   InputGroupAddon,
   InputGroupText
@@ -28,18 +29,55 @@ export class Login extends React.Component {
       email: '',
       password: '',
       register: false,
+      focusedl: '',
+      language: '',
+      focusedp: '',
       loading: false,
-      message: this.props.location.state ? this.props.location.state.message : '',
+      defaultMessage: require('../locales/en-us.js')
     };
     this.signIn = this.signIn.bind(this);
     this.register = this.register.bind(this);
+  };
+
+  componentWillMount() {
+    if (localStorage.getItem('authLanguage') !== 'pt-br') {
+      localStorage.setItem('authLanguage', 'en-us');
+      this.setState({
+        language: 'en-us',
+        defaultMessage: require('../locales/en-us.js')
+      });
+    } else {
+      this.setState({
+        language: 'pt-br',
+        defaultMessage: require('../locales/pt-br.js')
+      })
+    }
+  };
+
+  changeLanguage(lg) {
+    if (this.state.language !== lg) {
+      localStorage.setItem('authLanguage', lg);
+      this.setState({
+        language: lg,
+        defaultMessage: require(`../locales/${lg}.js`)
+      })
+    }
+  };
+
+  buttoncolor(language) {
+    if (language === this.state.language) {
+      return "primary"
+    }
+    else {
+      return "secondary"
+    }
   };
 
   async signIn() {
     this.setState({ loading: true });
     const requestInfo = {
       method: 'POST',
-      body: JSON.stringify({ "email": this.state.email, "password": this.state.password }),
+      body: JSON.stringify({ "email": this.state.email, "password": this.state.password, "language": this.state.language }),
       headers: new Headers({
         'Content-Type': 'application/json'
       }),
@@ -52,22 +90,38 @@ export class Login extends React.Component {
         localStorage.setItem('valid', "OK");
         this.getUserConfig(token);
         this.setState({
-          message: '',
           loading: false
         });
         this.props.history.push("/admin/dashboard");
         return;
       } else {
-        throw new Error(response.status === 400 ? 'User not found' : 'Invalid credentials');
+        throw new Error(token.error);
       }
     } catch (e) {
-      this.colorAlert = 'danger';
+      this.notify('br', e.message, 'fas fa-exclamation-triangle', 'danger');
       this.setState({
-        message: e.message,
         loading: false
       });
     }
   };
+
+  notify = (place, message, icon, color) => {
+    var options = {
+      place: place,
+      message: (
+        <div>
+          <div>
+            {message}
+          </div>
+        </div>
+      ),
+      type: color,
+      icon: icon,
+      autoDismiss: 7
+    };
+    this.refs.notificationAlert.notificationAlert(options);
+  };
+
 
   async getUserConfig() {
     const token = localStorage.getItem('token');
@@ -83,29 +137,28 @@ export class Login extends React.Component {
     this.setState({ loading: true });
     const requestInfo = {
       method: 'POST',
-      body: JSON.stringify({ "name": this.state.name, "email": this.state.email, "password": this.state.password }),
+      body: JSON.stringify({ "name": this.state.name, "email": this.state.email, "password": this.state.password, "language": this.state.language }),
       headers: new Headers({
         'Content-Type': 'application/json'
       }),
     };
     try {
       const response = await fetch('https://datatongji-backend.herokuapp.com/auth/register', requestInfo);
+      var promise = await response.json();
       if (response.ok) {
-        this.colorAlert = 'success';
+        this.notify('br', this.state.defaultMessage.Forms.reg.msg, 'fas fa-check', 'success');
         this.setState({
-          message: 'You have successfully registered, please sign in',
           register: false,
           loading: false
         });
         return;
       } else {
-        throw new Error("User has already been registered");
+        throw new Error(promise.error);
       }
     }
     catch (e) {
-      this.colorAlert = 'danger';
+      this.notify('br', e.message, 'fas fa-exclamation-triangle', 'danger');
       this.setState({
-        message: e.message,
         loading: false
       });
     }
@@ -119,22 +172,18 @@ export class Login extends React.Component {
   };
 
   inputValidation = () => {
-    this.colorAlert = 'danger';
-    this.setState({ visible: true });
     if (this.state.register === true) {
-      if (this.state.name == null || this.state.name.trim() === "") {
-        return this.setState({ message: 'Name field cannot be blank' });
+      if (this.state.name == null || this.state.name.trim() === '') {
+        return this.notify('br', this.state.defaultMessage.Forms.name.error, 'fas fa-exclamation-triangle', 'danger');
       }
     }
-
-    if (this.state.email == null || this.state.email.trim() === "") {
-      return this.setState({ message: 'Email field cannot be blank' });
+    if (this.state.email == null || this.state.email.trim() === '') {
+      return this.notify('br', this.state.defaultMessage.Forms.email.error, 'fas fa-exclamation-triangle', 'danger');
     }
-    else if (this.state.password == null || this.state.password.trim() === "") {
-      return this.setState({ message: 'Password field cannot be blank' });
+    else if (this.state.password == null || this.state.password.trim() === '') {
+      return this.notify('br', this.state.defaultMessage.Forms.pass.error, 'fas fa-exclamation-triangle', 'danger');
     }
     else {
-      this.setState({ message: '' });
       if (this.state.register) {
         this.register();
       } else {
@@ -147,46 +196,35 @@ export class Login extends React.Component {
     this.setState({ [e.target.name]: e.target.value });
   };
 
-  onFocus = () => {
-    this.setState({
-      focused: "input-group-focus"
-    });
-  };
-
   onBlur = () => {
     this.setState({
-      focused: ""
-    });
-  };
-
-
-  onDismiss = () => {
-    this.setState({
-      visible: false,
-      message: ''
+      focusedl: '',
+      focusedp: '',
+      focusedn: '',
     });
   };
 
   render() {
     let register;
-    let colorAlert;
-    let actionLoginText = 'Log in';
+    let actionLoginText = this.state.defaultMessage.NavBar.auth.ac1;
     let nameLabel;
     document.body.classList.remove("white-content")
     if (this.state.register === true) {
-      actionLoginText = "Sign Up"
-      nameLabel = <Label for="exampleEmail">User Name</Label>
-      register = <InputGroup className={this.state.focused}>
+      actionLoginText = this.state.defaultMessage.NavBar.auth.ac4
+      nameLabel = <Label for="exampleEmail">{this.state.defaultMessage.Forms.name.title}:</Label>
+      register = <InputGroup className={this.state.focusedn}>
         <InputGroupAddon addonType="prepend">
-          <InputGroupText>
-            <i className="tim-icons icon-single-02" />
-          </InputGroupText>
+          <InputGroupText><i className="tim-icons icon-single-02" style={{ marginRight: '10px' }}></i></InputGroupText>
         </InputGroupAddon>
         <Input
           type="text"
           name="name"
-          placeholder="Nome"
-          onFocus={this.onFocus}
+          placeholder={this.state.defaultMessage.Forms.name.title}
+          onFocus={() => {
+            this.setState({
+              focusedn: "input-group-focus",
+            });
+          }}
           onBlur={this.onBlur}
           onChange={this.handleChange}
         />
@@ -209,6 +247,9 @@ export class Login extends React.Component {
     return (
       <>
         <Row>
+          <div className="react-notification-alert-container">
+            <NotificationAlert ref="notificationAlert" />
+          </div>
           <Col className="col_center_login" md="4">
             <Card className="card-user">
               <CardBody>
@@ -222,38 +263,74 @@ export class Login extends React.Component {
                     alt="..."
                     className="avatar-logo"
                     src={require("assets/img/logoTong.png")}
-                  />
-                </div>
+                  /><br />
+                  <ButtonGroup>
+                    <Button
+                      className="btn-round btn-icon animation-on-hover"
+                      style={{ top: '15px' }}
+                      color={this.buttoncolor('en-us')}
+                      onClick={() => this.changeLanguage('en-us')}
+                      active={this.state.language === 'en-us'}
+                      size="sm">
+                      <span class="flag-icon flag-icon-us flag-icon-squared" style={{ left: '7px' }} />
+                    </Button>
+                    <Button
+                      className="btn-round btn-icon animation-on-hover"
+                      style={{ top: '15px' }}
+                      color={this.buttoncolor('pt-br')}
+                      onClick={() => this.changeLanguage('pt-br')}
+                      active={this.state.language === 'pt-br'}
+                      size="sm">
+                      <span class="flag-icon flag-icon-br flag-icon-squared" style={{ left: '7px' }} />
+                    </Button>
+                  </ButtonGroup>
+                </div><br />
                 <FormGroup>
-                  {
-                    this.state.message !== '' ? (
-                      <Alert
-                        isOpen={this.state.visible}
-                        toggle={this.onDismiss}
-                        color={this.colorAlert} className="text-center">{this.state.message}</Alert>
-                    ) : ''}
                   {nameLabel}
                   {register}
-                  <Label for="exampleEmail">Email address</Label>
-
-                  <Input
-                    type="email"
-                    name="email"
-                    id="exampleEmail"
-                    placeholder="Enter email"
-                    onChange={this.handleChange}
-                  />
                 </FormGroup>
                 <FormGroup>
-                  <Label for="examplePassword">Password</Label>
-                  <Input
-                    type="password"
-                    name="password"
-                    id="examplePassword"
-                    placeholder="Senha"
-                    autoComplete="off"
-                    onChange={this.handleChange}
-                  />
+                  <Label for="exampleEmail">{this.state.defaultMessage.Forms.email.title}:</Label>
+                  <InputGroup className={this.state.focusedl}>
+                    <InputGroupAddon addonType="prepend">
+                      <InputGroupText><i className="fas fa-at" style={{ marginRight: '10px' }}></i></InputGroupText>
+                    </InputGroupAddon>
+                    <Input
+                      type="email"
+                      name="email"
+                      id="exampleEmail"
+                      placeholder={this.state.defaultMessage.Forms.email.title}
+                      onFocus={() => {
+                        this.setState({
+                          focusedl: "input-group-focus",
+                        });
+                      }}
+                      onBlur={this.onBlur}
+                      onChange={this.handleChange}
+                    />
+                  </InputGroup>
+                </FormGroup>
+                <FormGroup>
+                  <Label for="examplePassword">{this.state.defaultMessage.Forms.pass.title}:</Label>
+                  <InputGroup className={this.state.focusedp}>
+                    <InputGroupAddon addonType="prepend">
+                      <InputGroupText><i className="fas fa-key" style={{ marginRight: '10px' }}></i></InputGroupText>
+                    </InputGroupAddon>
+                    <Input
+                      type="password"
+                      name="password"
+                      id="examplePassword"
+                      placeholder={this.state.defaultMessage.Forms.pass.title}
+                      onFocus={() => {
+                        this.setState({
+                          focusedp: "input-group-focus",
+                        });
+                      }}
+                      autoComplete="off"
+                      onBlur={this.onBlur}
+                      onChange={this.handleChange}
+                    />
+                  </InputGroup>
                 </FormGroup>
                 <Button
                   disabled={this.state.loading}
@@ -265,7 +342,6 @@ export class Login extends React.Component {
                   {actionLoginText}
                 </Button>
               </CardBody>
-              <CardFooter>
                 <div className="button-container">
                   <Button className="btn-icon btn-round" color="primary"
                     onClick={this.userRegister}>
@@ -277,7 +353,6 @@ export class Login extends React.Component {
                     </Button>
                   </Link>
                 </div>
-              </CardFooter>
             </Card>
           </Col>
         </Row>

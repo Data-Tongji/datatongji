@@ -29,7 +29,7 @@ export class About extends React.Component {
 
   render() {
     return (
-      <>
+      <><Container style={{ justifyContent: 'center', width: '95%' }}>
         <Row style={{ marginRight: '3%', marginLeft: '3%', marginTop: '2%' }} >
           <Col md="12">
             <Card className="card-user">
@@ -44,7 +44,7 @@ export class About extends React.Component {
                     <img
                       alt="..."
                       className="avatar-logo"
-                      style={{ width: '30%' }}
+                      style={{  maxWidth:'30%' }}
                       src={require("assets/img/logoTong.png")}
                     />
                   </a>
@@ -64,7 +64,6 @@ export class About extends React.Component {
                 </div>
               </CardBody ><br />
               <div class="react-card"></div>
-
               <Container style={{ justifyContent: 'center', width: '90%' }}>
                 <Table responsive>
                   <thead>
@@ -95,10 +94,12 @@ export class About extends React.Component {
                       </th>
                     </tr>
                   </thead>
-                </Table></Container>
+                </Table>
+              </Container>
             </Card>
           </Col>
         </Row>
+      </Container>
       </>
     );
   }

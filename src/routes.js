@@ -9,7 +9,7 @@ import icons from "views/Icons.jsx";
 import CorrelationRegression from "views/CorrelationRegression.jsx";
 import Probability from "views/Probability.jsx";
 import Talk from "views/Talk.jsx";
-var defaultMessage = localStorage.getItem('defaultLanguage') !== 'pt-br' ? require('./locales/en') : require('./locales/pt.js');
+var defaultMessage = localStorage.getItem('defaultLanguage') !== 'pt-br' ? require('./locales/en-us.js') : require('./locales/pt-br.js');
 
 var routes = [
   {
