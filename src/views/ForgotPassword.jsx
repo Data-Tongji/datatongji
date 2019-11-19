@@ -1,14 +1,16 @@
 
 import React from "react";
 import Stepper from 'react-stepper-horizontal';
+import NotificationAlert from "react-notification-alert";
 import { Link } from "react-router-dom";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupText,
+  FormGroup,
+  Label,
   Input,
   Button,
-  Alert,
   Card,
   Col,
   Row,
@@ -16,6 +18,7 @@ import {
   Nav,
   NavItem,
   CardHeader,
+  ButtonGroup,
   CardBody
 } from "reactstrap";
 import { DotLoader } from 'react-spinners';
@@ -25,7 +28,6 @@ export class ForgotPassword extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      message: this.props.location.state ? this.props.location.state.message : '',
       steps: [
         { title: '' },
         { title: '' },
@@ -33,9 +35,45 @@ export class ForgotPassword extends React.Component {
         { title: '' }],
       stepPosition: 0,
       loading: false,
-      focused: ""
+      focused: "",
+      language: '',
+      defaultMessage: require('../locales/en-us.js')
     };
   }
+
+  componentWillMount() {
+    if (localStorage.getItem('authLanguage') !== 'pt-br') {
+      localStorage.setItem('authLanguage', 'en-us');
+      this.setState({
+        language: 'en-us',
+        defaultMessage: require('../locales/en-us.js')
+      });
+    } else {
+      this.setState({
+        language: 'pt-br',
+        defaultMessage: require('../locales/pt-br.js')
+      })
+    }
+  };
+
+  changeLanguage(lg) {
+    if (this.state.language !== lg) {
+      localStorage.setItem('authLanguage', lg);
+      this.setState({
+        language: lg,
+        defaultMessage: require(`../locales/${lg}.js`)
+      })
+    }
+  };
+
+  buttoncolor(language) {
+    if (language === this.state.language) {
+      return "primary"
+    }
+    else {
+      return "secondary"
+    }
+  };
 
   onFocus = () => {
     this.setState({
@@ -61,27 +99,27 @@ export class ForgotPassword extends React.Component {
     this.setState({ loading: true });
     const requestInfo = {
       method: 'POST',
-      body: JSON.stringify({ "email": this.state.email }),
+      body: JSON.stringify({ "email": this.state.email, "language": this.state.language }),
       headers: new Headers({
         'Content-Type': 'application/json'
       }),
     };
     try {
       const response = await fetch('https://datatongji-backend.herokuapp.com/auth/forgot_password', requestInfo);
+      var result = await response.json();
       if (response.ok) {
         this.setState({
-          message: '',
           loading: false
         });
+        this.notify('br', this.state.defaultMessage.Forms.token.msg, 'fas fa-check', 'success');
         this.positionStep(1);
         return;
       } else {
-        throw new Error("User not found");
+        throw new Error(result.error);
       }
     } catch (err) {
-      this.colorAlert = 'danger';
+      this.notify('br', err.message, 'fas fa-exclamation-triangle', 'danger');
       this.setState({
-        message: err.message,
         loading: false
       });
     }
@@ -91,27 +129,27 @@ export class ForgotPassword extends React.Component {
     this.setState({ loading: true });
     const requestInfo = {
       method: 'POST',
-      body: JSON.stringify({ "email": this.state.email, "token": this.state.token }),
+      body: JSON.stringify({ "email": this.state.email, "token": this.state.token, "language": this.state.language }),
       headers: new Headers({
         'Content-Type': 'application/json'
       }),
     };
     try {
       const response = await fetch('https://datatongji-backend.herokuapp.com/auth/valid_token', requestInfo);
+      var result = await response.json();
       if (response.ok) {
         this.setState({
-          message: '',
           loading: false
         });
+        this.notify('br', this.state.defaultMessage.Forms.token.valid, 'fas fa-check', 'success');
         this.positionStep(1);
         return;
       } else {
-        throw new Error("Invalid token!");
+        throw new Error(result.error);
       }
     } catch (err) {
-      this.colorAlert = 'danger';
+      this.notify('br', err.message, 'fas fa-exclamation-triangle', 'danger');
       this.setState({
-        message: err.message,
         loading: false
       });
     }
@@ -121,71 +159,75 @@ export class ForgotPassword extends React.Component {
     this.setState({ loading: true });
     const requestInfo = {
       method: 'PUT',
-      body: JSON.stringify({ "email": this.state.email, "token": this.state.token, "password": this.state.password }),
+      body: JSON.stringify({ "email": this.state.email, "token": this.state.token, "password": this.state.password, "language": this.state.language }),
       headers: new Headers({
         'Content-Type': 'application/json'
       }),
     };
     try {
       const response = await fetch('https://datatongji-backend.herokuapp.com/auth/reset_password', requestInfo);
-      // var valid = await response.json();
+      var valid = await response.json();
       if (response.ok) {
         this.positionStep(1);
-        this.colorAlert = 'success';
+        this.notify('br', this.state.defaultMessage.Forms.pass.changed, 'fas fa-check', 'success');
         this.setState({
-          message: 'Success!',
           loading: false
         });
+        setTimeout(() => { this.props.history.push("/auth/login") }, 1400);
         return;
       } else {
-        throw new Error("Error when changing the password!");
+        throw new Error(valid.error);
       }
     } catch (err) {
-      this.colorAlert = 'danger';
+      this.notify('br', err.message, 'fas fa-exclamation-triangle', 'danger');
       this.setState({
-        message: err.message,
         loading: false
       });
     }
   }
 
+  notify = (place, message, icon, color) => {
+    var options = {
+      place: place,
+      message: (
+        <div>
+          <div>
+            {message}
+          </div>
+        </div>
+      ),
+      type: color,
+      icon: icon,
+      autoDismiss: 7
+    };
+    this.refs.notificationAlert.notificationAlert(options);
+  };
+
   inputValidation = () => {
-    this.colorAlert = 'danger';
-    this.setState({ visible: true });
     if (this.state.stepPosition === 0) {
       if (this.state.email == null || this.state.email.trim() === "") {
-        return this.setState({ message: 'Email field cannot be blank' });
+        return this.notify('br', this.state.defaultMessage.Forms.email.error, 'fas fa-exclamation-triangle', 'danger');
       }
       else {
-        this.setState({ message: '' });
         this.ForgotPass();
       }
     }
     else if (this.state.stepPosition === 1) {
       if (this.state.token == null || this.state.token.trim() === "") {
-        return this.setState({ message: 'Token field cannot be blank' });
+        return this.notify('br', this.state.defaultMessage.Forms.token.error, 'fas fa-exclamation-triangle', 'danger');
       }
       else {
-        this.setState({ message: '' });
         this.ValidToken();
       }
     }
     else if (this.state.stepPosition === 2) {
       if (this.state.password == null || this.state.password.trim() === "") {
-        return this.setState({ message: 'Password field cannot be blank' });
+        return this.notify('br', this.state.defaultMessage.Forms.pass.error, 'fas fa-exclamation-triangle', 'danger');
       }
       else {
-        this.setState({ message: '' });
         this.ResetPass();
       }
     }
-  };
-
-  onDismiss = () => {
-    this.setState({
-      visible: false,
-      message: ''
-    });
   };
 
   handleChange = e => {
@@ -195,11 +237,10 @@ export class ForgotPassword extends React.Component {
   render() {
     let Position = this.state.stepPosition;
     let Card_Body;
-    let colorAlert;
 
-    let buttontext = 'Send';
+    let buttontext = this.state.defaultMessage.Forms.btnenv.ac1;
     if (Position === 2) {
-      buttontext = 'Change Password'
+      buttontext = this.state.defaultMessage.Forms.btnenv.ac2
     };
     if (this.state.loading === true) {
       buttontext = <DotLoader
@@ -238,87 +279,135 @@ export class ForgotPassword extends React.Component {
     if (Position === 0) {
       Card_Body =
         <CardBody>
-          <CardHeader >Email address</CardHeader><br />
-          <InputGroup className={this.state.focused}>
-            <InputGroupAddon addonType="prepend">
-              <InputGroupText><i className="fas fa-at" style={{ marginRight: '10px' }}></i></InputGroupText>
-            </InputGroupAddon>
-            <Input
-              type="text"
-              name="email"
-              placeholder="Email"
-              onFocus={this.onFocus}
-              onBlur={this.onBlur}
-              onChange={this.handleChange}
-            />
-          </InputGroup><br />
+          <FormGroup>
+            <Label for="exampleEmail">{this.state.defaultMessage.Forms.email.title}:</Label>
+            <InputGroup className={this.state.focused}>
+              <InputGroupAddon addonType="prepend">
+                <InputGroupText><i className="fas fa-at" style={{ marginRight: '10px' }}></i></InputGroupText>
+              </InputGroupAddon>
+              <Input
+                type="text"
+                name="email"
+                placeholder={this.state.defaultMessage.Forms.email.title}
+                onFocus={this.onFocus}
+                onBlur={this.onBlur}
+                onChange={this.handleChange}
+              />
+            </InputGroup>
+          </FormGroup>
+          <br />
           {sendButton}
           <br />{homeButton}
         </CardBody>
     } else if (Position === 1) {
       Card_Body = <CardBody>
-        <CardHeader >Check your email and inform us the token you received</CardHeader><br />
+        <CardHeader >{this.state.defaultMessage.Forms.token.info}</CardHeader><br />
         <fieldset disabled>
-          <InputGroup>
-            <InputGroupAddon addonType="prepend">
-              <InputGroupText><i className="fas fa-at" style={{ marginRight: '10px' }}></i></InputGroupText>
-            </InputGroupAddon>
-            <Input type="text" id="disabled" value={this.state.email} />
-          </InputGroup>
+          <FormGroup>
+            <Label for="exampleEmail">{this.state.defaultMessage.Forms.email.title}:</Label>
+            <InputGroup>
+              <InputGroupAddon addonType="prepend">
+                <InputGroupText><i className="fas fa-at" style={{ marginRight: '10px' }}></i></InputGroupText>
+              </InputGroupAddon>
+              <Input type="text" id="disabled" value={this.state.email} />
+            </InputGroup>
+          </FormGroup>
         </fieldset>
-        <InputGroup className={this.state.focused}>
-          <InputGroupAddon addonType="prepend">
-            <InputGroupText><i className="fab fa-keycdn" style={{ marginRight: '10px' }}></i></InputGroupText>
-          </InputGroupAddon>
-          <Input
-            type="text"
-            name="token"
-            placeholder="Token"
-            onFocus={this.onFocus}
-            onBlur={this.onBlur}
-            onChange={this.handleChange}
-          />
-        </InputGroup><br />
+        <FormGroup>
+          <Label for="exampleEmail">{this.state.defaultMessage.Forms.token.title}:</Label>
+          <InputGroup className={this.state.focused}>
+            <InputGroupAddon addonType="prepend">
+              <InputGroupText><i className="fab fa-keycdn" style={{ marginRight: '10px' }}></i></InputGroupText>
+            </InputGroupAddon>
+            <Input
+              type="text"
+              name="token"
+              placeholder={this.state.defaultMessage.Forms.token.title}
+              onFocus={this.onFocus}
+              onBlur={this.onBlur}
+              onChange={this.handleChange}
+            />
+          </InputGroup>
+        </FormGroup><br />
         {sendButton}
         <br />{homeButton}
       </CardBody>
     } else if (Position === 2) {
       Card_Body = <CardBody>
-        <CardHeader >Inform the new password</CardHeader><br />
+        <CardHeader >{this.state.defaultMessage.Forms.pass.title2}</CardHeader><br />
         <fieldset disabled>
-          <InputGroup>
-            <InputGroupAddon addonType="prepend">
-              <InputGroupText><i className="fas fa-at" style={{ marginRight: '10px' }}></i></InputGroupText>
-            </InputGroupAddon>
-            <Input type="text" id="disabled" value={this.state.email} />
-          </InputGroup>
-          <InputGroup>
-            <InputGroupAddon addonType="prepend">
-              <InputGroupText><i className="fab fa-keycdn" style={{ marginRight: '10px' }}></i></InputGroupText>
-            </InputGroupAddon>
-            <Input type="text" id="disabled" value={this.state.token} />
-          </InputGroup>
+          <FormGroup>
+            <Label for="exampleEmail">{this.state.defaultMessage.Forms.email.title}:</Label>
+            <InputGroup>
+              <InputGroupAddon addonType="prepend">
+                <InputGroupText><i className="fas fa-at" style={{ marginRight: '10px' }}></i></InputGroupText>
+              </InputGroupAddon>
+              <Input type="text" id="disabled" value={this.state.email} />
+            </InputGroup>
+          </FormGroup>
+          <FormGroup>
+            <Label for="exampleEmail">{this.state.defaultMessage.Forms.token.title}:</Label>
+            <InputGroup>
+              <InputGroupAddon addonType="prepend">
+                <InputGroupText><i className="fab fa-keycdn" style={{ marginRight: '10px' }}></i></InputGroupText>
+              </InputGroupAddon>
+              <Input type="text" id="disabled" value={this.state.token} />
+            </InputGroup>
+          </FormGroup>
         </fieldset>
-        <InputGroup className={this.state.focused}>
-          <InputGroupAddon addonType="prepend">
-            <InputGroupText><i className="fas fa-key" style={{ marginRight: '10px' }}></i></InputGroupText>
-          </InputGroupAddon>
-          <Input
-            type="password"
-            name="password"
-            id="password"
-            placeholder="Password"
-            onFocus={this.onFocus}
-            onBlur={this.onBlur}
-            onChange={this.handleChange}
-          />
-        </InputGroup><br />
+        <FormGroup>
+          <Label for="examplePassword">{this.state.defaultMessage.Forms.pass.title}:</Label>
+          <InputGroup className={this.state.focused}>
+            <InputGroupAddon addonType="prepend">
+              <InputGroupText><i className="fas fa-key" style={{ marginRight: '10px' }}></i></InputGroupText>
+            </InputGroupAddon>
+            <Input
+              type="password"
+              name="password"
+              id="password"
+              placeholder={this.state.defaultMessage.Forms.pass.title}
+              onFocus={this.onFocus}
+              onBlur={this.onBlur}
+              autoComplete="off"
+              onChange={this.handleChange}
+            />
+          </InputGroup>
+        </FormGroup>
+        <br />
         {sendButton}
         <br />{homeButton}
       </CardBody>
     } else {
       Card_Body = <CardBody>
-        <CardHeader >Your Password has been changed, you can log in now!</CardHeader> <br />
+        <fieldset disabled>
+          <FormGroup>
+            <Label for="exampleEmail">{this.state.defaultMessage.Forms.email.title}:</Label>
+            <InputGroup>
+              <InputGroupAddon addonType="prepend">
+                <InputGroupText><i className="fas fa-at" style={{ marginRight: '10px' }}></i></InputGroupText>
+              </InputGroupAddon>
+              <Input type="text" id="disabled" value={this.state.email} />
+            </InputGroup>
+          </FormGroup>
+          <FormGroup>
+            <Label for="exampleEmail">{this.state.defaultMessage.Forms.token.title}:</Label>
+            <InputGroup>
+              <InputGroupAddon addonType="prepend">
+                <InputGroupText><i className="fab fa-keycdn" style={{ marginRight: '10px' }}></i></InputGroupText>
+              </InputGroupAddon>
+              <Input type="text" id="disabled" value={this.state.token} />
+            </InputGroup>
+          </FormGroup>
+          <FormGroup>
+            <Label for="examplePassword">{this.state.defaultMessage.Forms.pass.title}:</Label>
+            <InputGroup className={this.state.focused}>
+              <InputGroupAddon addonType="prepend">
+                <InputGroupText><i className="fas fa-key" style={{ marginRight: '10px' }}></i></InputGroupText>
+              </InputGroupAddon>
+              <Input type="password" id="disabled" value={this.state.password} />
+            </InputGroup>
+          </FormGroup>
+        </fieldset>
         <br />{homeButton}
       </CardBody>
     }
@@ -326,8 +415,10 @@ export class ForgotPassword extends React.Component {
     return (
       <>
         <Row>
+          <div className="react-notification-alert-container">
+            <NotificationAlert ref="notificationAlert" />
+          </div>
           <Col className="col_center_login" md="4">
-
             <Card className="card-user">
               <CardBody>
                 <CardText />
@@ -342,23 +433,36 @@ export class ForgotPassword extends React.Component {
                       className="avatar-logo"
                       src={require("assets/img/logoTong.png")}
                     />
-                  </a>
+                  </a><br />
+                  <ButtonGroup>
+                    <Button
+                      className="btn-round btn-icon animation-on-hover"
+                      style={{ top: '15px' }}
+                      color={this.buttoncolor('en-us')}
+                      onClick={() => this.changeLanguage('en-us')}
+                      active={this.state.language === 'en-us'}
+                      size="sm">
+                      <span class="flag-icon flag-icon-us flag-icon-squared" style={{ left: '7px' }} />
+                    </Button>
+                    <Button
+                      className="btn-round btn-icon animation-on-hover"
+                      style={{ top: '15px' }}
+                      color={this.buttoncolor('pt-br')}
+                      onClick={() => this.changeLanguage('pt-br')}
+                      active={this.state.language === 'pt-br'}
+                      size="sm">
+                      <span class="flag-icon flag-icon-br flag-icon-squared" style={{ left: '7px' }} />
+                    </Button>
+                  </ButtonGroup>
                 </div>
-                <form>
+                <form><br />
                   <Card>
                     <Stepper
                       activeColor={"#750f0f"}
                       completeColor={"#c45858"}
                       steps={this.state.steps}
                       activeStep={this.state.stepPosition} />
-                    <CardBody>{
-                      this.state.message !== '' ? (
-                        <Alert
-                          isOpen={this.state.visible}
-                          toggle={this.onDismiss}
-                          color={this.colorAlert}
-                          className="text-center">{this.state.message}</Alert>
-                      ) : ''}
+                    <CardBody>
                       {Card_Body}
                     </CardBody>
                   </Card>

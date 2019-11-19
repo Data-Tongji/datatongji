@@ -1,5 +1,6 @@
 import React from "react";
 import { TagInputNaN } from '../components/reactjs-tag-input';
+import NotificationAlert from "react-notification-alert";
 
 import { Save, AddCircle } from 'grommet-icons';
 import { Row, Col } from 'react-bootstrap';
@@ -29,6 +30,9 @@ import {
 } from "reactstrap";
 import csvicon from '../assets/img/csv.svg';
 import '../assets/css/csv.css';
+import { DotLoader } from 'react-spinners';
+
+var defaultMessage = localStorage.getItem('defaultLanguage') !== 'pt-br' ? require('../locales/en-us.js') : require('../locales/pt-br.js');
 
 class CorrelationRegression extends React.Component {
   constructor(props) {
@@ -50,6 +54,8 @@ class CorrelationRegression extends React.Component {
       body: '',
       xProj: '',
       yProj: '',
+      loading: false,
+      loadingsv: false,
       modalDemo: false,
       modalHelp: false,
       btnSave: true,
@@ -70,6 +76,7 @@ class CorrelationRegression extends React.Component {
     this.toggleModalHelp = this.toggleModalHelp.bind(this);
     this.updateData = this.updateData.bind(this);
     this.fileInput = React.createRef();
+    this.SendData = this.SendData.bind(this);
   };
 
   onTagsChangedX(tagsX) {
@@ -135,15 +142,8 @@ class CorrelationRegression extends React.Component {
     });
   };
 
-  ResultCollapse() {
-    this.SendData();
-
-    this.setState(state => ({
-      collapse: !this.state.collapse
-    }));
-  };
-
-  SendData = () => {
+  async SendData() {
+    this.setState({ loading: true, collapse: false });
     var tagsx = [];
     var tagsy = [];
     var data = [];
@@ -180,28 +180,48 @@ class CorrelationRegression extends React.Component {
         'Authorization': localStorage.getItem('token')
       }),
     };
-    fetch(`https://datatongji-backend.herokuapp.com/correlation/corrreg`, requestInfo)
-      .then(response => {
-        if (response.ok) {
-          this.setState({ message: '' });
-          return response.json();
-        }
-        throw new Error("Failure!");
-      }).then(result => {
-        
+    try {
+      const response = await fetch('https://datatongji-backend.herokuapp.com/correlation/corrreg', requestInfo);
+      var result = await response.json();
+      if (response.ok) {
         this.setState({
+          message: '',
           btnSave: false,
           correlation: result.distribution.correlation,
           regression: result.distribution.regression,
-          line: result.distribution.line
+          line: result.distribution.line,
+          collapse: true,
+          loading: false
         });
-      })
-      .catch(e => {
-        this.setState({
-          message: e.message,
-          btnSave: true
-        });
+      } else {
+        throw new Error(result.error);
+      }
+    } catch (e) {
+      this.colorAlert = 'danger';
+      this.setState({
+        message: e.message,
+        btnSave: true,
+        loading: false,
+        collapse: false
       });
+    }
+  };
+
+  notify = (place, message, icon, color) => {
+    var options = {
+      place: place,
+      message: (
+        <div>
+          <div>
+            {message}
+          </div>
+        </div>
+      ),
+      type: color,
+      icon: icon,
+      autoDismiss: 7
+    };
+    this.refs.notificationAlert.notificationAlert(options);
   };
 
   inputValidation = () => {
@@ -211,32 +231,28 @@ class CorrelationRegression extends React.Component {
       btnSave: true
     });
     if (this.state.VarX === null || this.state.VarX.trim() === "") {
-      this.setState({ message: 'Name of independent variable cannot be blank' });
+      this.setState({ message: defaultMessage.Correg.x.error });
       return false;
     }
     else if (this.state.VarY === null || this.state.VarY.trim() === "") {
-      this.setState({ message: 'Name of dependent variable cannot be blank' });
+      this.setState({ message: defaultMessage.Correg.y.error });
       return false;
     }
     else if (this.state.tagsX === null || this.state.tagsX.length === 0) {
-      this.setState({ message: 'Invalid values for independent variable' });
+      this.setState({ message: defaultMessage.Correg.x.values.error });
       return false;
     }
     else if (this.state.tagsY === null || this.state.tagsY.length === 0) {
-      this.setState({ message: 'Invalid values for dependent variable' });
+      this.setState({ message: defaultMessage.Correg.y.values.error });
       return false;
     }
     else if (this.state.tagsY.length !== this.state.tagsX.length) {
-      this.setState({ message: 'The amount of values of both variables must be the same' });
+      this.setState({ message: defaultMessage.Correg.xyerror });
       return false;
     }
     else {
       this.setState({ message: '' });
-      if (!this.state.collapse) {
-        this.ResultCollapse();
-      } else {
-        this.SendData();
-      }
+      this.SendData();
     }
   };
 
@@ -265,11 +281,7 @@ class CorrelationRegression extends React.Component {
         dispcsv: false
       });
     } else {
-      this.colorAlert = 'danger';
-      this.setState({
-        visible: true,
-        message: 'Invalid type of file, only .csv are accepted'
-      });
+      this.notify('br', defaultMessage.Correg.csv.error3, 'fas fa-exclamation-triangle', 'danger');
     }
   };
 
@@ -281,15 +293,18 @@ class CorrelationRegression extends React.Component {
     });
   };
 
-  saveChanges = () => {
+  saveValidation = () => {
     if (this.state.body === '') {
-      this.setState({ message: 'Please, calculate the results first!' })
+      this.notify('tc', defaultMessage.Modal.save.validate, 'fas fa-exclamation-triangle', 'danger');
     }
     else if (this.state.Name === '') {
       this.Name.focus();
     }
     else {
-      this.setState({ visible: true });
+      this.setState({
+        visible: true,
+        loadingsv: true
+      });
       var body = {
         "name": this.state.Name,
         "data": this.state.body,
@@ -298,7 +313,11 @@ class CorrelationRegression extends React.Component {
           "regression": this.state.regression
         }
       };
+      this.saveChanges(body);
     };
+  }
+
+  async saveChanges(body) {
     const requestInfo = {
       method: 'POST',
       body: JSON.stringify(body),
@@ -307,22 +326,24 @@ class CorrelationRegression extends React.Component {
         'Authorization': localStorage.getItem('token')
       }),
     };
-    fetch(`https://datatongji-backend.herokuapp.com/correlation/save`, requestInfo)
-      .then(response => {
-        if (response.ok) {
-          this.setState({ message: '' });
-          return response.json();
-        }
-        throw new Error("Failure!");
-      }).then(result => {
-        this.colorAlert = 'success';
-        this.setState({ message: 'Saved' });
+    try {
+      const response = await fetch('https://datatongji-backend.herokuapp.com/correlation/save', requestInfo);
+      if (response.ok) {
+        this.notify('br', defaultMessage.Modal.save.message, 'fas fa-check', 'success');
+        this.setState({
+          loadingsv: false
+        });
         this.toggleModalDemo();
-      })
-      .catch(e => {
-        this.colorAlert = 'danger';
-        this.setState({ message: e.message });
+      } else {
+        throw new Error("Failure!");
+      }
+    } catch (e) {
+      this.colorAlert = 'danger';
+      this.notify('tc', e.message, 'fas fa-exclamation-triangle', 'danger');
+      this.setState({
+        loading: false
       });
+    }
   };
 
   updateData(result) {
@@ -331,11 +352,7 @@ class CorrelationRegression extends React.Component {
     var arrfull = [];
     var pass = true;
     if (keys.length !== 2) {
-      this.colorAlert = 'danger';
-      this.setState({
-        visible: true,
-        message: 'Format of file not compatible, please download an example file and try first'
-      });
+      this.notify('br', defaultMessage.Correg.csv.error1, 'fas fa-exclamation-triangle', 'danger');
     } else {
       for (var i = 0; i < data.length; i++) {
         Object.keys(data[0]).forEach(function (key) {
@@ -398,11 +415,7 @@ class CorrelationRegression extends React.Component {
         });
       }
       else {
-        this.colorAlert = 'danger';
-        this.setState({
-          visible: true,
-          message: 'There is a wrong cell data on your file, please fix it first'
-        });
+        this.notify('br', defaultMessage.Correg.csv.error2, 'fas fa-exclamation-triangle', 'danger');
       }
     };
   };
@@ -414,6 +427,34 @@ class CorrelationRegression extends React.Component {
     const fileInputKey = this.state.acceptedFiles.value ? '' : +new Date();
     let tagcsvX = null;
     let tagcsvY = null;
+    let resultsbtn = defaultMessage.resultsBtn;
+    if (this.state.loading === true) {
+      resultsbtn = <DotLoader
+        css={`
+                      display: block;
+                      margin: 0 auto;
+                      border-color: red;
+                      `}
+        sizeUnit={"px"}
+        size={20}
+        color={'#fff'}
+        loading={this.state.loading}
+      />
+    };
+    let saveBtn = defaultMessage.Modal.btn2;
+    if (this.state.loadingsv === true) {
+      saveBtn = <DotLoader
+        css={`
+                      display: block;
+                      margin: 0 auto;
+                      border-color: red;
+                      `}
+        sizeUnit={"px"}
+        size={20}
+        color={'#fff'}
+        loading={this.state.loadingsv}
+      />
+    };
     let options = {
       chart: {
         type: 'scatter',
@@ -431,7 +472,7 @@ class CorrelationRegression extends React.Component {
           fontSize: '16px',
           fontWeight: 'bold'
         },
-        text: `Scatter Chart (${this.state.VarX} x ${this.state.VarY})`,
+        text: `${defaultMessage.Correg.chart.title} (${this.state.VarX} x ${this.state.VarY})`,
         backgroundColor: '#F0F0EA',
       },
       xAxis: {
@@ -490,7 +531,7 @@ class CorrelationRegression extends React.Component {
       series: [{
         regression: true,
         type: 'line',
-        name: 'Regression line',
+        name: defaultMessage.Correg.chart.reg,
         data: this.state.line,
         marker: {
           enabled: true
@@ -522,7 +563,7 @@ class CorrelationRegression extends React.Component {
         (
           <TagInputNaN
             tagStyle={`background: linear-gradient(to bottom right, #550300, #d32a23, #550300);`}
-            placeholder="Independent variable values"
+            placeholder={defaultMessage.Correg.x.values.title}
             tags={this.state.tagsX}
             onTagsChanged={this.onTagsChangedX}
           />)
@@ -530,7 +571,7 @@ class CorrelationRegression extends React.Component {
         (
           <TagInputNaN
             tagStyle={`background: linear-gradient(to bottom right, #550300, #d32a23, #550300);`}
-            placeholder="Independent variable values"
+            placeholder={defaultMessage.Correg.y.values.title}
             tags={this.state.tagsY}
             onTagsChanged={this.onTagsChangedY}
           />)
@@ -541,7 +582,7 @@ class CorrelationRegression extends React.Component {
     let ModalHelp = (<Modal isOpen={this.state.modalHelp} toggle={this.toggleModalHelp}>
       <div className="modal-header">
         <h5 className="modal-title" id="exampleModalLongTitle">
-          Need information?
+          <b>{defaultMessage.Modal.info.title}</b>
         </h5>
         <button
           type="button"
@@ -554,30 +595,24 @@ class CorrelationRegression extends React.Component {
         </button>
       </div>
       <ModalBody style={{ textAlign: 'justify' }}>
-        <b>Correlation</b> is a statistical measure which determines
-        co-relationship or association of two variables, using the
-      <b> correlation coefficient</b>, which indicates the extent to which two
-      variables move together.<br />
-        <b>Regression</b> describes how an independent variable is numerically related
-        to the dependent variable. It indicates the impact of a unit change in the known
-      variable (x) on the estimated variable (y).<br />
-        Use the input fields below to insert the data manually or import a
-      <b> .csv </b> file and calculate the results, use <a href="https://raw.githubusercontent.com/leoronne/datatongji/master/src/assets/files/Correlation-Regression.csv" target="_blank">this</a> as an example file.
+        <div dangerouslySetInnerHTML={{ __html: defaultMessage.Modal.info.corregText }} />
       </ModalBody>
       <ModalFooter>
         <Button color="secondary" onClick={this.toggleModalHelp}>
-          Close
-          </Button>
+          {defaultMessage.Modal.btn1}
+        </Button>
       </ModalFooter>
     </Modal>)
     return (
       <>
         <div className="content">
+          <div className="react-notification-alert-container">
+            <NotificationAlert ref="notificationAlert" />
+          </div>
           <Row>
             <Col md="12">
               <Card>
-                <CardHeader>Correlation and Regression<span>&nbsp;&nbsp;</span>
-
+                <CardHeader>{defaultMessage.Correg.title}<span>&nbsp;&nbsp;</span>
                   <Button
                     className="btn-round btn-icon animation-on-hover"
                     color="info"
@@ -591,30 +626,28 @@ class CorrelationRegression extends React.Component {
                   <Card>
                     <Container >
                       <br />
-                      {
-                        this.state.message !== '' ? (
-                          <Alert
-                            isOpen={this.state.visible}
-                            toggle={this.onDismiss}
-                            color={this.colorAlert} className="text-center">{this.state.message}</Alert>
-                        ) : ''}
+                      {this.state.message !== '' ? (
+                        <Alert
+                          isOpen={this.state.visible}
+                          toggle={this.onDismiss}
+                          color={this.colorAlert} className="text-center">{this.state.message}</Alert>
+                      ) : ''}
                       <br />
                       <Row>
                         <Col sm>
-                          <CardTitle>Name of the independent variable(X<sub>i</sub>):</CardTitle>
+                          <CardTitle>{defaultMessage.Correg.x.title} (X<sub>i</sub>):</CardTitle>
                           <Input
                             type="text"
                             name="VarX"
                             value={this.state.VarX}
-                            placeholder="Xi name"
+                            placeholder={defaultMessage.Correg.x.placeholder}
                             onChange={this.handleChange}
                           /><br />
                           <CardTitle>X<sub>i</sub> - {this.state.VarX}:</CardTitle>
-
                           {!this.state.dispcsv ? (
                             <TagInputNaN
                               tagStyle={`background: linear-gradient(to bottom right, #550300, #d32a23, #550300);`}
-                              placeholder="Independent variable values"
+                              placeholder={defaultMessage.Correg.x.values.title}
                               tags={this.state.tagsX}
                               onTagsChanged={this.onTagsChangedX}
                             />
@@ -624,20 +657,19 @@ class CorrelationRegression extends React.Component {
                             </ul>}
                           <br /></Col>
                         <Col sm>
-                          <CardTitle>Name of the dependent variable (Y<sub>i</sub>):</CardTitle>
+                          <CardTitle>{defaultMessage.Correg.y.title} (Y<sub>i</sub>):</CardTitle>
                           <Input
                             type="text"
                             name="VarY"
                             value={this.state.VarY}
-                            placeholder="Yi name"
+                            placeholder={defaultMessage.Correg.y.placeholder}
                             onChange={this.handleChange}
                           /><br />
                           <CardTitle>Y<sub>i</sub>  - {this.state.VarY}:</CardTitle>
-
                           {!this.state.dispcsv ? (
                             <TagInputNaN
                               tagStyle={`background: linear-gradient(to bottom right, #550300, #d32a23, #550300);`}
-                              placeholder="Independent variable values"
+                              placeholder={defaultMessage.Correg.y.values.title}
                               tags={this.state.tagsY}
                               onTagsChanged={this.onTagsChangedY}
                             />
@@ -645,7 +677,6 @@ class CorrelationRegression extends React.Component {
                             <ul className="list-group mt-2">
                               {tagcsvY}
                             </ul>}
-
                           <br /></Col>
                       </Row>
                       <Nav style={{ justifyContent: 'center' }}>
@@ -675,10 +706,9 @@ class CorrelationRegression extends React.Component {
                           </label>
                           {this.state.acceptedFiles !== '' ? (
                             <ul className="list-group mt-2">
-                              {
-                                <Alert
-                                  toggle={this.onDismissCSV}
-                                  color={'success'} className="text-center">{this.state.acceptedFiles}</Alert>
+                              {<Alert
+                                toggle={this.onDismissCSV}
+                                color={'success'} className="text-center">{this.state.acceptedFiles}</Alert>
                               }
                             </ul>) : ''}
                         </NavItem>
@@ -698,8 +728,8 @@ class CorrelationRegression extends React.Component {
                     </Container>
                     <Nav style={{ justifyContent: 'center' }}>
                       <NavItem >
-                        <Button className="btn-round animation-on-hover" style={{ width: '100%' }} color="primary" type="button" onClick={this.inputValidation}>
-                          Show Results
+                        <Button disabled={this.state.loading} className="btn-round animation-on-hover" style={{ width: '100%' }} color="primary" type="button" onClick={this.inputValidation}>
+                          {resultsbtn}
                         </Button>
                       </NavItem><NavItem ><span>&nbsp;&nbsp;</span></NavItem >
                       <NavItem >
@@ -714,7 +744,7 @@ class CorrelationRegression extends React.Component {
                         <Modal isOpen={this.state.modalDemo} toggle={this.toggleModalDemo}>
                           <div className="modal-header">
                             <h5 className="modal-title" id="exampleModalLabel">
-                              Save Analysis
+                              <b>{defaultMessage.Modal.save.title}</b>
                             </h5>
                             <button
                               type="button"
@@ -727,9 +757,9 @@ class CorrelationRegression extends React.Component {
                             </button>
                           </div>
                           <ModalBody>
-                            <p>Do you wish to save the analysis?</p>
-                            <Label for="error" className="control-label">Name:</Label>
-                            <Input type="text" name="Name" placeholder="Analysis name"
+                            <p>{defaultMessage.Modal.save.text}</p>
+                            <Label for="error" className="control-label">{defaultMessage.Modal.save.input1}:</Label>
+                            <Input type="text" name="Name" placeholder={defaultMessage.Modal.save.lbl1}
                               autoFocus
                               onFocus={this.onFocus}
                               ref={(input) => { this.Name = input; }}
@@ -738,10 +768,10 @@ class CorrelationRegression extends React.Component {
                           </ModalBody>
                           <ModalFooter>
                             <Button className="btn-round animation-on-hover" color="secondary" onClick={this.toggleModalDemo}>
-                              Close
+                              {defaultMessage.Modal.btn1}
                             </Button>
-                            <Button className="btn-round animation-on-hover" color="primary" onClick={this.saveChanges}>
-                              Save
+                            <Button disabled={this.state.loadingsv} className="btn-round animation-on-hover" color="primary" onClick={this.saveValidation}>
+                              {saveBtn}
                             </Button>
                           </ModalFooter>
                         </Modal>
@@ -751,15 +781,14 @@ class CorrelationRegression extends React.Component {
                       <Nav style={{ justifyContent: 'center' }}>
                         <NavItem >
                           <ListGroup>
-                            <ListGroupItem style={{ backgroundColor: 'transparent' }} className="justify-content-between">Linear Correlation Coefficient: <Badge pill>{this.state.correlation}</Badge></ListGroupItem>
+                            <ListGroupItem style={{ backgroundColor: 'transparent' }} className="justify-content-between">{defaultMessage.Correg.results.acoef}: <Badge pill>{this.state.correlation}</Badge></ListGroupItem>
                             <ListGroupItem style={{ backgroundColor: 'transparent' }} className="justify-content-between">
-                              Equation: <Badge pill> y<sub>1</sub> =({this.state.regression.aCoef})+({this.state.regression.iPoint}x<sub>1</sub>)</Badge>
+                              {defaultMessage.Correg.results.eqt}: <Badge pill> y<sub>1</sub> =({this.state.regression.aCoef})+({this.state.regression.iPoint}x<sub>1</sub>)</Badge>
                             </ListGroupItem>
                             <ListGroupItem style={{ backgroundColor: 'transparent' }} className="justify-content-between">
                               <Row>
                                 <Col sm>
-                                  <CardTitle>Projeções de X:</CardTitle>
-
+                                  <CardTitle><div dangerouslySetInnerHTML={{ __html: defaultMessage.Correg.results.projx }} /></CardTitle>
                                   <Input type="text"
                                     pattern="[^0-9,.]"
                                     onInput={this.handleChange.bind(this)}
@@ -768,8 +797,7 @@ class CorrelationRegression extends React.Component {
                                     placeholder="0.00" />
                                 </Col>
                                 <Col sm>
-                                  <CardTitle>Projeções de Y:</CardTitle>
-
+                                  <CardTitle><div dangerouslySetInnerHTML={{ __html: defaultMessage.Correg.results.projy }} /></CardTitle>
                                   <Input type="text"
                                     pattern="[^0-9,.]"
                                     onInput={this.handleChange.bind(this)}

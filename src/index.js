@@ -11,12 +11,13 @@ import PrivateRoute from './auth';
 import "assets/scss/black-dashboard-react.scss";
 import "assets/demo/demo.css";
 import "assets/css/nucleo-icons.css";
+import 'flag-icon-css/css/flag-icon.css'
 
 const hist = createBrowserHistory();
 
 var http = require("http");
 setInterval(function() {
-    http.get("http://datatongji.herokuapp.com");
+    http.get("http://datatongji-backend.herokuapp.com");
 }, 150000); // every 2,5 minutes 
 
 const authenticate_token = () => {
