@@ -47,7 +47,6 @@ const closest = function (el, selector, rootNode) {
         }
         el = el.parentElement;
     }
-    el.setAttribute('style', 'border: 50px solid red;');
     return el;
 };
 class Descriptive extends React.Component {
@@ -79,79 +78,29 @@ class Descriptive extends React.Component {
             cSelected: [],
             items: [],
             test: [],
-            data: [
-                {
-                    title: '0',
-                    accumulatedPercentage: '31.82',
-                    cumulativeFrequency: 21,
-                    frequency: 21,
-                    relativeFrequency: '31.82',
-                    value: '1000',
-                    key: '1'
-                },
-                {
-                    title: '1',
-                    accumulatedPercentage: '31.82',
-                    cumulativeFrequency: 21,
-                    frequency: 21,
-                    relativeFrequency: '31.82',
-                    value: '1000',
-                    key: '2'
-                }
-                ,
-                {
-                    title: '2',
-                    accumulatedPercentage: '31.82',
-                    cumulativeFrequency: 21,
-                    frequency: 21,
-                    relativeFrequency: '31.82',
-                    value: '1000',
-                    key: '3'
-                },
-                {
-                    title: '3',
-                    accumulatedPercentage: '31.82',
-                    cumulativeFrequency: 21,
-                    frequency: 21,
-                    relativeFrequency: '31.82',
-                    value: '1000',
-                    key: '4'
-                }
-
-            ],
             dragIndex: -1,
             draggedIndex: -1,
         };
         this.columns = [
             {
-                title: 'id',
-                dataIndex: 'title',
-                key: 'title',
-            },
-            {
                 title: 'Variável',
                 dataIndex: 'value',
-                key: 'content',
             },
             {
                 title: 'Fi',
                 dataIndex: 'frequency',
-                key: 'content',
             },
             {
                 title: 'Fac',
                 dataIndex: 'cumulativeFrequency',
-                key: 'content',
             },
             {
                 title: 'Fr%',
                 dataIndex: 'accumulatedPercentage',
-                key: 'content',
             },
             {
                 title: 'Fac%',
                 dataIndex: 'relativeFrequency',
-                key: 'content',
             },
 
             {
@@ -175,7 +124,7 @@ class Descriptive extends React.Component {
                             onMouseDown={this.onMouseDown}
                             href="#"
                         >
-                            VaiDar
+                            Alter
             </a>
                     </span>,
             },
@@ -236,7 +185,6 @@ class Descriptive extends React.Component {
                 'Authorization': localStorage.getItem('token')
             }),
         };
-
         fetch('https://datatongji-backend.herokuapp.com/descriptive/simple_frequency', requestInfo)
             .then(response => {
                 if (response.ok) {
@@ -463,7 +411,9 @@ class Descriptive extends React.Component {
     };
 
     valida = () => {
+        console.log(this.state.tags)
         if (this.state.stepPosition === 0) {
+            
             if (this.state.tags === null || this.state.tags.length === 0) {
                 this.setState({ message: 'Enter some value!' });
                 return false;
@@ -560,17 +510,16 @@ class Descriptive extends React.Component {
         } else if (Position === 1) {
             button = []
             if (this.state.collapse) {
-                table = <div style={{ margin: 20 }}>
-                    <h2>Table row dragging</h2>
-                    <Table
-                        id='students'
-                        className={(this.state.dragIndex >= 0 && 'dragging-container') || ''}
-                        //           ref="dragContainer"
-                        columns={this.columns}
-                        pagination={false}
-                        dataSource={this.state.vet}
-                    />
-                </div>
+                 table = <div style={{ margin: 20 }}>
+                <h2>Table row dragging</h2>
+                <Table
+                    className={(this.state.dragIndex >= 0 && 'dragging-container') || ''}
+                    ref="dragContainer"
+                    columns={this.columns}
+                    pagination={false}
+                    dataSource={this.state.vet}
+                />
+            </div>
             }
 
 
@@ -639,6 +588,7 @@ class Descriptive extends React.Component {
 
             </CardBody>
         } else if (Position === 2) {
+            button = []
             Card_Body = <CardBody style={{ marginLeft: '10%', marginRight: '10%' }}>
                 <Container >
                     <MDBRow className="mx-auto" >

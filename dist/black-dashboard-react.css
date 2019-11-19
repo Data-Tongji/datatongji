@@ -16134,6 +16134,7 @@ hr {
     content: unset;
   }
   .nav-open body {
+    overflow: hidden;
     position: relative;
     overflow-x: hidden;
   }
