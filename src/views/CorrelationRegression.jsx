@@ -67,7 +67,6 @@ class CorrelationRegression extends React.Component {
       dispcsv: false,
       csv: null,
       csvfile: undefined,
-      message: this.props.location.state ? this.props.location.state.message : ''
     };
     this.onTagsChangedX = this.onTagsChangedX.bind(this);
     this.onTagsChangedY = this.onTagsChangedY.bind(this);
@@ -184,7 +183,6 @@ class CorrelationRegression extends React.Component {
       var result = await response.json();
       if (response.ok) {
         this.setState({
-          message: '',
           btnSave: false,
           correlation: result.distribution.correlation,
           regression: result.distribution.regression,
@@ -196,9 +194,8 @@ class CorrelationRegression extends React.Component {
         throw new Error(result.error);
       }
     } catch (e) {
-      this.colorAlert = 'danger';
+      this.notify('br', e.message, 'fas fa-exclamation-triangle', 'danger');
       this.setState({
-        message: e.message,
         btnSave: true,
         loading: false,
         collapse: false
@@ -224,42 +221,32 @@ class CorrelationRegression extends React.Component {
   };
 
   inputValidation = () => {
-    this.colorAlert = 'danger';
     this.setState({
-      visible: true,
       btnSave: true
     });
     if (this.state.VarX === null || this.state.VarX.trim() === "") {
-      this.setState({ message: defaultMessage.Correg.x.error });
+      this.notify('br', defaultMessage.Correg.x.error, 'fas fa-exclamation-triangle', 'danger');
       return false;
     }
     else if (this.state.VarY === null || this.state.VarY.trim() === "") {
-      this.setState({ message: defaultMessage.Correg.y.error });
+      this.notify('br', defaultMessage.Correg.y.error, 'fas fa-exclamation-triangle', 'danger');
       return false;
     }
     else if (this.state.tagsX === null || this.state.tagsX.length === 0) {
-      this.setState({ message: defaultMessage.Correg.x.values.error });
+      this.notify('br', defaultMessage.Correg.x.values.error , 'fas fa-exclamation-triangle', 'danger');
       return false;
     }
     else if (this.state.tagsY === null || this.state.tagsY.length === 0) {
-      this.setState({ message: defaultMessage.Correg.y.values.error });
+      this.notify('br', defaultMessage.Correg.y.values.error , 'fas fa-exclamation-triangle', 'danger');
       return false;
     }
     else if (this.state.tagsY.length !== this.state.tagsX.length) {
-      this.setState({ message: defaultMessage.Correg.xyerror });
+      this.notify('br', defaultMessage.Correg.xyerror , 'fas fa-exclamation-triangle', 'danger');
       return false;
     }
     else {
-      this.setState({ message: '' });
       this.SendData();
     }
-  };
-
-  onDismiss = () => {
-    this.setState({
-      visible: false,
-      message: ''
-    });
   };
 
   onDismissCSV = () => {
@@ -301,7 +288,6 @@ class CorrelationRegression extends React.Component {
     }
     else {
       this.setState({
-        visible: true,
         loadingsv: true
       });
       var body = {
@@ -310,7 +296,8 @@ class CorrelationRegression extends React.Component {
         "results": {
           "correlation": this.state.correlation,
           "regression": this.state.regression
-        }
+        },
+        "language": localStorage.getItem('defaultLanguage'), 
       };
       this.saveChanges(body);
     };
@@ -327,6 +314,7 @@ class CorrelationRegression extends React.Component {
     };
     try {
       const response = await fetch('https://datatongji-backend.herokuapp.com/correlation/save', requestInfo);
+      var promise = await response.json();
       if (response.ok) {
         this.notify('br', defaultMessage.Modal.save.message, 'fas fa-check', 'success');
         this.setState({
@@ -334,10 +322,9 @@ class CorrelationRegression extends React.Component {
         });
         this.toggleModalDemo();
       } else {
-        throw new Error("Failure!");
+        throw new Error(promise.error);
       }
     } catch (e) {
-      this.colorAlert = 'danger';
       this.notify('tc', e.message, 'fas fa-exclamation-triangle', 'danger');
       this.setState({
         loading: false
@@ -624,12 +611,6 @@ class CorrelationRegression extends React.Component {
                   <Card>
                     <Container >
                       <br />
-                      {this.state.message !== '' ? (
-                        <Alert
-                          isOpen={this.state.visible}
-                          toggle={this.onDismiss}
-                          color={this.colorAlert} className="text-center">{this.state.message}</Alert>
-                      ) : ''}
                       <br />
                       <Row>
                         <Col sm>
