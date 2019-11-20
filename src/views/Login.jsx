@@ -281,7 +281,7 @@ export class Login extends React.Component {
                       onClick={() => this.changeLanguage('pt-br')}
                       active={this.state.language === 'pt-br'}
                       size="sm">
-                      <span class="flag-icon flag-icon-br flag-icon-squared" style={{ left: '7px' }} />
+                      <span className="flag-icon flag-icon-br flag-icon-squared" style={{ left: '7px' }} />
                     </Button>
                   </ButtonGroup>
                 </div><br />

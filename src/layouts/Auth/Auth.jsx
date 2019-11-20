@@ -1,23 +1,8 @@
 import React from "react";
-import { Link, Route, Switch } from "react-router-dom";
+import { Route, Switch } from "react-router-dom";
 // javascript plugin used to create scrollbars on windows
 import PerfectScrollbar from "perfect-scrollbar";
-import classNames from "classnames";
-import {
-  Collapse,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-  UncontrolledDropdown,
-  InputGroup,
-  NavbarBrand,
-  Navbar,
-  NavbarToggler,
-  NavItem,
-  NavLink,
-  Nav,
-  Container,
-} from "reactstrap";
+
 // core components
 import Footer from "components/Footer/Footer.jsx";
 import routes from '../../routes';

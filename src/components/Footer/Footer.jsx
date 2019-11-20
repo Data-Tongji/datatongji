@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Container, Nav, NavItem, NavLink } from "reactstrap";
+
 var defaultMessage = localStorage.getItem('defaultLanguage') !== 'pt-br' ? require('../../locales/en-us.js') : require('../../locales/pt-br.js');
 
 class Footer extends React.Component {

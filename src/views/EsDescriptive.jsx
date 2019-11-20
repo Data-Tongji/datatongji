@@ -1,4 +1,4 @@
-import React, { PureComponent } from "react";
+import React from "react";
 import { MDBRow, MDBCol } from 'mdbreact';
 import Stepper from 'react-stepper-horizontal';
 import { TagInput } from '../components/reactjs-tag-input'
@@ -139,7 +139,7 @@ class Descriptive extends React.Component {
             this.setState({
                 collapse: false
             });
-        }else{
+        } else {
             this.setState({
                 collapse: true
             });
@@ -379,13 +379,15 @@ class Descriptive extends React.Component {
 
     positionStep = (steps) => {
         var Position = this.state.stepPosition;
-        if (steps === 1 && Position < this.state.steps.length - 1)
-            if (this.valida()) {
+        if (steps === 1 && Position < this.state.steps.length - 1) {
+            if (this.valida())
                 return this.setState({ stepPosition: Position += + 1 });
-            }
-        if (steps !== 1 && Position > 0)
+        }
+
+        if (steps !== 1 && Position > 0) {
             this.SendArray();
             return this.setState({ stepPosition: Position += - 1 });
+        }
     };
 
     RangeChange = (op) => {
@@ -413,17 +415,15 @@ class Descriptive extends React.Component {
     valida = () => {
         console.log(this.state.tags)
         if (this.state.stepPosition === 0) {
-            
-            if (this.state.tags === null || this.state.tags.length === 0) {
-                this.setState({ message: 'Enter some value!' });
+            if (this.state.PopAmost === "") {
+                this.setState({ message: 'Select data distribution type!' });
                 return false;
             }
             else if (this.state.Var == null || this.state.Var.trim() === "") {
                 this.setState({ message: 'Enter variable name!' });
                 return false;
-            }
-            else if (this.state.PopAmost === "") {
-                this.setState({ message: 'Select data distribution type!' });
+            } else if (this.state.tags === null || this.state.tags.length === 0) {
+                this.setState({ message: 'Enter some value!' });
                 return false;
             }
             else {
@@ -498,26 +498,26 @@ class Descriptive extends React.Component {
                     <MDBCol>
                         <CardTitle>Variable values:</CardTitle>
                         <TagInput tags={this.state.tags}
-                            tagStyle={`
-                    background: linear-gradient(to bottom right, #550300, #d32a23, #550300);`}
+                            tagStyle={`background: linear-gradient(to bottom right, #550300, #d32a23, #550300)!important;`}
                             onTagsChanged={this.onTagsChanged}
-                            placeholder="Values" />
+                            placeholder="Values"
+                        />
                     </MDBCol>
                 </Container>
             </CardBody>
         } else if (Position === 1) {
             button = []
             if (this.state.collapse) {
-                 table = <div style={{ margin: 20 }}>
-                <h2>Table row dragging</h2>
-                <Table
-                    className={(this.state.dragIndex >= 0 && 'dragging-container') || ''}
-                    ref="dragContainer"
-                    columns={this.columns}
-                    pagination={false}
-                    dataSource={this.state.vet}
-                />
-            </div>
+                table = <div style={{ margin: 20 }}>
+                    <h2>Table row dragging</h2>
+                    <Table
+                        className={(this.state.dragIndex >= 0 && 'dragging-container') || ''}
+                        ref="dragContainer"
+                        columns={this.columns}
+                        pagination={false}
+                        dataSource={this.state.vet}
+                    />
+                </div>
             }
 
 

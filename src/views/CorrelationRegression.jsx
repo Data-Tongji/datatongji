@@ -26,7 +26,6 @@ import {
   ModalFooter,
   Nav,
   NavItem,
-  Table,
 } from "reactstrap";
 import csvicon from '../assets/img/csv.svg';
 import '../assets/css/csv.css';
@@ -423,7 +422,6 @@ class CorrelationRegression extends React.Component {
   _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } };
 
   render() {
-    let colorAlert;
     const fileInputKey = this.state.acceptedFiles.value ? '' : +new Date();
     let tagcsvX = null;
     let tagcsvY = null;
