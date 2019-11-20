@@ -54,10 +54,13 @@ module.exports = {
             "title": "Perfil do Usuário",
             "avatar": "Mudar foto de perfil",
             "sidecolor": "Cor da Sidebar",
+            "language": "Idioma",
             "bgcolor": {
                   "light": "MODO CLARO",
                   "dark": "MODO ESCURO"
             },
+            "error1": "Apenas arquivos .png, .jpg or .jpeg são aceitos!",
+            "msg1": "Suas alterações foram salvas!"
       },
       "Modal": {
             "btn1": "Fechar",

@@ -14,12 +14,14 @@ class Footer extends React.Component {
               rel="noopener noreferrer"
             >
               DATA TONGJÌ
-            </a> {' '} | {' '}<a
+            </a> 
+            {/* {' '} | {' '}<a
               href="/auth/talkwithus"
               rel="_blank"
             >
               {defaultMessage.Menu.Talk}
-            </a>.
+            </a> */}
+            .
           </div>
         {/* </Container> */}
       </footer>

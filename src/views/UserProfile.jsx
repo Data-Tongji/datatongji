@@ -1,20 +1,14 @@
 import React from "react";
-import classNames from "classnames";
+import NotificationAlert from "react-notification-alert";
 import {
   Button,
+  ButtonGroup,
   Card,
   CardBody,
   CardFooter,
   CardText,
-  Nav,
-  Navbar,
-  Container,
   Row,
   Col,
-  UncontrolledDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem
 } from "reactstrap";
 import { DotLoader } from 'react-spinners';
 var defaultMessage = localStorage.getItem('defaultLanguage') !== 'pt-br' ? require('../locales/en-us.js') : require('../locales/pt-br.js');
@@ -46,6 +40,23 @@ class UserProfile extends React.Component {
   //     this.setState({ userUrl: responseJson.userImg });
   //   }
   // };
+
+  componentWillMount() {
+    if (localStorage.getItem('defaultLanguage') !== 'pt-br') {
+      localStorage.setItem('defaultLanguage', 'en-us');
+      this.setState({
+        defaultLanguage: 'en-us',
+      });
+    } else {
+      this.setState({
+        defaultLanguage: 'pt-br',
+      })
+    }
+    this.setState({
+      backgroundColor: localStorage.getItem('background'),
+      sidebarColor: localStorage.getItem('sidebarColor')
+    })
+  };
 
   resetThenSet = (id, key) => {
     let temp = JSON.parse(JSON.stringify(this.state[key]));
@@ -131,45 +142,46 @@ class UserProfile extends React.Component {
           },
           body: data
         });
+        var promise = await response.json();
         if (response.ok) {
-          this.colorAlert = 'success';
+          this.notify('br', defaultMessage.Profile.msg1, 'fas fa-check', 'success');
           this.setState({
-            message: 'Saved'
+            loading: false
           });
         } else {
-          throw new Error("Failure!");
+          throw new Error(promise.error);
         }
       } catch (e) {
-        this.colorAlert = 'danger';
+        this.notify('br', e.message, 'fas fa-exclamation-triangle', 'danger');
         this.setState({
-          message: e.message,
           loading: false
         });
       }
     };
-    if (this.state.sidebarColor !== '' || this.state.backgroundColor !== '') {
+    if (this.state.sidebarColor !== '' || this.state.backgroundColor !== '' || this.state.defaultLanguage !== '') {
       const requestInfo = {
         method: 'PUT',
-        body: JSON.stringify({ "token": localStorage.getItem('token'), "sidebarColor": this.state.sidebarColor, "backgroundColor": this.state.backgroundColor }),
+        body: JSON.stringify({ "token": localStorage.getItem('token'), "sidebarColor": this.state.sidebarColor, "backgroundColor": this.state.backgroundColor, "language": this.state.defaultLanguage }),
         headers: new Headers({
           'Content-Type': 'application/json'
         }),
       };
+      console.log(requestInfo);
       try {
         const response = await fetch('https://datatongji-backend.herokuapp.com/auth/updateuser', requestInfo);
+        promise = await response.json();
         if (response.ok) {
-          this.colorAlert = 'success';
+          this.notify('br', defaultMessage.Profile.msg1, 'fas fa-check', 'success');
           this.setState({
-            message: 'Saved'
+            loading: false
           });
         } else {
-          throw new Error("Error when updating user colors");
+          throw new Error(promise.error);
         }
       }
       catch (e) {
-        this.colorAlert = 'danger';
+        this.notify('br', e.message, 'fas fa-exclamation-triangle', 'danger');
         this.setState({
-          message: e.message,
           loading: false
         })
       }
@@ -177,28 +189,55 @@ class UserProfile extends React.Component {
   }
 
   handleImagechenge = e => {
-    this.setState({
-      image: e.target.files[0],
-      change: true,
-      img: true
-    });
+    if (e.target.files[0].name.includes('.png') || e.target.files[0].name.includes('.jpg') || e.target.files[0].name.includes('.jpeg')) {
+      this.setState({
+        image: e.target.files[0],
+        change: true,
+        img: true
+      });
+    } else {
+      this.notify('br', defaultMessage.Profile.error1, 'fas fa-exclamation-triangle', 'danger');
+    }
   };
 
-  changeLanguage (language) {
-    if (localStorage.getItem('defaultLanguage') !== language) {
-      // localStorage.setItem('defaultLanguage', language);
-      this.language = language === 'pt-br' ? <span class="flag-icon flag-icon-br" /> : <span class="flag-icon flag-icon-us" />;
-      // this.setState({
-      //   change: true,
-      //   defaultLanguage: language
-      // });
+  notify = (place, message, icon, color) => {
+    var options = {
+      place: place,
+      message: (
+        <div>
+          <div>
+            {message}
+          </div>
+        </div>
+      ),
+      type: color,
+      icon: icon,
+      autoDismiss: 7
+    };
+    this.refs.notificationAlert.notificationAlert(options);
+  };
+
+  changeLanguage(lg) {
+    if (this.state.defaultLanguage !== lg) {
+      localStorage.setItem('defaultLanguage', lg);
+      this.setState({
+        change: true,
+        defaultLanguage: lg
+      })
+    }
+  };
+
+  buttoncolor(language) {
+    if (language === this.state.defaultLanguage) {
+      return "primary"
+    }
+    else {
+      return "secondary"
     }
   };
 
   render() {
     let btnSave;
-    var language = localStorage.getItem('defaultLanguage') === 'pt-br' ? <span class="flag-icon flag-icon-br" /> : <span class="flag-icon flag-icon-us" />;
-
     let bntsavetext = defaultMessage.Modal.btn2;
     if (this.state.loading === true) {
       bntsavetext = <DotLoader
@@ -216,7 +255,8 @@ class UserProfile extends React.Component {
     // onChange={this.handleImagechenge}
 
     let upload = <div class="box">
-      <input onChange={this.handleImagechenge} type="file" name="file-1[]" id="file-1" class="inputfile inputfile-1" data-multiple-caption="{count} files selected" multiple />
+      <input onChange={this.handleImagechenge} type="file"
+        accept=".png, .jpg, .jpeg"  name="file-1[]" id="file-1" class="inputfile inputfile-1" data-multiple-caption="{count} files selected" multiple />
       <label for="file-1"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="17" viewBox="0 0 20 17"><path d="M10 0l-5.2 4.9h3.3v5.1h3.8v-5.1h3.3l-5.2-4.9zm9.3 11.5l-3.2-2.1h-2l3.4 2.6h-3.5c-.1 0-.2.1-.2.1l-.8 2.3h-6l-.8-2.2c-.1-.1-.1-.2-.2-.2h-3.6l3.4-2.6h-2l-3.2 2.1c-.4.3-.7 1-.6 1.5l.6 3.1c.1.5.7.9 1.2.9h16.3c.6 0 1.1-.4 1.3-.9l.6-3.1c.1-.5-.2-1.2-.7-1.5z" /></svg> <span>
         {defaultMessage.Profile.avatar}</span></label>
     </div>
@@ -238,6 +278,9 @@ class UserProfile extends React.Component {
         <div className="content">
           <form id="new-post" onSubmit={this.handleSubmit}>
             <Row>
+              <div className="react-notification-alert-container">
+                <NotificationAlert ref="notificationAlert" />
+              </div>
               <Col md="12">
                 <Card className="card-user">
                   <CardBody>
@@ -260,26 +303,26 @@ class UserProfile extends React.Component {
                           style={{ padding: '3%', marginRight: '10%' }}
                           className="config-color show">
                           {upload}
-                          <UncontrolledDropdown group >
-                            <DropdownToggle caret color="primary" data-toggle="dropdown"
-                              style={{ width: '40px', height: '35px', 'border-radius': '50%', hover: { background: 'transparent' } }}>
-                              {/* <span class={`flag-icon flag-icon-${language}`} /> */}
-                              {language}
-                            </DropdownToggle>
-                            <DropdownMenu className="dropdown-navbar" right tag="ul" style={{ marginRight: '-65px', marginTop: '60px', height: '90px', width: '100px' }}>
-                              <DropdownItem style={{ color: 'gray' }} className="nav-item">
-                                <div onClick={() => { this.changeLanguage('en-us') }}>
-                                  <span class="flag-icon flag-icon-us" />{' '} {defaultMessage.Menu.lang.en}
-                                </div>
-                              </DropdownItem>
-                              <DropdownItem style={{ color: 'gray' }} className="nav-item" onClick={this.changeLanguage('pt-br')}>
-                                <div onClick={() => { this.changeLanguage('pt-br') }}>
-                                  <span class="flag-icon flag-icon-br" />{' '} {defaultMessage.Menu.lang.pt}
-                                </div>
-                              </DropdownItem>
-                            </DropdownMenu>
-                          </UncontrolledDropdown>
-                          <li className="header-title">{defaultMessage.Profile.sidecolor}</li>
+                          <li className="header-title">{defaultMessage.Profile.language}</li>
+                          <ButtonGroup>
+                            <Button
+                              className="btn-round btn-icon animation-on-hover"
+                              color={this.buttoncolor('en-us')}
+                              onClick={() => this.changeLanguage('en-us')}
+                              active={this.state.defaultLanguage === 'en-us'}
+                              size="sm">
+                              <span class="flag-icon flag-icon-us flag-icon-squared" style={{ left: '7px' }} />
+                            </Button>
+                            <Button
+                              className="btn-round btn-icon animation-on-hover"
+                              color={this.buttoncolor('pt-br')}
+                              onClick={() => this.changeLanguage('pt-br')}
+                              active={this.state.defaultLanguage === 'pt-br'}
+                              size="sm">
+                              <span class="flag-icon flag-icon-br flag-icon-squared" style={{ left: '7px' }} />
+                            </Button>
+                          </ButtonGroup>
+                          <br /><br /><li className="header-title">{defaultMessage.Profile.sidecolor}</li>
                           <li className="adjustments-line">
                             <div className="badge-colors text-center">
                               <span

@@ -4,9 +4,9 @@ import { Save } from 'grommet-icons';
 import { FormControl, FormControlLabel, Radio, RadioGroup } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
+import NotificationAlert from "react-notification-alert";
 
 import {
-  Alert,
   Badge,
   Button,
   Card,
@@ -105,7 +105,6 @@ class Probability extends React.Component {
       modalDemo: false,
       modalHelp: false,
       Name: '',
-      message: this.props.location.state ? this.props.location.state.message : '',
       btnSave: true
     };
     this.toggle = this.toggle.bind(this);
@@ -120,7 +119,6 @@ class Probability extends React.Component {
       activeTab: tab,
       collapse: false,
       selectedOption: "",
-      message: '',
       prob: "",
       btnSave: true,
       loading: false,
@@ -143,6 +141,24 @@ class Probability extends React.Component {
     this.setState({
       modalDemo: !this.state.modalDemo
     });
+  };
+
+
+  notify = (place, message, icon, color) => {
+    var options = {
+      place: place,
+      message: (
+        <div>
+          <div>
+            {message}
+          </div>
+        </div>
+      ),
+      type: color,
+      icon: icon,
+      autoDismiss: 7
+    };
+    this.refs.notificationAlert.notificationAlert(options);
   };
 
   handleChange = e => {
@@ -256,7 +272,6 @@ class Probability extends React.Component {
       var result = await response.json();
       if (response.ok) {
         this.setState({
-          message: '',
           btnSave: false,
           correlation: result.distribution.correlation,
           regression: result.distribution.regression,
@@ -287,9 +302,8 @@ class Probability extends React.Component {
         throw new Error(result.error);
       }
     } catch (e) {
-      this.colorAlert = 'danger';
+      this.notify('br', e.message, 'fas fa-exclamation-triangle', 'danger');
       this.setState({
-        message: e.message,
         btnSave: true,
         loading: false,
         collapse: false
@@ -309,6 +323,7 @@ class Probability extends React.Component {
         body = {
           "name": this.state.Name,
           "type": defaultMessage.Probability.Normal.title,
+          "language": localStorage.getItem('defaultLanguage'), 
           "data": {
             "Mean": parseFloat(this.state.Mean),
             "stdDev": parseFloat(this.state.stdDev),
@@ -324,6 +339,7 @@ class Probability extends React.Component {
         body = {
           "name": this.state.Name,
           "type": defaultMessage.Probability.Uniform.title,
+          "language": localStorage.getItem('defaultLanguage'), 
           "data": {
             "PMin": parseFloat(this.state.PMin),
             "PMax": parseFloat(this.state.PMax),
@@ -344,6 +360,7 @@ class Probability extends React.Component {
         body = {
           "name": this.state.Name,
           "type": defaultMessage.Probability.Binomial.title,
+          "language": localStorage.getItem('defaultLanguage'), 
           "data": {
             "k": k,
             "n": parseFloat(this.state.spn),
@@ -374,37 +391,26 @@ class Probability extends React.Component {
     };
     try {
       const response = await fetch('https://datatongji-backend.herokuapp.com/probability/save', requestInfo);
+      var promise = await response.json();
       if (response.ok) {
-        this.colorAlert = 'success';
+        this.notify('br', defaultMessage.Modal.save.message, 'fas fa-check', 'success');
         this.setState({
-          message: defaultMessage.Modal.save.message,
           loadingsv: false
         });
         this.toggleModalDemo();
       } else {
-        throw new Error("Failure!");
+        throw new Error(promise.error);
       }
     } catch (e) {
-      this.colorAlert = 'danger';
+      this.notify('br', e.message, 'fas fa-exclamation-triangle', 'danger');
       this.setState({
-        message: e.message,
         loading: false
       });
     }
   };
 
-
-  onDismiss = () => {
-    this.setState({
-      visible: false,
-      message: ''
-    });
-  };
-
   inputValidation = () => {
-    this.colorAlert = 'danger';
     this.setState({
-      visible: true,
       btnSave: true,
       collapse: false
     });
@@ -412,43 +418,41 @@ class Probability extends React.Component {
       if (this.state.Mean == null ||
         this.state.Mean.trim() === "" ||
         parseFloat(this.state.Mean) === 0) {
-        this.setState({ message: defaultMessage.Probability.Normal.mean.error, });
+        this.notify('br', defaultMessage.Probability.Normal.mean.error, 'fas fa-exclamation-triangle', 'danger');
         return false;
       }
       else if (this.state.stdDev == null ||
         this.state.stdDev.trim() === "" ||
         parseFloat(this.state.stdDev) === 0) {
-        this.setState({ message: defaultMessage.Probability.Normal.std.error });
+        this.notify('br', defaultMessage.Probability.Normal.std.error, 'fas fa-exclamation-triangle', 'danger');
         return false;
       }
       else if (this.state.selectedOption === "") {
-        this.setState({ message: defaultMessage.Probability.interval.error1 });
+        this.notify('br', defaultMessage.Probability.interval.error1, 'fas fa-exclamation-triangle', 'danger');
         return false;
       }
       else if (this.state.Min == null ||
         this.state.Min.trim() === "" ||
         parseFloat(this.state.Min) === 0) {
-        this.setState({ message: defaultMessage.Probability.interval.erroroptmin });
+        this.notify('br', defaultMessage.Probability.interval.erroroptmin, 'fas fa-exclamation-triangle', 'danger');
         return false;
       }
       else if (this.state.collapseint === true) {
         if (this.state.Max == null ||
           this.state.Max.trim() === "" ||
           parseFloat(this.state.Max) === 0) {
-          this.setState({ message: defaultMessage.Probability.interval.erroroptmax });
+          this.notify('br', defaultMessage.Probability.interval.erroroptmax, 'fas fa-exclamation-triangle', 'danger');
           return false;
         }
         else if (parseFloat(this.state.Max) < this.state.Min) {
-          this.setState({ message: defaultMessage.Probability.interval.error2 });
+          this.notify('br', defaultMessage.Probability.interval.error2, 'fas fa-exclamation-triangle', 'danger');
           return false;
         }
         else {
-          this.setState({ message: '' });
           this.SendData();
         }
       }
       else {
-        this.setState({ message: '' });
         this.SendData();
       }
     }
@@ -456,47 +460,45 @@ class Probability extends React.Component {
       if (this.state.PMin == null ||
         this.state.PMin.trim() === "" ||
         parseFloat(this.state.PMin) === 0) {
-        this.setState({ message: defaultMessage.Probability.Uniform.initial.error });
+        this.notify('br', defaultMessage.Probability.Uniform.initial.error, 'fas fa-exclamation-triangle', 'danger');
         return false;
       }
       else if (this.state.PMax == null ||
         this.state.PMax.trim() === "" ||
         parseFloat(this.state.PMax) === 0) {
-        this.setState({ message: defaultMessage.Probability.Uniform.final.error });
+        this.notify('br', defaultMessage.Probability.Uniform.final.error, 'fas fa-exclamation-triangle', 'danger');
         return false;
       }
       else if (parseFloat(this.state.PMax) < parseFloat(this.state.PMin)) {
-        this.setState({ message: defaultMessage.Probability.Uniform.error1 });
+        this.notify('br', defaultMessage.Probability.Uniform.error1, 'fas fa-exclamation-triangle', 'danger');
         return false;
       }
       else if (this.state.selectedOption === "") {
-        this.setState({ message: defaultMessage.Probability.interval.error1 });
+        this.notify('br', defaultMessage.Probability.interval.error1, 'fas fa-exclamation-triangle', 'danger');
         return false;
       }
       else if (this.state.Min == null ||
         this.state.Min.trim() === "" ||
         parseFloat(this.state.Min) === 0) {
-        this.setState({ message: defaultMessage.Probability.interval.erroroptmin });
+        this.notify('br', defaultMessage.Probability.interval.erroroptmin, 'fas fa-exclamation-triangle', 'danger');
         return false;
       }
       else if (this.state.collapseint === true) {
         if (this.state.Max == null ||
           this.state.Max.trim() === "" ||
           parseFloat(this.state.Max) === 0) {
-          this.setState({ message: defaultMessage.Probability.interval.erroroptmax });
+          this.notify('br', defaultMessage.Probability.interval.erroroptmax, 'fas fa-exclamation-triangle', 'danger');
           return false;
         }
         else if (parseFloat(this.state.Max) < this.state.Min) {
-          this.setState({ message: defaultMessage.Probability.interval.error2 });
+          this.notify('br', defaultMessage.Probability.interval.error2, 'fas fa-exclamation-triangle', 'danger');
           return false;
         }
         else {
-          this.setState({ message: '' });
           this.SendData();
         }
       }
       else {
-        this.setState({ message: '' });
         this.SendData();
       }
     }
@@ -504,58 +506,56 @@ class Probability extends React.Component {
       if (this.state.spn == null ||
         this.state.spn.trim() === "" ||
         parseFloat(this.state.spn) === 0) {
-        this.setState({ message: defaultMessage.Probability.Binomial.sample.error });
+        this.notify('br', defaultMessage.Probability.Binomial.sample.error, 'fas fa-exclamation-triangle', 'danger');
         return false;
       }
       else if (this.state.p == null ||
         this.state.p === "") {
-        this.setState({ message: defaultMessage.Probability.Binomial.p.error });
+          this.notify('br', defaultMessage.Probability.Binomial.p.error, 'fas fa-exclamation-triangle', 'danger');
         return false;
       }
       else if (this.state.q == null ||
         this.state.q === "") {
-        this.setState({ message: defaultMessage.Probability.Binomial.q.error });
+          this.notify('br', defaultMessage.Probability.Binomial.q.error , 'fas fa-exclamation-triangle', 'danger');
         return false;
       }
       else if (this.state.selectedOption === "") {
-        this.setState({ message: defaultMessage.Probability.interval.error1 });
+        this.notify('br', defaultMessage.Probability.interval.error1 , 'fas fa-exclamation-triangle', 'danger');
         return false;
       }
       else if (this.state.BMin == null ||
         this.state.BMin.trim() === "") {
-        this.setState({ message: defaultMessage.Probability.Binomial.event.error1 });
+          this.notify('br', defaultMessage.Probability.Binomial.event.error1 , 'fas fa-exclamation-triangle', 'danger');
         return false;
       }
       else if (parseFloat(this.state.selectedOption) !== 1 &&
         (parseFloat(this.state.BMin) > parseFloat(this.state.spn))
       ) {
-        this.setState({ message: defaultMessage.Probability.Binomial.event.error2 });
+          this.notify('br', defaultMessage.Probability.Binomial.event.error2 , 'fas fa-exclamation-triangle', 'danger');
         return false;
       }
       else if (this.state.collapseint === true) {
         if (this.state.BMax == null ||
           this.state.BMax.trim() === "") {
-          this.setState({ message: defaultMessage.Probability.Binomial.event.error1 });
+            this.notify('br', defaultMessage.Probability.Binomial.event.error1 , 'fas fa-exclamation-triangle', 'danger');
           return false;
         }
         else if (parseFloat(this.state.BMax) < this.state.BMin) {
-          this.setState({ message: defaultMessage.Probability.Binomial.event.error3 });
+          this.notify('br', defaultMessage.Probability.Binomial.event.error3 , 'fas fa-exclamation-triangle', 'danger');
           return false;
         }
         else if (parseFloat(this.state.selectedOption) !== 1 &&
           (parseFloat(this.state.BMin) > parseFloat(this.state.spn) ||
             parseFloat(this.state.BMax) > parseFloat(this.state.spn))
         ) {
-          this.setState({ message: defaultMessage.Probability.Binomial.event.error2 });
+          this.notify('br', defaultMessage.Probability.Binomial.event.error2 , 'fas fa-exclamation-triangle', 'danger');
           return false;
         }
         else {
-          this.setState({ message: '' });
           this.SendData();
         }
       }
       else {
-        this.setState({ message: '' });
         this.SendData();
       }
     }
@@ -574,7 +574,6 @@ class Probability extends React.Component {
   };
 
   render() {
-    let colorAlert;
     var TableResults;
     let Position = this.state.activeTab;
     let ModalHelp = (<Modal isOpen={this.state.modalHelp} toggle={this.toggleModalHelp}>
@@ -774,8 +773,8 @@ class Probability extends React.Component {
         <Modal isOpen={this.state.modalDemo} toggle={this.toggleModalDemo}>
           <div className="modal-header">
             <h5 className="modal-title" id="exampleModalLabel">
-             <b>{defaultMessage.Modal.save.title}</b>
-          </h5>
+              <b>{defaultMessage.Modal.save.title}</b>
+            </h5>
             <button
               type="button"
               className="close"
@@ -798,8 +797,8 @@ class Probability extends React.Component {
           </ModalBody>
           <ModalFooter>
             <Button className="btn-round animation-on-hover" color="secondary" onClick={this.toggleModalDemo}>
-            {defaultMessage.Modal.btn1}
-          </Button>
+              {defaultMessage.Modal.btn1}
+            </Button>
             <Button disabled={this.state.loadingsv} className="btn-round animation-on-hover" color="primary" onClick={this.saveValidation}>
               {saveBtn}
             </Button>
@@ -820,6 +819,9 @@ class Probability extends React.Component {
       <>
         <div className="content">
           <Row>
+            <div className="react-notification-alert-container">
+              <NotificationAlert ref="notificationAlert" />
+            </div>
             <Col md="12">
               <Card>
                 <CardHeader>{defaultMessage.Probability.title}<span>&nbsp;&nbsp;</span>
@@ -861,12 +863,6 @@ class Probability extends React.Component {
                       </NavItem>
                     </Nav>
                     <TabContent activeTab={this.state.activeTab}><br />
-                      {this.state.message !== '' ? (
-                        <Alert
-                          isOpen={this.state.visible}
-                          toggle={this.onDismiss}
-                          color={this.colorAlert} className="text-center">{this.state.message}</Alert>
-                      ) : ''}
                       <TabPane tabId="1">
                         <Row>
                           <Col sm="12">

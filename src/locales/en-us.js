@@ -43,22 +43,24 @@ module.exports = {
       "NavBar": {
             "ac1": "Profile",
             "ac2": "Log Out",
-            "auth":{
+            "auth": {
                   "ac1": "Log in",
                   "ac2": "About",
-                  "ac3": "Talk with us",   
-                  "ac4": "Sign Up",         
+                  "ac3": "Talk with us",
+                  "ac4": "Sign Up",
             }
       },
       "Profile": {
             "title": "User Profile",
             "avatar": "Change avatar",
             "sidecolor": "Sidebar Background",
+            "language": "Language",
             "bgcolor": {
                   "light": "LIGHT MODE",
                   "dark": "DARK MODE"
             },
-
+            "error1": "Only .png, .jpg or .jpeg files are accepted!",
+            "msg1": "Your changes has been saved!"
       },
       "Modal": {
             "btn1": "Close",

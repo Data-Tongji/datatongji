@@ -125,7 +125,7 @@ export class Login extends React.Component {
 
   async getUserConfig() {
     const token = localStorage.getItem('token');
-    const response = await fetch(`https://datatongji-backend.herokuapp.com/auth/get_user_cofig?token=${token}`);
+    const response = await fetch(`https://datatongji-backend.herokuapp.com/auth/get_user_config?token=${token}`);
     const responseJson = await response.json();
 
     localStorage.setItem('background', responseJson.backgroundColor);
