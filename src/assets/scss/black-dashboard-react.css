@@ -1,3 +1,5 @@
+/*     brand Colors              */
+/* navbar color */
 :root {
   --blue: #5e72e4;
   --indigo: #5603ad;
@@ -12832,7 +12834,7 @@ fieldset[disabled]
 }
 
 .footer {
-  padding: 24px 0 24px 200px;
+  padding: 24px 0 24px 250px;
 }
 
 .footer [class*="container-"] {

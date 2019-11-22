@@ -272,7 +272,7 @@ export class Login extends React.Component {
                       onClick={() => this.changeLanguage('en-us')}
                       active={this.state.language === 'en-us'}
                       size="sm">
-                      <span class="flag-icon flag-icon-us flag-icon-squared" style={{ left: '7px' }} />
+                      <span className="flag-icon flag-icon-us flag-icon-squared" style={{ left: '7px' }} />
                     </Button>
                     <Button
                       className="btn-round btn-icon animation-on-hover"

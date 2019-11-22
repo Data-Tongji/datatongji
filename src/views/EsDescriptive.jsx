@@ -1,7 +1,7 @@
 import React from "react";
 import { MDBRow, MDBCol } from 'mdbreact';
 import Stepper from 'react-stepper-horizontal';
-import { TagInput } from '../components/reactjs-tag-input'
+import { TagInput } from '../components/reactjs-tag-input';
 import InputRange from 'react-input-range';
 import '../assets/css/all.css';
 import '../assets/css/table.css';
@@ -29,6 +29,8 @@ import {
 } from "reactstrap";
 import { Table } from 'antd';
 import "react-table/react-table.css";
+// core components
+import { Doughnut } from 'react-chartjs-2';
 
 const closest = function (el, selector, rootNode) {
     rootNode = rootNode || document.body;
@@ -61,7 +63,17 @@ class Descriptive extends React.Component {
                 { title: '' },
                 { title: '' },
                 { title: '' }],
-            data: [],
+            data:  {
+                datasets: [{
+                    backgroundColor: [ 'rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)', 'rgba(255, 206, 86, 0.2)'],
+                    data: [10, 20, 30]
+                }],
+                labels: [
+                    'Red',
+                    'Yellow',
+                    'Blue'
+                ]
+            },
             tags: [],
             vet: [],
             collapse: false,
@@ -78,6 +90,7 @@ class Descriptive extends React.Component {
             cSelected: [],
             items: [],
             test: [],
+            
             dragIndex: -1,
             draggedIndex: -1,
         };
@@ -482,7 +495,7 @@ class Descriptive extends React.Component {
                         <CardTitle>Name of variable:</CardTitle>
                         <InputGroup className={this.state.focused}>
                             <InputGroupAddon addonType="prepend">
-                                <InputGroupText><i className="fab fa-dribbble"></i></InputGroupText>
+                                <InputGroupText><i className="fas fa-thumbtack"></i></InputGroupText>
                             </InputGroupAddon>
                             <Input
                                 type="text"
@@ -511,6 +524,7 @@ class Descriptive extends React.Component {
                 table = <div style={{ margin: 20 }}>
                     <h2>Table row dragging</h2>
                     <Table
+                        responsive
                         className={(this.state.dragIndex >= 0 && 'dragging-container') || ''}
                         ref="dragContainer"
                         columns={this.columns}
@@ -587,6 +601,15 @@ class Descriptive extends React.Component {
             </CardBody>
         } else if (Position === 2) {
             button = []
+            button.push(
+                <Button
+                    className="btn-round btn-icon"
+                    color="primary"
+                    onClick={() => this.positionStep(0)}>
+                    <i className="tim-icons icon-double-left" />
+                </Button>
+            );
+
             Card_Body = <CardBody style={{ marginLeft: '10%', marginRight: '10%' }}>
                 <Container >
                     <MDBRow className="mx-auto" >
@@ -664,7 +687,14 @@ class Descriptive extends React.Component {
                             </tbody>
                         </table>
                     </div>
+                    <div className="chart-area">
+                    
+                    <Doughnut
+                      data={this.state.data}
 
+                      options={'sss'}
+                    />
+                  </div>
                     {/* </Collapse> */}
 
 
