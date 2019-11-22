@@ -38,9 +38,9 @@ class Sidebar extends React.Component {
   };
 
   render() {
-    if(localStorage.getItem('background') !== 'dark'){
+    if (localStorage.getItem('background') !== 'dark') {
       document.body.classList.add("white-content")
-    }else{
+    } else {
       document.body.classList.remove("white-content")
     }
     const { bgColor, routes, rtlActive, logo } = this.props;
@@ -94,39 +94,41 @@ class Sidebar extends React.Component {
       }
     }
     return (
-      <div className="sidebar" data={localStorage.getItem('sidebarColor')}>
-        <div className="sidebar-wrapper" ref="sidebar">
-          {logoImg !== null || logoText !== null ? (
-            <div className="logo">
-              {logoImg}
-              {logoText}
-            </div>
-          ) : null}
-          <Nav>
-            {routes.map((prop, key) => {
-              if (prop.redirect) return null;
-              if (prop.invisible) return null;
-              return (
-                <li
-                  className={
-                    this.activeRoute(prop.path) +
-                    (prop.pro ? " active-pro" : "")
-                  }
-                  key={key}
-                >
-                  <NavLink
-                    to={prop.layout + prop.path}
-                    className="nav-link"
-                    activeClassName="active"
-                    onClick={this.props.toggleSidebar}
+      <div class="notranslate">
+        <div className="sidebar" data={localStorage.getItem('sidebarColor')}>
+          <div className="sidebar-wrapper" ref="sidebar">
+            {logoImg !== null || logoText !== null ? (
+              <div className="logo">
+                {logoImg}
+                {logoText}
+              </div>
+            ) : null}
+            <Nav>
+              {routes.map((prop, key) => {
+                if (prop.redirect) return null;
+                if (prop.invisible) return null;
+                return (
+                  <li
+                    className={
+                      this.activeRoute(prop.path) +
+                      (prop.pro ? " active-pro" : "")
+                    }
+                    key={key}
                   >
-                    <i className={prop.icon} />
-                    <p>{rtlActive ? prop.rtlName : prop.name}</p>
-                  </NavLink>
-                </li>
-              );
-            })}
-          </Nav>
+                    <NavLink
+                      to={prop.layout + prop.path}
+                      className="nav-link"
+                      activeClassName="active"
+                      onClick={this.props.toggleSidebar}
+                    >
+                      <i className={prop.icon} />
+                      <p>{rtlActive ? prop.rtlName : prop.name}</p>
+                    </NavLink>
+                  </li>
+                );
+              })}
+            </Nav>
+          </div>
         </div>
       </div>
     );

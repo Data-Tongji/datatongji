@@ -1,5 +1,9 @@
 module.exports = {
       "resultsBtn": "Show Results",
+      "About": {
+            "p1": "A good definition about statistics is based on being a set of methods especially appropriated for collecting, presenting, analyzing and interpreting observation data, it aims the understanding of a specific reality and help in decision making scenarios. This project was developed in order to optimize such analyzes by creating a web system, which focuses on the presentation and interpretation of the expected data analysis results.",
+            "p2": "In other words, Data Tongjì meets the needs of all users who are interested in making statistical analysis or calculations (limited to Descriptive Analysis, Probability and Correlation and Regression operations), quickly and efficiently. It's interface is pleasant and harmonious and does not require advanced knowledge for it's use, the user must inform the data to be analyzed, the software will perform the calculations and the user should know how to interpret the results."
+      },
       "Menu": {
             "Correg": "Correlation / Regression",
             "Dash": "Dashboard",
@@ -11,6 +15,13 @@ module.exports = {
             }
       },
       "Forms": {
+            "talk": {
+                  "inputmsg": {
+                        "title": "Message",
+                        "error": "Message field cannot be blank!"
+                  },
+                  "sendmail": "Message sent!"
+            },
             "email": {
                   "title": "Email adress",
                   "error": "Email field cannot be blank!"
@@ -46,7 +57,7 @@ module.exports = {
             "auth": {
                   "ac1": "Log in",
                   "ac2": "About",
-                  "ac3": "Talk with us",
+                  "ac3": "Contact us",
                   "ac4": "Sign Up",
             }
       },

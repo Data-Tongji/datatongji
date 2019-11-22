@@ -415,6 +415,7 @@ export class ForgotPassword extends React.Component {
     return (
       <>
         <Row>
+          <div class="notranslate">
           <div className="react-notification-alert-container">
             <NotificationAlert ref="notificationAlert" />
           </div>
@@ -470,6 +471,7 @@ export class ForgotPassword extends React.Component {
               </CardBody>
             </Card>
           </Col>
+          </div>
         </Row>
       </>
     );

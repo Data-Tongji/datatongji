@@ -256,7 +256,7 @@ class UserProfile extends React.Component {
 
     let upload = <div class="box">
       <input onChange={this.handleImagechenge} type="file"
-        accept=".png, .jpg, .jpeg"  name="file-1[]" id="file-1" class="inputfile inputfile-1" data-multiple-caption="{count} files selected" multiple />
+        accept=".png, .jpg, .jpeg" name="file-1[]" id="file-1" class="inputfile inputfile-1" data-multiple-caption="{count} files selected" multiple />
       <label for="file-1"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="17" viewBox="0 0 20 17"><path d="M10 0l-5.2 4.9h3.3v5.1h3.8v-5.1h3.3l-5.2-4.9zm9.3 11.5l-3.2-2.1h-2l3.4 2.6h-3.5c-.1 0-.2.1-.2.1l-.8 2.3h-6l-.8-2.2c-.1-.1-.1-.2-.2-.2h-3.6l3.4-2.6h-2l-3.2 2.1c-.4.3-.7 1-.6 1.5l.6 3.1c.1.5.7.9 1.2.9h16.3c.6 0 1.1-.4 1.3-.9l.6-3.1c.1-.5-.2-1.2-.7-1.5z" /></svg> <span>
         {defaultMessage.Profile.avatar}</span></label>
     </div>
@@ -276,109 +276,111 @@ class UserProfile extends React.Component {
     return (
       <>
         <div className="content">
-          <form id="new-post" onSubmit={this.handleSubmit}>
-            <Row>
-              <div className="react-notification-alert-container">
-                <NotificationAlert ref="notificationAlert" />
-              </div>
-              <Col md="12">
-                <Card className="card-user">
-                  <CardBody>
-                    <CardText />
-                    <div className="author">
-                      <div className="block block-one" />
-                      <div className="block block-two" />
-                      <div className="block block-three" />
-                      <div className="block block-four" />
-                      <a href="#" onClick={e => e.preventDefault()}>
-                        {photo}
-                        <h5 className="title">{userName}</h5>
-                      </a>
-                      <p className="description">{userEmail}</p>
-                      <br />
-                    </div>
-                    <div className="fixed-plugin">
-                      <div className={this.state.classes}>
-                        <ul
-                          style={{ padding: '3%', marginRight: '10%' }}
-                          className="config-color show">
-                          {upload}
-                          <li className="header-title">{defaultMessage.Profile.language}</li>
-                          <ButtonGroup>
-                            <Button
-                              className="btn-round btn-icon animation-on-hover"
-                              color={this.buttoncolor('en-us')}
-                              onClick={() => this.changeLanguage('en-us')}
-                              active={this.state.defaultLanguage === 'en-us'}
-                              size="sm">
-                              <span class="flag-icon flag-icon-us flag-icon-squared" style={{ left: '7px' }} />
-                            </Button>
-                            <Button
-                              className="btn-round btn-icon animation-on-hover"
-                              color={this.buttoncolor('pt-br')}
-                              onClick={() => this.changeLanguage('pt-br')}
-                              active={this.state.defaultLanguage === 'pt-br'}
-                              size="sm">
-                              <span class="flag-icon flag-icon-br flag-icon-squared" style={{ left: '7px' }} />
-                            </Button>
-                          </ButtonGroup>
-                          <br /><br /><li className="header-title">{defaultMessage.Profile.sidecolor}</li>
-                          <li className="adjustments-line">
-                            <div className="badge-colors text-center">
-                              <span
-                                className={
-                                  this.props.bgColor === "primary"
-                                    ? "badge filter badge-primary active"
-                                    : "badge filter badge-primary"
-                                }
-                                data-color="primary"
-                                onClick={() => {
-                                  this.handleBgClick("primary");
-                                }}
-                              />{" "}
-                              <span
-                                className={
-                                  this.props.bgColor === "blue"
-                                    ? "badge filter badge-info active"
-                                    : "badge filter badge-info"
-                                }
-                                data-color="blue"
-                                onClick={() => {
-                                  this.handleBgClick("blue");
-                                }}
-                              />{" "}
-                              <span
-                                className={
-                                  this.props.bgColor === "green"
-                                    ? "badge filter badge-success active"
-                                    : "badge filter badge-success"
-                                }
-                                data-color="green"
-                                onClick={() => {
-                                  this.handleBgClick("green");
-                                }}
-                              />{" "}
-                            </div>
-                          </li>
-                          <li className="adjustments-line text-center color-change">
-                            <span className="color-label">{defaultMessage.Profile.bgcolor.light}</span>{" "}
-                            <span
-                              className="badge light-badge mr-2"
-                              onClick={() => this.activateMode("light")}
-                            />{" "}
-                            <span
-                              className="badge dark-badge ml-2"
-                              onClick={() => this.activateMode("dark")}
-                            />{" "}
-                            <span className="color-label">{defaultMessage.Profile.bgcolor.dark}</span>{" "}
-                          </li>
-                        </ul>
+          <div class="notranslate">
+            <form id="new-post" onSubmit={this.handleSubmit}>
+              <Row>
+
+                <div className="react-notification-alert-container">
+                  <NotificationAlert ref="notificationAlert" />
+                </div>
+                <Col md="12">
+                  <Card className="card-user">
+                    <CardBody>
+                      <CardText />
+                      <div className="author">
+                        <div className="block block-one" />
+                        <div className="block block-two" />
+                        <div className="block block-three" />
+                        <div className="block block-four" />
+                        <a href="#" onClick={e => e.preventDefault()}>
+                          {photo}
+                          <h5 className="title">{userName}</h5>
+                        </a>
+                        <p className="description">{userEmail}</p>
+                        <br />
                       </div>
-                    </div>
-                  </CardBody>
-                  <CardFooter>
-                    {btnSave}
-                    {/* <div className="button-container">
+                      <div className="fixed-plugin">
+                        <div className={this.state.classes}>
+                          <ul
+                            style={{ padding: '3%', marginRight: '10%' }}
+                            className="config-color show">
+                            {upload}
+                            <li className="header-title">{defaultMessage.Profile.language}</li>
+                            <ButtonGroup>
+                              <Button
+                                className="btn-round btn-icon animation-on-hover"
+                                color={this.buttoncolor('en-us')}
+                                onClick={() => this.changeLanguage('en-us')}
+                                active={this.state.defaultLanguage === 'en-us'}
+                                size="sm">
+                                <span class="flag-icon flag-icon-us flag-icon-squared" style={{ left: '7px' }} />
+                              </Button>
+                              <Button
+                                className="btn-round btn-icon animation-on-hover"
+                                color={this.buttoncolor('pt-br')}
+                                onClick={() => this.changeLanguage('pt-br')}
+                                active={this.state.defaultLanguage === 'pt-br'}
+                                size="sm">
+                                <span class="flag-icon flag-icon-br flag-icon-squared" style={{ left: '7px' }} />
+                              </Button>
+                            </ButtonGroup>
+                            <br /><br /><li className="header-title">{defaultMessage.Profile.sidecolor}</li>
+                            <li className="adjustments-line">
+                              <div className="badge-colors text-center">
+                                <span
+                                  className={
+                                    this.props.bgColor === "primary"
+                                      ? "badge filter badge-primary active"
+                                      : "badge filter badge-primary"
+                                  }
+                                  data-color="primary"
+                                  onClick={() => {
+                                    this.handleBgClick("primary");
+                                  }}
+                                />{" "}
+                                <span
+                                  className={
+                                    this.props.bgColor === "blue"
+                                      ? "badge filter badge-info active"
+                                      : "badge filter badge-info"
+                                  }
+                                  data-color="blue"
+                                  onClick={() => {
+                                    this.handleBgClick("blue");
+                                  }}
+                                />{" "}
+                                <span
+                                  className={
+                                    this.props.bgColor === "green"
+                                      ? "badge filter badge-success active"
+                                      : "badge filter badge-success"
+                                  }
+                                  data-color="green"
+                                  onClick={() => {
+                                    this.handleBgClick("green");
+                                  }}
+                                />{" "}
+                              </div>
+                            </li>
+                            <li className="adjustments-line text-center color-change">
+                              <span className="color-label">{defaultMessage.Profile.bgcolor.light}</span>{" "}
+                              <span
+                                className="badge light-badge mr-2"
+                                onClick={() => this.activateMode("light")}
+                              />{" "}
+                              <span
+                                className="badge dark-badge ml-2"
+                                onClick={() => this.activateMode("dark")}
+                              />{" "}
+                              <span className="color-label">{defaultMessage.Profile.bgcolor.dark}</span>{" "}
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </CardBody>
+                    <CardFooter>
+                      {btnSave}
+                      {/* <div className="button-container">
                       <Button className="btn-icon btn-round" color="facebook">
                         <i className="fab fa-facebook" />
                       </Button>
@@ -389,11 +391,12 @@ class UserProfile extends React.Component {
                         <i className="fab fa-google-plus" />
                       </Button>
                     </div> */}
-                  </CardFooter>
-                </Card>
-              </Col>
-            </Row>
-          </form>
+                    </CardFooter>
+                  </Card>
+                </Col>
+              </Row>
+            </form>
+          </div>
         </div>
       </>
     );

@@ -4,7 +4,7 @@
   "private": true,
   "homepage": "https://datatongji.info",
   "engines": {
-    "node": "12.4.0"
+    "node": "^12.13.1"
   },
   "dependencies": {
     "@babel/runtime": "^7.6.0",
