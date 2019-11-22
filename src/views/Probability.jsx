@@ -323,7 +323,7 @@ class Probability extends React.Component {
         body = {
           "name": this.state.Name,
           "type": defaultMessage.Probability.Normal.title,
-          "language": localStorage.getItem('defaultLanguage'), 
+          "language": localStorage.getItem('defaultLanguage'),
           "data": {
             "Mean": parseFloat(this.state.Mean),
             "stdDev": parseFloat(this.state.stdDev),
@@ -339,7 +339,7 @@ class Probability extends React.Component {
         body = {
           "name": this.state.Name,
           "type": defaultMessage.Probability.Uniform.title,
-          "language": localStorage.getItem('defaultLanguage'), 
+          "language": localStorage.getItem('defaultLanguage'),
           "data": {
             "PMin": parseFloat(this.state.PMin),
             "PMax": parseFloat(this.state.PMax),
@@ -360,7 +360,7 @@ class Probability extends React.Component {
         body = {
           "name": this.state.Name,
           "type": defaultMessage.Probability.Binomial.title,
-          "language": localStorage.getItem('defaultLanguage'), 
+          "language": localStorage.getItem('defaultLanguage'),
           "data": {
             "k": k,
             "n": parseFloat(this.state.spn),
@@ -511,44 +511,44 @@ class Probability extends React.Component {
       }
       else if (this.state.p == null ||
         this.state.p === "") {
-          this.notify('br', defaultMessage.Probability.Binomial.p.error, 'fas fa-exclamation-triangle', 'danger');
+        this.notify('br', defaultMessage.Probability.Binomial.p.error, 'fas fa-exclamation-triangle', 'danger');
         return false;
       }
       else if (this.state.q == null ||
         this.state.q === "") {
-          this.notify('br', defaultMessage.Probability.Binomial.q.error , 'fas fa-exclamation-triangle', 'danger');
+        this.notify('br', defaultMessage.Probability.Binomial.q.error, 'fas fa-exclamation-triangle', 'danger');
         return false;
       }
       else if (this.state.selectedOption === "") {
-        this.notify('br', defaultMessage.Probability.interval.error1 , 'fas fa-exclamation-triangle', 'danger');
+        this.notify('br', defaultMessage.Probability.interval.error1, 'fas fa-exclamation-triangle', 'danger');
         return false;
       }
       else if (this.state.BMin == null ||
         this.state.BMin.trim() === "") {
-          this.notify('br', defaultMessage.Probability.Binomial.event.error1 , 'fas fa-exclamation-triangle', 'danger');
+        this.notify('br', defaultMessage.Probability.Binomial.event.error1, 'fas fa-exclamation-triangle', 'danger');
         return false;
       }
       else if (parseFloat(this.state.selectedOption) !== 1 &&
         (parseFloat(this.state.BMin) > parseFloat(this.state.spn))
       ) {
-          this.notify('br', defaultMessage.Probability.Binomial.event.error2 , 'fas fa-exclamation-triangle', 'danger');
+        this.notify('br', defaultMessage.Probability.Binomial.event.error2, 'fas fa-exclamation-triangle', 'danger');
         return false;
       }
       else if (this.state.collapseint === true) {
         if (this.state.BMax == null ||
           this.state.BMax.trim() === "") {
-            this.notify('br', defaultMessage.Probability.Binomial.event.error1 , 'fas fa-exclamation-triangle', 'danger');
+          this.notify('br', defaultMessage.Probability.Binomial.event.error1, 'fas fa-exclamation-triangle', 'danger');
           return false;
         }
         else if (parseFloat(this.state.BMax) < this.state.BMin) {
-          this.notify('br', defaultMessage.Probability.Binomial.event.error3 , 'fas fa-exclamation-triangle', 'danger');
+          this.notify('br', defaultMessage.Probability.Binomial.event.error3, 'fas fa-exclamation-triangle', 'danger');
           return false;
         }
         else if (parseFloat(this.state.selectedOption) !== 1 &&
           (parseFloat(this.state.BMin) > parseFloat(this.state.spn) ||
             parseFloat(this.state.BMax) > parseFloat(this.state.spn))
         ) {
-          this.notify('br', defaultMessage.Probability.Binomial.event.error2 , 'fas fa-exclamation-triangle', 'danger');
+          this.notify('br', defaultMessage.Probability.Binomial.event.error2, 'fas fa-exclamation-triangle', 'danger');
           return false;
         }
         else {
@@ -818,176 +818,178 @@ class Probability extends React.Component {
     return (
       <>
         <div className="content">
-          <Row>
-            <div className="react-notification-alert-container">
-              <NotificationAlert ref="notificationAlert" />
-            </div>
-            <Col md="12">
-              <Card>
-                <CardHeader>{defaultMessage.Probability.title}<span>&nbsp;&nbsp;</span>
-                  <Button
-                    className="btn-round btn-icon animation-on-hover"
-                    color="info"
-                    onClick={this.toggleModalHelp}
-                    style={{ height: '20px', width: '15px' }}
-                  >?
+          <div class="notranslate">
+            <Row>
+              <div className="react-notification-alert-container">
+                <NotificationAlert ref="notificationAlert" />
+              </div>
+              <Col md="12">
+                <Card>
+                  <CardHeader>{defaultMessage.Probability.title}<span>&nbsp;&nbsp;</span>
+                    <Button
+                      className="btn-round btn-icon animation-on-hover"
+                      color="info"
+                      onClick={this.toggleModalHelp}
+                      style={{ height: '20px', width: '15px' }}
+                    >?
                   </Button>
-                  {ModalHelp}
-                </CardHeader>
-                <CardBody>
-                  <div>
-                    <Nav tabs>
-                      <NavItem>
-                        <NavLink
-                          className={classnames({ active: this.state.activeTab === '1' })}
-                          onClick={() => { this.toggle('1'); }}
-                        >
-                          {defaultMessage.Probability.Normal.title}
-                        </NavLink>
-                      </NavItem>
-                      <NavItem>
-                        <NavLink
-                          className={classnames({ active: this.state.activeTab === '2' })}
-                          onClick={() => { this.toggle('2'); }}
-                        >
-                          {defaultMessage.Probability.Uniform.title}
-                        </NavLink>
-                      </NavItem>
-                      <NavItem>
-                        <NavLink
-                          className={classnames({ active: this.state.activeTab === '3' })}
-                          onClick={() => { this.toggle('3'); }}
-                        >
-                          {defaultMessage.Probability.Binomial.title}
-                        </NavLink>
-                      </NavItem>
-                    </Nav>
-                    <TabContent activeTab={this.state.activeTab}><br />
-                      <TabPane tabId="1">
-                        <Row>
-                          <Col sm="12">
-                            <CardBody>
-                              <Container >
-                                <Row>
-                                  <Col sm>
-                                    <FormGroup inline >
-                                      <CardTitle>{defaultMessage.Probability.Normal.mean.title}:</CardTitle>
+                    {ModalHelp}
+                  </CardHeader>
+                  <CardBody>
+                    <div>
+                      <Nav tabs>
+                        <NavItem>
+                          <NavLink
+                            className={classnames({ active: this.state.activeTab === '1' })}
+                            onClick={() => { this.toggle('1'); }}
+                          >
+                            {defaultMessage.Probability.Normal.title}
+                          </NavLink>
+                        </NavItem>
+                        <NavItem>
+                          <NavLink
+                            className={classnames({ active: this.state.activeTab === '2' })}
+                            onClick={() => { this.toggle('2'); }}
+                          >
+                            {defaultMessage.Probability.Uniform.title}
+                          </NavLink>
+                        </NavItem>
+                        <NavItem>
+                          <NavLink
+                            className={classnames({ active: this.state.activeTab === '3' })}
+                            onClick={() => { this.toggle('3'); }}
+                          >
+                            {defaultMessage.Probability.Binomial.title}
+                          </NavLink>
+                        </NavItem>
+                      </Nav>
+                      <TabContent activeTab={this.state.activeTab}><br />
+                        <TabPane tabId="1">
+                          <Row>
+                            <Col sm="12">
+                              <CardBody>
+                                <Container >
+                                  <Row>
+                                    <Col sm>
+                                      <FormGroup inline >
+                                        <CardTitle>{defaultMessage.Probability.Normal.mean.title}:</CardTitle>
+                                        <Input type="text"
+                                          pattern="[^0-9,.]"
+                                          onInput={this.handleChange.bind(this)}
+                                          value={this.state.Mean}
+                                          name='Mean'
+                                          placeholder="0.00" />
+                                        <br /><br />
+                                        <CardTitle>{defaultMessage.Probability.Normal.std.title}:</CardTitle>
+                                        <Input type="text"
+                                          pattern="[^0-9,.]"
+                                          onInput={this.handleChange.bind(this)}
+                                          value={this.state.stdDev}
+                                          name='stdDev'
+                                          placeholder="0.00" />
+                                      </FormGroup><br />
+                                    </Col>
+                                    <Col sm>
+                                      <CardTitle>{defaultMessage.Probability.interval.title}</CardTitle>
+                                      {intervaltag}
+                                      <br />
+                                    </Col>
+                                  </Row>
+                                </Container>
+                              </CardBody>
+                            </Col>
+                          </Row>
+                          {Results}
+                        </TabPane>
+                        <TabPane tabId="2">
+                          <Row>
+                            <Col sm="12">
+                              <CardBody>
+                                <Container >
+                                  <Row>
+                                    <Col sm> <FormGroup inline >
+                                      <CardTitle>{defaultMessage.Probability.Uniform.initial.title}:</CardTitle>
                                       <Input type="text"
                                         pattern="[^0-9,.]"
                                         onInput={this.handleChange.bind(this)}
-                                        value={this.state.Mean}
-                                        name='Mean'
+                                        value={this.state.PMin}
+                                        name='PMin'
                                         placeholder="0.00" />
                                       <br /><br />
-                                      <CardTitle>{defaultMessage.Probability.Normal.std.title}:</CardTitle>
+                                      <CardTitle>{defaultMessage.Probability.Uniform.final.title}:</CardTitle>
                                       <Input type="text"
                                         pattern="[^0-9,.]"
                                         onInput={this.handleChange.bind(this)}
-                                        value={this.state.stdDev}
-                                        name='stdDev'
+                                        value={this.state.PMax}
+                                        name='PMax'
                                         placeholder="0.00" />
+                                    </FormGroup><br /></Col>
+                                    <Col sm><CardTitle>{defaultMessage.Probability.interval.title}</CardTitle>
+                                      {intervaltag}
+                                      <br /></Col>
+                                  </Row>
+                                </Container>
+                              </CardBody>
+                            </Col>
+                          </Row>
+                          {Results}
+                        </TabPane>
+                        <TabPane tabId="3">
+                          <Row>
+                            <Col sm="12">
+                              <CardBody>
+                                <Container >
+                                  <Row>
+                                    <Col sm="5">  <FormGroup inline >
+                                      <CardTitle>{defaultMessage.Probability.Binomial.sample.title}:</CardTitle>
+                                      <Input type="text"
+                                        pattern="[^0-9,.]"
+                                        onInput={this.handleChange.bind(this)}
+                                        value={this.state.spn}
+                                        name='spn'
+                                        placeholder="0" />
+                                      <br /><br />
+                                      <form>
+                                        <Row>
+                                          <Col sm>
+                                            <CardTitle>{defaultMessage.Probability.Binomial.p.title}:</CardTitle>
+                                            <Input type="text"
+                                              onInput={this.handleChange.bind(this)}
+                                              value={this.state.p}
+                                              name='p'
+                                              placeholder="0.00%" /><br />
+                                          </Col>
+                                          <Col sm>
+                                            <CardTitle>{defaultMessage.Probability.Binomial.q.title}:</CardTitle>
+                                            <Input type="text"
+                                              onInput={this.handleChange.bind(this)}
+                                              value={this.state.q}
+                                              name='q'
+                                              placeholder="0.00%" />
+                                          </Col>
+                                        </Row>
+                                      </form>
                                     </FormGroup><br />
-                                  </Col>
-                                  <Col sm>
-                                    <CardTitle>{defaultMessage.Probability.interval.title}</CardTitle>
-                                    {intervaltag}
-                                    <br />
-                                  </Col>
-                                </Row>
-                              </Container>
-                            </CardBody>
-                          </Col>
-                        </Row>
-                        {Results}
-                      </TabPane>
-                      <TabPane tabId="2">
-                        <Row>
-                          <Col sm="12">
-                            <CardBody>
-                              <Container >
-                                <Row>
-                                  <Col sm> <FormGroup inline >
-                                    <CardTitle>{defaultMessage.Probability.Uniform.initial.title}:</CardTitle>
-                                    <Input type="text"
-                                      pattern="[^0-9,.]"
-                                      onInput={this.handleChange.bind(this)}
-                                      value={this.state.PMin}
-                                      name='PMin'
-                                      placeholder="0.00" />
-                                    <br /><br />
-                                    <CardTitle>{defaultMessage.Probability.Uniform.final.title}:</CardTitle>
-                                    <Input type="text"
-                                      pattern="[^0-9,.]"
-                                      onInput={this.handleChange.bind(this)}
-                                      value={this.state.PMax}
-                                      name='PMax'
-                                      placeholder="0.00" />
-                                  </FormGroup><br /></Col>
-                                  <Col sm><CardTitle>{defaultMessage.Probability.interval.title}</CardTitle>
-                                    {intervaltag}
-                                    <br /></Col>
-                                </Row>
-                              </Container>
-                            </CardBody>
-                          </Col>
-                        </Row>
-                        {Results}
-                      </TabPane>
-                      <TabPane tabId="3">
-                        <Row>
-                          <Col sm="12">
-                            <CardBody>
-                              <Container >
-                                <Row>
-                                  <Col sm="5">  <FormGroup inline >
-                                    <CardTitle>{defaultMessage.Probability.Binomial.sample.title}:</CardTitle>
-                                    <Input type="text"
-                                      pattern="[^0-9,.]"
-                                      onInput={this.handleChange.bind(this)}
-                                      value={this.state.spn}
-                                      name='spn'
-                                      placeholder="0" />
-                                    <br /><br />
-                                    <form>
-                                      <Row>
-                                        <Col sm>
-                                          <CardTitle>{defaultMessage.Probability.Binomial.p.title}:</CardTitle>
-                                          <Input type="text"
-                                            onInput={this.handleChange.bind(this)}
-                                            value={this.state.p}
-                                            name='p'
-                                            placeholder="0.00%" /><br />
-                                        </Col>
-                                        <Col sm>
-                                          <CardTitle>{defaultMessage.Probability.Binomial.q.title}:</CardTitle>
-                                          <Input type="text"
-                                            onInput={this.handleChange.bind(this)}
-                                            value={this.state.q}
-                                            name='q'
-                                            placeholder="0.00%" />
-                                        </Col>
-                                      </Row>
-                                    </form>
-                                  </FormGroup><br />
-                                  </Col>
-                                  <Col sm>
-                                    <CardTitle>{defaultMessage.Probability.Binomial.event.title}</CardTitle>
-                                    {intervaltag}
-                                    <br />
-                                  </Col>
-                                </Row>
-                              </Container>
-                            </CardBody>
-                          </Col>
-                        </Row>
-                        {Results}
-                      </TabPane>
-                    </TabContent>
-                  </div>
-                </CardBody>
-              </Card>
-            </Col>
-          </Row>
+                                    </Col>
+                                    <Col sm>
+                                      <CardTitle>{defaultMessage.Probability.Binomial.event.title}</CardTitle>
+                                      {intervaltag}
+                                      <br />
+                                    </Col>
+                                  </Row>
+                                </Container>
+                              </CardBody>
+                            </Col>
+                          </Row>
+                          {Results}
+                        </TabPane>
+                      </TabContent>
+                    </div>
+                  </CardBody>
+                </Card>
+              </Col>
+            </Row>
+          </div>
         </div>
       </>
     );

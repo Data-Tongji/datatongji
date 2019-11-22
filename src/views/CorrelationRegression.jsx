@@ -233,15 +233,15 @@ class CorrelationRegression extends React.Component {
       return false;
     }
     else if (this.state.tagsX === null || this.state.tagsX.length === 0) {
-      this.notify('br', defaultMessage.Correg.x.values.error , 'fas fa-exclamation-triangle', 'danger');
+      this.notify('br', defaultMessage.Correg.x.values.error, 'fas fa-exclamation-triangle', 'danger');
       return false;
     }
     else if (this.state.tagsY === null || this.state.tagsY.length === 0) {
-      this.notify('br', defaultMessage.Correg.y.values.error , 'fas fa-exclamation-triangle', 'danger');
+      this.notify('br', defaultMessage.Correg.y.values.error, 'fas fa-exclamation-triangle', 'danger');
       return false;
     }
     else if (this.state.tagsY.length !== this.state.tagsX.length) {
-      this.notify('br', defaultMessage.Correg.xyerror , 'fas fa-exclamation-triangle', 'danger');
+      this.notify('br', defaultMessage.Correg.xyerror, 'fas fa-exclamation-triangle', 'danger');
       return false;
     }
     else {
@@ -297,7 +297,7 @@ class CorrelationRegression extends React.Component {
           "correlation": this.state.correlation,
           "regression": this.state.regression
         },
-        "language": localStorage.getItem('defaultLanguage'), 
+        "language": localStorage.getItem('defaultLanguage'),
       };
       this.saveChanges(body);
     };
@@ -591,215 +591,217 @@ class CorrelationRegression extends React.Component {
     return (
       <>
         <div className="content">
-          <div className="react-notification-alert-container">
-            <NotificationAlert ref="notificationAlert" />
-          </div>
-          <Row>
-            <Col md="12">
-              <Card>
-                <CardHeader>{defaultMessage.Correg.title}<span>&nbsp;&nbsp;</span>
-                  <Button
-                    className="btn-round btn-icon animation-on-hover"
-                    color="info"
-                    onClick={this.toggleModalHelp}
-                    style={{ height: '20px', width: '15px' }}
-                  >?
+          <div class="notranslate">
+            <div className="react-notification-alert-container">
+              <NotificationAlert ref="notificationAlert" />
+            </div>
+            <Row>
+              <Col md="12">
+                <Card>
+                  <CardHeader>{defaultMessage.Correg.title}<span>&nbsp;&nbsp;</span>
+                    <Button
+                      className="btn-round btn-icon animation-on-hover"
+                      color="info"
+                      onClick={this.toggleModalHelp}
+                      style={{ height: '20px', width: '15px' }}
+                    >?
                   </Button>
-                  {ModalHelp}
-                </CardHeader>
-                <CardBody>
-                  <Card>
-                    <Container >
-                      <br />
-                      <br />
-                      <Row>
-                        <Col sm>
-                          <CardTitle>{defaultMessage.Correg.x.title} (X<sub>i</sub>):</CardTitle>
-                          <Input
-                            type="text"
-                            name="VarX"
-                            value={this.state.VarX}
-                            placeholder={defaultMessage.Correg.x.placeholder}
-                            onChange={this.handleChange}
-                          /><br />
-                          <CardTitle>X<sub>i</sub> - {this.state.VarX}:</CardTitle>
-                          {!this.state.dispcsv ? (
-                            <TagInputNaN
-                              tagStyle={`background: linear-gradient(to bottom right, #550300, #d32a23, #550300);`}
-                              placeholder={defaultMessage.Correg.x.values.title}
-                              tags={this.state.tagsX}
-                              onTagsChanged={this.onTagsChangedX}
-                            />
-                          ) :
-                            <ul className="list-group mt-2">
-                              {tagcsvX}
-                            </ul>}
-                          <br /></Col>
-                        <Col sm>
-                          <CardTitle>{defaultMessage.Correg.y.title} (Y<sub>i</sub>):</CardTitle>
-                          <Input
-                            type="text"
-                            name="VarY"
-                            value={this.state.VarY}
-                            placeholder={defaultMessage.Correg.y.placeholder}
-                            onChange={this.handleChange}
-                          /><br />
-                          <CardTitle>Y<sub>i</sub>  - {this.state.VarY}:</CardTitle>
-                          {!this.state.dispcsv ? (
-                            <TagInputNaN
-                              tagStyle={`background: linear-gradient(to bottom right, #550300, #d32a23, #550300);`}
-                              placeholder={defaultMessage.Correg.y.values.title}
-                              tags={this.state.tagsY}
-                              onTagsChanged={this.onTagsChangedY}
-                            />
-                          ) :
-                            <ul className="list-group mt-2">
-                              {tagcsvY}
-                            </ul>}
-                          <br /></Col>
-                      </Row>
+                    {ModalHelp}
+                  </CardHeader>
+                  <CardBody>
+                    <Card>
+                      <Container >
+                        <br />
+                        <br />
+                        <Row>
+                          <Col sm>
+                            <CardTitle>{defaultMessage.Correg.x.title} (X<sub>i</sub>):</CardTitle>
+                            <Input
+                              type="text"
+                              name="VarX"
+                              value={this.state.VarX}
+                              placeholder={defaultMessage.Correg.x.placeholder}
+                              onChange={this.handleChange}
+                            /><br />
+                            <CardTitle>X<sub>i</sub> - {this.state.VarX}:</CardTitle>
+                            {!this.state.dispcsv ? (
+                              <TagInputNaN
+                                tagStyle={`background: linear-gradient(to bottom right, #550300, #d32a23, #550300);`}
+                                placeholder={defaultMessage.Correg.x.values.title}
+                                tags={this.state.tagsX}
+                                onTagsChanged={this.onTagsChangedX}
+                              />
+                            ) :
+                              <ul className="list-group mt-2">
+                                {tagcsvX}
+                              </ul>}
+                            <br /></Col>
+                          <Col sm>
+                            <CardTitle>{defaultMessage.Correg.y.title} (Y<sub>i</sub>):</CardTitle>
+                            <Input
+                              type="text"
+                              name="VarY"
+                              value={this.state.VarY}
+                              placeholder={defaultMessage.Correg.y.placeholder}
+                              onChange={this.handleChange}
+                            /><br />
+                            <CardTitle>Y<sub>i</sub>  - {this.state.VarY}:</CardTitle>
+                            {!this.state.dispcsv ? (
+                              <TagInputNaN
+                                tagStyle={`background: linear-gradient(to bottom right, #550300, #d32a23, #550300);`}
+                                placeholder={defaultMessage.Correg.y.values.title}
+                                tags={this.state.tagsY}
+                                onTagsChanged={this.onTagsChangedY}
+                              />
+                            ) :
+                              <ul className="list-group mt-2">
+                                {tagcsvY}
+                              </ul>}
+                            <br /></Col>
+                        </Row>
+                        <Nav style={{ justifyContent: 'center' }}>
+                          <NavItem style={{ width: '220px' }}>
+                            <label
+                              id="csv"
+                              className={
+                                this.state.csv
+                                  ? 'has-csv'
+                                  : ''}>
+                              <input
+                                key={fileInputKey}
+                                className="csv-input"
+                                type="file"
+                                accept=".csv"
+                                ref={input => {
+                                  this.filesInput = input;
+                                }}
+                                name="file"
+                                placeholder={null}
+                                onChange={this.handlecsvChange}
+                              /><img
+                                src={csvicon}
+                                alt="select file"
+                                style={{ height: '30px' }} />
+                              <p />
+                            </label>
+                            {this.state.acceptedFiles !== '' ? (
+                              <ul className="list-group mt-2">
+                                {<Alert
+                                  toggle={this.onDismissCSV}
+                                  color={'success'} className="text-center">{this.state.acceptedFiles}</Alert>
+                                }
+                              </ul>) : ''}
+                          </NavItem>
+                          <NavItem ><span>&nbsp;&nbsp;</span></NavItem >
+                          <NavItem >
+                            <Button
+                              className="btn-round btn-icon animation-on-hover"
+                              style={this.state.acceptedFiles !== '' ? { top: '15px' } : { top: '7px' }}
+                              color="success"
+                              size="sm"
+                              onClick={this.importCSV}
+                              disabled={this.state.acceptedFiles !== '' ? false : true}>
+                              <AddCircle color='#fff' ></AddCircle>
+                            </Button>
+                          </NavItem>
+                        </Nav>
+                      </Container>
                       <Nav style={{ justifyContent: 'center' }}>
-                        <NavItem style={{ width: '220px' }}>
-                          <label
-                            id="csv"
-                            className={
-                              this.state.csv
-                                ? 'has-csv'
-                                : ''}>
-                            <input
-                              key={fileInputKey}
-                              className="csv-input"
-                              type="file"
-                              accept=".csv"
-                              ref={input => {
-                                this.filesInput = input;
-                              }}
-                              name="file"
-                              placeholder={null}
-                              onChange={this.handlecsvChange}
-                            /><img
-                              src={csvicon}
-                              alt="select file"
-                              style={{ height: '30px' }} />
-                            <p />
-                          </label>
-                          {this.state.acceptedFiles !== '' ? (
-                            <ul className="list-group mt-2">
-                              {<Alert
-                                toggle={this.onDismissCSV}
-                                color={'success'} className="text-center">{this.state.acceptedFiles}</Alert>
-                              }
-                            </ul>) : ''}
-                        </NavItem>
-                        <NavItem ><span>&nbsp;&nbsp;</span></NavItem >
+                        <NavItem >
+                          <Button disabled={this.state.loading} className="btn-round animation-on-hover" style={{ width: '100%' }} color="primary" type="button" onClick={this.inputValidation}>
+                            {resultsbtn}
+                          </Button>
+                        </NavItem><NavItem ><span>&nbsp;&nbsp;</span></NavItem >
                         <NavItem >
                           <Button
                             className="btn-round btn-icon animation-on-hover"
-                            style={this.state.acceptedFiles !== '' ? { top: '15px' } : { top: '7px' }}
-                            color="success"
-                            size="sm"
-                            onClick={this.importCSV}
-                            disabled={this.state.acceptedFiles !== '' ? false : true}>
-                            <AddCircle color='#fff' ></AddCircle>
+                            style={{ width: '100%' }}
+                            color="primary"
+                            onClick={this.toggleModalDemo}
+                            disabled={this.state.btnSave}>
+                            <Save color='#fff' ></Save>
                           </Button>
+                          <Modal isOpen={this.state.modalDemo} toggle={this.toggleModalDemo}>
+                            <div className="modal-header">
+                              <h5 className="modal-title" id="exampleModalLabel">
+                                <b>{defaultMessage.Modal.save.title}</b>
+                              </h5>
+                              <button
+                                type="button"
+                                className="close"
+                                data-dismiss="modal"
+                                aria-hidden="true"
+                                onClick={this.toggleModalDemo}
+                              >
+                                <i className="tim-icons icon-simple-remove" />
+                              </button>
+                            </div>
+                            <ModalBody>
+                              <p>{defaultMessage.Modal.save.text}</p>
+                              <Label for="error" className="control-label">{defaultMessage.Modal.save.input1}:</Label>
+                              <Input type="text" name="Name" placeholder={defaultMessage.Modal.save.lbl1}
+                                autoFocus
+                                onFocus={this.onFocus}
+                                ref={(input) => { this.Name = input; }}
+                                onInput={this.handleChange.bind(this)}
+                                style={{ backgroundColor: '#1c2336', color: '#fff' }} />
+                            </ModalBody>
+                            <ModalFooter>
+                              <Button className="btn-round animation-on-hover" color="secondary" onClick={this.toggleModalDemo}>
+                                {defaultMessage.Modal.btn1}
+                              </Button>
+                              <Button disabled={this.state.loadingsv} className="btn-round animation-on-hover" color="primary" onClick={this.saveValidation}>
+                                {saveBtn}
+                              </Button>
+                            </ModalFooter>
+                          </Modal>
                         </NavItem>
-                      </Nav>
-                    </Container>
-                    <Nav style={{ justifyContent: 'center' }}>
-                      <NavItem >
-                        <Button disabled={this.state.loading} className="btn-round animation-on-hover" style={{ width: '100%' }} color="primary" type="button" onClick={this.inputValidation}>
-                          {resultsbtn}
-                        </Button>
-                      </NavItem><NavItem ><span>&nbsp;&nbsp;</span></NavItem >
-                      <NavItem >
-                        <Button
-                          className="btn-round btn-icon animation-on-hover"
-                          style={{ width: '100%' }}
-                          color="primary"
-                          onClick={this.toggleModalDemo}
-                          disabled={this.state.btnSave}>
-                          <Save color='#fff' ></Save>
-                        </Button>
-                        <Modal isOpen={this.state.modalDemo} toggle={this.toggleModalDemo}>
-                          <div className="modal-header">
-                            <h5 className="modal-title" id="exampleModalLabel">
-                              <b>{defaultMessage.Modal.save.title}</b>
-                            </h5>
-                            <button
-                              type="button"
-                              className="close"
-                              data-dismiss="modal"
-                              aria-hidden="true"
-                              onClick={this.toggleModalDemo}
-                            >
-                              <i className="tim-icons icon-simple-remove" />
-                            </button>
-                          </div>
-                          <ModalBody>
-                            <p>{defaultMessage.Modal.save.text}</p>
-                            <Label for="error" className="control-label">{defaultMessage.Modal.save.input1}:</Label>
-                            <Input type="text" name="Name" placeholder={defaultMessage.Modal.save.lbl1}
-                              autoFocus
-                              onFocus={this.onFocus}
-                              ref={(input) => { this.Name = input; }}
-                              onInput={this.handleChange.bind(this)}
-                              style={{ backgroundColor: '#1c2336', color: '#fff' }} />
-                          </ModalBody>
-                          <ModalFooter>
-                            <Button className="btn-round animation-on-hover" color="secondary" onClick={this.toggleModalDemo}>
-                              {defaultMessage.Modal.btn1}
-                            </Button>
-                            <Button disabled={this.state.loadingsv} className="btn-round animation-on-hover" color="primary" onClick={this.saveValidation}>
-                              {saveBtn}
-                            </Button>
-                          </ModalFooter>
-                        </Modal>
-                      </NavItem>
-                    </Nav> <br />
-                    <Collapse isOpen={this.state.collapse}>
-                      <Nav style={{ justifyContent: 'center' }}>
-                        <NavItem >
-                          <ListGroup>
-                            <ListGroupItem style={{ backgroundColor: 'transparent' }} className="justify-content-between">{defaultMessage.Correg.results.acoef}: <Badge pill>{this.state.correlation}</Badge></ListGroupItem>
-                            <ListGroupItem style={{ backgroundColor: 'transparent' }} className="justify-content-between">
-                              {defaultMessage.Correg.results.eqt}: <Badge pill> y<sub>1</sub> =({this.state.regression.aCoef})+({this.state.regression.iPoint}x<sub>1</sub>)</Badge>
-                            </ListGroupItem>
-                            <ListGroupItem style={{ backgroundColor: 'transparent' }} className="justify-content-between">
-                              <Row>
-                                <Col sm>
-                                  <CardTitle><div dangerouslySetInnerHTML={{ __html: defaultMessage.Correg.results.projx }} /></CardTitle>
-                                  <Input type="text"
-                                    pattern="[^0-9,.]"
-                                    onInput={this.handleChange.bind(this)}
-                                    value={this.state.xProj}
-                                    name='xProj'
-                                    placeholder="0.00" />
-                                </Col>
-                                <Col sm>
-                                  <CardTitle><div dangerouslySetInnerHTML={{ __html: defaultMessage.Correg.results.projy }} /></CardTitle>
-                                  <Input type="text"
-                                    pattern="[^0-9,.]"
-                                    onInput={this.handleChange.bind(this)}
-                                    value={this.state.yProj}
-                                    name='yProj'
-                                    placeholder="0.00" /></Col>
-                              </Row>
-                            </ListGroupItem>
-                          </ListGroup><br />
-                        </NavItem>
-                      </Nav>
-                      <CardBody >
-                        <HighchartsReact
-                          highcharts={Highcharts}
-                          options={options}
-                        />
-                      </CardBody>
-                    </Collapse>
-                  </Card>
-                </CardBody>
-              </Card>
-            </Col>
-          </Row>
+                      </Nav> <br />
+                      <Collapse isOpen={this.state.collapse}>
+                        <Nav style={{ justifyContent: 'center' }}>
+                          <NavItem >
+                            <ListGroup>
+                              <ListGroupItem style={{ backgroundColor: 'transparent' }} className="justify-content-between">{defaultMessage.Correg.results.acoef}: <Badge pill>{this.state.correlation}</Badge></ListGroupItem>
+                              <ListGroupItem style={{ backgroundColor: 'transparent' }} className="justify-content-between">
+                                {defaultMessage.Correg.results.eqt}: <Badge pill> y<sub>1</sub> =({this.state.regression.aCoef})+({this.state.regression.iPoint}x<sub>1</sub>)</Badge>
+                              </ListGroupItem>
+                              <ListGroupItem style={{ backgroundColor: 'transparent' }} className="justify-content-between">
+                                <Row>
+                                  <Col sm>
+                                    <CardTitle><div dangerouslySetInnerHTML={{ __html: defaultMessage.Correg.results.projx }} /></CardTitle>
+                                    <Input type="text"
+                                      pattern="[^0-9,.]"
+                                      onInput={this.handleChange.bind(this)}
+                                      value={this.state.xProj}
+                                      name='xProj'
+                                      placeholder="0.00" />
+                                  </Col>
+                                  <Col sm>
+                                    <CardTitle><div dangerouslySetInnerHTML={{ __html: defaultMessage.Correg.results.projy }} /></CardTitle>
+                                    <Input type="text"
+                                      pattern="[^0-9,.]"
+                                      onInput={this.handleChange.bind(this)}
+                                      value={this.state.yProj}
+                                      name='yProj'
+                                      placeholder="0.00" /></Col>
+                                </Row>
+                              </ListGroupItem>
+                            </ListGroup><br />
+                          </NavItem>
+                        </Nav>
+                        <CardBody >
+                          <HighchartsReact
+                            highcharts={Highcharts}
+                            options={options}
+                          />
+                        </CardBody>
+                      </Collapse>
+                    </Card>
+                  </CardBody>
+                </Card>
+              </Col>
+            </Row>
+          </div>
         </div>
       </>
     );

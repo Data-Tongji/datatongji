@@ -3,14 +3,12 @@ import classNames from "classnames";
 import { Link } from "react-router-dom";
 // reactstrap components
 import {
-  Button,
   Collapse,
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
   UncontrolledDropdown,
   Input,
-  InputGroup,
   NavbarBrand,
   Navbar,
   NavLink,
@@ -87,7 +85,7 @@ class AdminNavbar extends React.Component {
     localStorage.setItem('userUrl', undefined);
     localStorage.setItem('defaultLanguage', undefined);
     localStorage.setItem('UserName', undefined);
-   
+
     this.props.history.push("/auth/login");
   };
   // eslint-disable-next-line no-dupe-class-members
@@ -116,95 +114,97 @@ class AdminNavbar extends React.Component {
 
     return (
       <>
-        <Navbar
-          className={classNames("navbar-absolute", this.state.color)}
-          expand="lg"
-        >
-          <Container fluid>
-            <div className="navbar-wrapper">
-              <div
-                className={classNames("navbar-toggle d-inline", {
-                  toggled: this.props.sidebarOpened
-                })}
-              >
-                <button
-                  className="navbar-toggler"
-                  type="button"
-                  onClick={this.props.toggleSidebar}
+        <div class="notranslate">
+          <Navbar
+            className={classNames("navbar-absolute", this.state.color)}
+            expand="lg"
+          >
+            <Container fluid>
+              <div className="navbar-wrapper">
+                <div
+                  className={classNames("navbar-toggle d-inline", {
+                    toggled: this.props.sidebarOpened
+                  })}
                 >
-                  <span className="navbar-toggler-bar bar1" />
-                  <span className="navbar-toggler-bar bar2" />
-                  <span className="navbar-toggler-bar bar3" />
-                </button>
-              </div>
-              <NavbarBrand onClick={e => e.preventDefault()}>
-                {this.props.brandText}
-              </NavbarBrand>
-            </div>
-            <button
-              aria-expanded={false}
-              aria-label="Toggle navigation"
-              className="navbar-toggler"
-              data-target="#navigation"
-              data-toggle="collapse"
-              id="navigation"
-              type="button"
-              onClick={this.toggleCollapse}
-            >
-              <span className="navbar-toggler-bar navbar-kebab" />
-              <span className="navbar-toggler-bar navbar-kebab" />
-              <span className="navbar-toggler-bar navbar-kebab" />
-            </button>
-            <Collapse navbar isOpen={this.state.collapseOpen}>
-              <Nav className="ml-auto" navbar>         
-                <UncontrolledDropdown nav>
-                  <DropdownToggle
-                    caret
-                    color="default"
-                    data-toggle="dropdown"
-                    nav
-                    onClick={e => e.preventDefault()}
+                  <button
+                    className="navbar-toggler"
+                    type="button"
+                    onClick={this.props.toggleSidebar}
                   >
-                    <div className="photo">
-                      {photo}
-                    </div>
-                    <b className="caret d-none d-lg-block d-xl-block" />
-                    <p className="d-lg-none">{user}</p>
-                  </DropdownToggle>
-                  <DropdownMenu className="dropdown-navbar" right tag="ul">
-                    <NavLink tag="li">
-                      <Link to="/admin/user-profile">
-                        <DropdownItem className="nav-item" >{defaultMessage.NavBar.ac1}</DropdownItem>
-                      </Link>
-                    </NavLink>
-                    <NavLink tag="li">
-                      <DropdownItem className="nav-item" onClick={this.logout}>{defaultMessage.NavBar.ac2}</DropdownItem>
-                    </NavLink>
-                  </DropdownMenu>
-                </UncontrolledDropdown>
-                <li className="separator d-lg-none" />
-              </Nav>
-            </Collapse>
-          </Container>
-        </Navbar>
-        <Modal
-          modalClassName="modal-search"
-          isOpen={this.state.modalSearch}
-          toggle={this.toggleModalSearch}
-        >
-          <div className="modal-header">
-            <Input id="inlineFormInputGroup" placeholder="SEARCH" type="text" />
-            <button
-              aria-label="Close"
-              className="close"
-              data-dismiss="modal"
-              type="button"
-              onClick={this.toggleModalSearch}
-            >
-              <i className="tim-icons icon-simple-remove" />
-            </button>
-          </div>
-        </Modal>
+                    <span className="navbar-toggler-bar bar1" />
+                    <span className="navbar-toggler-bar bar2" />
+                    <span className="navbar-toggler-bar bar3" />
+                  </button>
+                </div>
+                <NavbarBrand onClick={e => e.preventDefault()}>
+                  {this.props.brandText}
+                </NavbarBrand>
+              </div>
+              <button
+                aria-expanded={false}
+                aria-label="Toggle navigation"
+                className="navbar-toggler"
+                data-target="#navigation"
+                data-toggle="collapse"
+                id="navigation"
+                type="button"
+                onClick={this.toggleCollapse}
+              >
+                <span className="navbar-toggler-bar navbar-kebab" />
+                <span className="navbar-toggler-bar navbar-kebab" />
+                <span className="navbar-toggler-bar navbar-kebab" />
+              </button>
+              <Collapse navbar isOpen={this.state.collapseOpen}>
+                <Nav className="ml-auto" navbar>
+                  <UncontrolledDropdown nav>
+                    <DropdownToggle
+                      caret
+                      color="default"
+                      data-toggle="dropdown"
+                      nav
+                      onClick={e => e.preventDefault()}
+                    >
+                      <div className="photo">
+                        {photo}
+                      </div>
+                      <b className="caret d-none d-lg-block d-xl-block" />
+                      <p className="d-lg-none">{user}</p>
+                    </DropdownToggle>
+                    <DropdownMenu className="dropdown-navbar" right tag="ul">
+                      <NavLink tag="li">
+                        <Link to="/admin/user-profile">
+                          <DropdownItem className="nav-item" >{defaultMessage.NavBar.ac1}</DropdownItem>
+                        </Link>
+                      </NavLink>
+                      <NavLink tag="li">
+                        <DropdownItem className="nav-item" onClick={this.logout}>{defaultMessage.NavBar.ac2}</DropdownItem>
+                      </NavLink>
+                    </DropdownMenu>
+                  </UncontrolledDropdown>
+                  <li className="separator d-lg-none" />
+                </Nav>
+              </Collapse>
+            </Container>
+          </Navbar>
+          <Modal
+            modalClassName="modal-search"
+            isOpen={this.state.modalSearch}
+            toggle={this.toggleModalSearch}
+          >
+            <div className="modal-header">
+              <Input id="inlineFormInputGroup" placeholder="SEARCH" type="text" />
+              <button
+                aria-label="Close"
+                className="close"
+                data-dismiss="modal"
+                type="button"
+                onClick={this.toggleModalSearch}
+              >
+                <i className="tim-icons icon-simple-remove" />
+              </button>
+            </div>
+          </Modal>
+        </div>
       </>
     );
   }

@@ -7,7 +7,6 @@ import {
   ButtonGroup,
   Col,
   CardText,
-  CardFooter,
   Button,
   Card,
   CardBody,
@@ -250,6 +249,7 @@ export class Login extends React.Component {
           <div className="react-notification-alert-container">
             <NotificationAlert ref="notificationAlert" />
           </div>
+          <div class="notranslate">
           <Col className="col_center_login" md="4">
             <Card className="card-user">
               <CardBody>
@@ -355,6 +355,7 @@ export class Login extends React.Component {
                 </div>
             </Card>
           </Col>
+          </div>
         </Row>
       </>
     );
