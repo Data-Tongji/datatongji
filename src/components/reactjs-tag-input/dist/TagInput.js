@@ -95,7 +95,6 @@ var TagInput = function (_Component) {
                                 displayValue: vet[i].trim()
                             }])
                         }
-
                         return { selectedTags: aux };
                     }
                     if (isNaN(inputValue)) {

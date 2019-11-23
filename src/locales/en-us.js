@@ -92,7 +92,25 @@ module.exports = {
             }
       },
       "Descriptive": {
-            "title": "Descriptive Analysis"
+            "title": "Descriptive Analysis",       
+            "distrib": {
+                  "title": "Type of data distribution:",
+                  "error": "Choose a type of data distribution!"
+            },
+            "Var": {
+                  "title": "Name of variable:",
+                  "placeholder": "Variable",
+                  "error": "Name of variable cannot be blank!"
+            },
+            "Tags": {
+                  "title": "Values of the variable in analysis:",
+                  "placeholder": "Values",
+                  "error": "Add a value for the variable in analysis!"
+            },
+            "Type": {
+                  "title": "Sub-Type of analysis:",
+                  "error": "Choose the sub-type of the analysis!"
+            }
       },
       "Probability": {
             "title": "Probability",

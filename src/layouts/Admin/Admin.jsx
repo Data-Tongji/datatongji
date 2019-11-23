@@ -14,6 +14,7 @@ import routes from '../../routes';
 import logo from "assets/img/favicon.png";
 
 var ps;
+
 class Admin extends React.Component {
   constructor(props) {
     super(props);
@@ -37,11 +38,11 @@ class Admin extends React.Component {
     }
   }
   componentWillUnmount() {
-    if (navigator.platform.indexOf("Win") > -1) {
-      ps.destroy();
-      document.documentElement.className += " perfect-scrollbar-off";
-      document.documentElement.classList.remove("perfect-scrollbar-on");
-    }
+    // if (navigator.platform.indexOf("Win") > -1) {
+    //   ps.destroy();
+      // document.documentElement.className += " perfect-scrollbar-off";
+      // document.documentElement.classList.remove("perfect-scrollbar-on");
+    // }
   }
   componentDidUpdate(e) {
     if (e.history.action === "PUSH") {

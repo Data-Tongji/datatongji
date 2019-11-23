@@ -274,6 +274,9 @@ class CorrelationRegression extends React.Component {
   importCSV = () => {
     const { csvfile } = this.state;
     Papa.parse(csvfile, {
+      skipEmptyLines: 'greedy',
+      // dynamicTyping: true,
+      keepEmptyRows: false,
       complete: this.updateData,
       header: true
     });
@@ -332,7 +335,7 @@ class CorrelationRegression extends React.Component {
     }
   };
 
-  updateData(result) {
+  updateData = (result) => {
     var data = result.data;
     var keys = Object.keys(data[0]);
     var arrfull = [];
@@ -342,7 +345,7 @@ class CorrelationRegression extends React.Component {
     } else {
       for (var i = 0; i < data.length; i++) {
         Object.keys(data[0]).forEach(function (key) {
-          if (data[i][key] !== undefined) {
+          if (data[i][key] !== undefined && data[i][key] !== '') {
             var inputValue = data[i][key];
             inputValue = inputValue.replace(/,{1,}/g, '.');
             inputValue = inputValue.replace(/\s{2,}/g, ' ');

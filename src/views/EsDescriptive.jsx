@@ -1,5 +1,6 @@
 import React from "react";
 import { MDBRow, MDBCol } from 'mdbreact';
+import { Save, AddCircle } from 'grommet-icons';
 import Stepper from 'react-stepper-horizontal';
 import { TagInput } from '../components/reactjs-tag-input';
 import InputRange from 'react-input-range';
@@ -7,9 +8,9 @@ import '../assets/css/all.css';
 import '../assets/css/table.css';
 import 'react-input-range/lib/css/index.css';
 import { ComboBox } from '@progress/kendo-react-dropdowns';
+import NotificationAlert from "react-notification-alert";
 
 import {
-    Alert,
     Button,
     Badge,
     ButtonGroup,
@@ -18,8 +19,15 @@ import {
     CardHeader,
     CardTitle,
     Container,
+    Modal,
+    ModalBody,
+    ModalFooter,
     Row,
     Col,
+    Nav,
+    NavItem,
+    Alert,
+    FormGroup,
     InputGroup,
     InputGroupAddon,
     InputGroupText,
@@ -28,9 +36,14 @@ import {
     ListGroupItem,
 } from "reactstrap";
 import { Table } from 'antd';
-import "react-table/react-table.css";
-// core components
+import { DotLoader } from 'react-spinners';
+import { css } from 'emotion'
+import Papa from 'papaparse';
 import { Doughnut } from 'react-chartjs-2';
+import csvicon from '../assets/img/csv.svg';
+import '../assets/css/antdtable.css';
+import "react-table/react-table.css";
+import '../assets/css/csv.css';
 
 const closest = function (el, selector, rootNode) {
     rootNode = rootNode || document.body;
@@ -51,6 +64,8 @@ const closest = function (el, selector, rootNode) {
     }
     return el;
 };
+var defaultMessage = localStorage.getItem('defaultLanguage') !== 'pt-br' ? require('../locales/en-us.js') : require('../locales/pt-br.js');
+
 class Descriptive extends React.Component {
     constructor(props) {
         super(props);
@@ -63,9 +78,9 @@ class Descriptive extends React.Component {
                 { title: '' },
                 { title: '' },
                 { title: '' }],
-            data:  {
+            data: {
                 datasets: [{
-                    backgroundColor: [ 'rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)', 'rgba(255, 206, 86, 0.2)'],
+                    backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)', 'rgba(255, 206, 86, 0.2)'],
                     data: [10, 20, 30]
                 }],
                 labels: [
@@ -77,48 +92,82 @@ class Descriptive extends React.Component {
             tags: [],
             vet: [],
             collapse: false,
-            message: this.props.location.state ? this.props.location.state.message : '',
             stepPosition: 0,
             btncolor: "primary",
             focused: "",
             PopAmost: "",
             Type: "",
-            var: "",
+            Var: '',
             step: 1,
             value: 0,
             MedSep: "Percentil",
             cSelected: [],
             items: [],
             test: [],
-            
+            loading: false,
+            loadingsv: false,
+            modalDemo: false,
+            modalHelp: false,
+            acceptedFiles: '',
+            btnSave: true,
+            dispcsv: false,
+            csv: null,
+            csvfile: undefined,
             dragIndex: -1,
             draggedIndex: -1,
         };
+        this.header = css({
+            // backgroundColor: 'transparent',
+            background: '#e5e5e5',
+            borderWidth: '0px',
+            borderStyle: 'solid',
+            color: 'white',
+            '& table': {
+                borderCollapse: 'collapse'
+            },
+            '& thead > tr > th': {
+                color: 'white',
+                fontStyle: 'bold',
+                background: 'linear-gradient(to bottom right, #550300, #d32a23, #550300)',
+            },
+            '& thead > tr': {
+                color: 'white',
+                fontStyle: 'bold',
+                background: 'linear-gradient(to bottom right, #550300, #d32a23, #550300)',
+            }
+        });
         this.columns = [
             {
                 title: 'Variável',
                 dataIndex: 'value',
+                align: 'center',
             },
             {
                 title: 'Fi',
                 dataIndex: 'frequency',
+                align: 'center',
             },
             {
                 title: 'Fac',
                 dataIndex: 'cumulativeFrequency',
+                align: 'center',
             },
             {
                 title: 'Fr%',
                 dataIndex: 'accumulatedPercentage',
+                align: 'center',
             },
             {
                 title: 'Fac%',
                 dataIndex: 'relativeFrequency',
+                align: 'center',
             },
 
             {
                 title: 'Operates',
                 key: 'operate',
+                width: '90px',
+                align: 'center',
                 render: (text, record, index) =>
                     <span>
                         {(this.state.dragIndex >= 0 &&
@@ -137,15 +186,124 @@ class Descriptive extends React.Component {
                             onMouseDown={this.onMouseDown}
                             href="#"
                         >
-                            Alter
-            </a>
+                            <i class="fas fa-arrows-alt" />
+                        </a>
                     </span>,
             },
         ];
-
         this.onTagsChanged = this.onTagsChanged.bind(this);
         this.onRadioBtnClick = this.onRadioBtnClick.bind(this);
+        this.updateData = this.updateData.bind(this);
     };
+
+    onDismissCSV = () => {
+        this.setState({
+            csvfile: '',
+            csv: '',
+            acceptedFiles: '',
+            csvdata: null
+        });
+    };
+
+    toggleModalDemo() {
+        this.setState({
+            modalDemo: !this.state.modalDemo
+        });
+    };
+
+    toggleModalHelp = () => {
+        this.setState({
+            modalHelp: !this.state.modalHelp
+        });
+    };
+
+    handlecsvChange = event => {
+        if (event.target.files[0].name.includes('.csv')) {
+            this.setState({
+                csvfile: event.target.files[0],
+                csv: 'has-csv',
+                acceptedFiles: event.target.files[0].name,
+                dispcsv: false
+            });
+        } else {
+            this.notify('br', defaultMessage.Correg.csv.error3, 'fas fa-exclamation-triangle', 'danger');
+        }
+    };
+
+    importCSV = () => {
+        const { csvfile } = this.state;
+        Papa.parse(csvfile, {
+            skipEmptyLines: 'greedy',
+            // dynamicTyping: true,
+            keepEmptyRows: false,
+            complete: this.updateData,
+            header: true,
+        });
+    };
+
+    updateData = (result) => {
+        var data = result.data;
+        var keys = Object.keys(data[0]);
+        var arrfull = [];
+        var pass = true;
+        for (var i = 0; i < keys.length; i++) {
+            if (keys[i] === '') {
+                keys.splice(i, 1);
+            }
+        };
+        if (keys.length !== 1) {
+            this.notify('br', defaultMessage.Correg.csv.error1, 'fas fa-exclamation-triangle', 'danger');
+        } else {
+            for (i = 0; i < data.length; i++) {
+                // eslint-disable-next-line no-loop-func
+                Object.keys(data[0]).forEach(function (key) {
+                    if (data[i][key] !== undefined && data[i][key] !== '') {
+                        var inputValue = data[i][key];
+                        inputValue = inputValue.replace(/\s{2,}/g, ' ');
+                        inputValue = inputValue.replace(/-{2,}/g, '-');
+                        inputValue = inputValue.replace(/,{1,}/g, '.');
+                        inputValue = inputValue.replace(/\.{2,}/g, '.');
+                        inputValue = inputValue.replace(/\;{2,}/g, ';');
+                        inputValue = inputValue.normalize('NFD').replace(/([\u0300-\u036f]|[^0-9a-zA-Z\s,-\.\;])/g, '');
+                        if (isNaN(inputValue)) {
+                            inputValue = inputValue.replace(/,{1,}/g, '.');
+                            inputValue = inputValue.replace(/\.{1,}/g, '');
+                        };
+                        arrfull.push(inputValue);
+                    }
+                })
+            };
+            if (pass) {
+                this.setState({ csvdata: data });
+                if (this.state.Var === '') {
+                    this.setState({ Var: keys[0] });
+                }
+                let aux = [];
+                var pos = 1;
+
+                if (this.state.tags.length > 0) {
+                    aux = this._toConsumableArray(this.state.tags);
+                    pos = this.state.tags.length
+                }
+                for (i = 0; i < arrfull.length; i++) {
+                    aux = [].concat(aux, [{
+                        index: pos,
+                        displayValue: arrfull[i]
+                    }]);
+                    pos++;
+                }
+                this.setState({
+                    tags: aux,
+                    dispcsv: true
+                });
+            }
+            else {
+                this.notify('br', defaultMessage.Correg.csv.error2, 'fas fa-exclamation-triangle', 'danger');
+            }
+        };
+    };
+
+    _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } };
 
     onRadioBtnClick(categ, rSelected) {
         if (rSelected !== 'Ordinal') {
@@ -180,7 +338,24 @@ class Descriptive extends React.Component {
         }
     }
 
-    SendArray = () => {
+    notify = (place, message, icon, color) => {
+        var options = {
+            place: place,
+            message: (
+                <div>
+                    <div>
+                        {message}
+                    </div>
+                </div>
+            ),
+            type: color,
+            icon: icon,
+            autoDismiss: 7
+        };
+        this.refs.notificationAlert.notificationAlert(options);
+    };
+
+    async SendArray() {
         let aux = [];
         for (let i = 0; i < this.state.tags.length; i++) {
             aux.push((this.state.tags[i].displayValue));
@@ -191,46 +366,53 @@ class Descriptive extends React.Component {
                 "varPesq": this.state.Var,
                 "data": aux,
                 "subTypeMeasure": this.state.rSelected,
-                "amost": this.state.PopAmost
+                "amost": this.state.PopAmost,
+                "language": localStorage.getItem('defaultLanguage')
             }),
             headers: new Headers({
                 'Content-Type': 'application/json',
                 'Authorization': localStorage.getItem('token')
             }),
         };
-        fetch('https://datatongji-backend.herokuapp.com/descriptive/simple_frequency', requestInfo)
-            .then(response => {
-                if (response.ok) {
-                    this.setState({ message: '' });
-                    return response.json();
-                }
-                throw new Error("Falha!");
-            }).then(descriptive => {
-                let desc = descriptive;
-                this.setState({ Type: desc.typeVar });
-                this.setState({ weightedMean: desc.weightedMean });
-                this.setState({ median: desc.median });
-                this.setState({ variance: desc.variance });
-                this.setState({ deviation: desc.deviation });
-                this.setState({ coefvar: desc.coefvar });
-                this.setState({ percentile: desc.percentile });
-                this.setState({ rSelected: desc.subType })
-                if (desc.mode.length > 1) {
-                    let m = desc.mode[0].Value;
-                    for (let i = 1; i < desc.mode.length; i++) {
-                        m = m + ' | ' + desc.mode[i].Value;
+
+        try {
+            const response = await fetch('https://datatongji-backend.herokuapp.com/descriptive/simple_frequency', requestInfo);
+            var result = await response.json();
+            console.log(result);
+            if (response.ok) {
+                this.setState({
+                    Type: result.typeVar,
+                    weightedMean: result.weightedMean,
+                    median: result.median,
+                    variance: result.variance,
+                    deviation: result.deviation,
+                    coefvar: result.coefvar,
+                    percentile: result.percentile,
+                    rSelected: result.subType,
+                    loading: false
+                });
+                if (result.mode.length > 1) {
+                    let m = result.mode[0].Value;
+                    for (let i = 1; i < result.mode.length; i++) {
+                        m = m + ' | ' + result.mode[i].Value;
                     }
                     this.setState({ mode: m })
                 } else {
-                    this.setState({ mode: desc.mode[0].Value })
+                    this.setState({ mode: result.mode[0].Value })
                 }
-                this.setState({ vet: desc.dataDescriptive });
-            })
-            .catch(e => {
-                this.setState({ message: e.message });
+                this.setState({ vet: result.dataDescriptive });
+            } else {
+                throw new Error(result.error);
+            }
+        }
+        catch (e) {
+            this.notify('br', e.message, 'fas fa-exclamation-triangle', 'danger');
+            this.setState({
+                loading: false
             });
-        // this.ResultCollapse();
+        }
     };
+
     onMouseDown(e) {
         const target = this.getTrNode(e.target);
         if (target) {
@@ -304,7 +486,7 @@ class Descriptive extends React.Component {
             { Variável: 'se', Fi: '2', Fac: 2, 'Fr%': '25.00', 'Fac%': '25.00' }
         )
         return header.map((key, index) => {
-            return <th key={index}>{key}</th>
+            return <th key={index} style={{ background: 'linear-gradient(to bottom left, #550300, #d32a23, #550300)' }}>{key}</th>
         })
     }
 
@@ -390,15 +572,16 @@ class Descriptive extends React.Component {
         }
     };
 
-    positionStep = (steps) => {
+    async positionStep(steps) {
         var Position = this.state.stepPosition;
-        if (steps === 1 && Position < this.state.steps.length - 1) {
-            if (this.valida())
+        console.log(this.state.stepPosition);
+        if (steps === 1) {
+            if (await this.inputValidation())
                 return this.setState({ stepPosition: Position += + 1 });
         }
 
         if (steps !== 1 && Position > 0) {
-            this.SendArray();
+            await this.SendArray();
             return this.setState({ stepPosition: Position += - 1 });
         }
     };
@@ -425,107 +608,217 @@ class Descriptive extends React.Component {
         // this.Calcular();
     };
 
-    valida = () => {
-        console.log(this.state.tags)
+    inputValidation = () => {
         if (this.state.stepPosition === 0) {
             if (this.state.PopAmost === "") {
-                this.setState({ message: 'Select data distribution type!' });
-                return false;
+                return this.notify('br', defaultMessage.Descriptive.distrib.error, 'fas fa-exclamation-triangle', 'danger');
             }
             else if (this.state.Var == null || this.state.Var.trim() === "") {
-                this.setState({ message: 'Enter variable name!' });
-                return false;
+                return this.notify('br', defaultMessage.Descriptive.Var.error, 'fas fa-exclamation-triangle', 'danger');
             } else if (this.state.tags === null || this.state.tags.length === 0) {
-                this.setState({ message: 'Enter some value!' });
-                return false;
+                return this.notify('br', defaultMessage.Descriptive.Tags.error, 'fas fa-exclamation-triangle', 'danger');
             }
             else {
-                this.setState({ message: '' });
                 this.SendArray();
                 return true;
             }
         }
         else if (this.state.stepPosition === 1) {
             if (this.state.rSelected == null || this.state.rSelected.trim() === "") {
-                this.setState({ message: 'Selecione o tipo de análise desejada' });
-                return false;
+                return this.notify('br', defaultMessage.Descriptive.Type.error, 'fas fa-exclamation-triangle', 'danger');
             }
             else {
-                this.setState({ message: '' });
                 return true;
             }
-
         }
     };
 
     render() {
+        const fileInputKey = this.state.acceptedFiles.value ? '' : +new Date();
         let button = [];
         let Position = this.state.stepPosition;
         let Card_Body;
         let ButtonType;
         let table;
+        let tagcsv = null;
+        let ModalHelp = (<Modal isOpen={this.state.modalHelp} toggle={this.toggleModalHelp}>
+            <div className="modal-header">
+                <h5 className="modal-title" id="exampleModalLongTitle">
+                    <b>{defaultMessage.Modal.info.title}</b>
+                </h5>
+                <button
+                    type="button"
+                    className="close"
+                    data-dismiss="modal"
+                    aria-hidden="true"
+                    onClick={this.toggleModalHelp}
+                >
+                    <i className="tim-icons icon-simple-remove" />
+                </button>
+            </div>
+            <ModalBody style={{ textAlign: 'justify' }}>
+                <div dangerouslySetInnerHTML={{ __html: defaultMessage.Modal.info.corregText }} />
+            </ModalBody>
+            <ModalFooter>
+                <Button color="secondary" onClick={this.toggleModalHelp}>
+                    {defaultMessage.Modal.btn1}
+                </Button>
+            </ModalFooter>
+        </Modal>)
 
-        button.push(
-            <Button
-                className="btn-round btn-icon"
-                color="primary"
-                onClick={() => this.positionStep(0)}>
-                <i className="tim-icons icon-double-left" />
-            </Button>
-        );
-        button.push(
-            <Button
-                className="btn-round btn-icon"
-                color="primary"
-                onClick={() => this.positionStep(1)}>
-                <i className="tim-icons icon-double-right" />
-            </Button>);
+        if (this.state.dispcsv) {
+            tagcsv =
+                (
+                    <TagInput
+                        tagStyle={`background: linear-gradient(to bottom right, #550300, #d32a23, #550300);`}
+                        placeholder={defaultMessage.Descriptive.Tags.placeholder}
+                        tags={this.state.tags}
+                        onTagsChanged={this.onTagsChanged}
+                    />)
+        } else {
+            tagcsv = null;
+        };
+
+        let saveBtn = defaultMessage.Modal.btn2;
+        if (this.state.loadingsv === true) {
+            saveBtn = <DotLoader
+                css={`
+                      display: block;
+                      margin: 0 auto;
+                      border-color: red;
+                      `}
+                sizeUnit={"px"}
+                size={20}
+                color={'#fff'}
+                loading={this.state.loadingsv}
+            />
+        };
+
         if (Position === 0) {
-            Card_Body = <CardBody style={{ marginLeft: '10%', marginRight: '10%' }}>
+            button.push(
+                <Button
+                    disabled={true}
+                    className="btn-round btn-icon"
+                    color="primary"
+                    onClick={() => this.positionStep(0)}>
+                    <i className="tim-icons icon-double-left" />
+                </Button>
+            );
+            button.push(
+                <Button
+                    className="btn-round btn-icon"
+                    color="primary"
+                    onClick={() => this.positionStep(1)}>
+                    <i className="tim-icons icon-double-right" />
+                </Button>);
+            Card_Body = <CardBody
+                style={{ marginLeft: '10%', marginRight: '10%' }}
+            >
                 <Container >
-                    <MDBCol >
-                        <CardTitle>Tipo de distribuição de dados:</CardTitle>
-                        <ButtonGroup>
-                            <Button color={this.buttoncolor('PopAmost', 'População')} onClick={() => this.onRadioBtnClick('PopAmost', 'População')} active={this.state.PopAmost === 'População'}>População</Button>
-                            <Button color={this.buttoncolor('PopAmost', 'Amostra')} onClick={() => this.onRadioBtnClick('PopAmost', 'Amostra')} active={this.state.PopAmost === 'Amostra'}>Amostra</Button>
-                        </ButtonGroup>
-                        {/* <p>Selected: {this.state.PopAmost}</p> */}
-                    </MDBCol>
-                    <MDBCol >
-                        <CardTitle>Name of variable:</CardTitle>
-                        <InputGroup className={this.state.focused}>
-                            <InputGroupAddon addonType="prepend">
-                                <InputGroupText><i className="fas fa-thumbtack"></i></InputGroupText>
-                            </InputGroupAddon>
-                            <Input
-                                type="text"
-                                name="Var"
-                                value={this.state.Var}
-                                placeholder="Variável"
-                                onFocus={this.onFocus}
-                                onBlur={this.onBlur}
-                                onChange={this.handleChange}
+                    <Row>
+                        <Col sm>
+                            <FormGroup>
+                                <CardTitle>{defaultMessage.Descriptive.Var.title}</CardTitle>
+                                <InputGroup className={this.state.focused}>
+                                    <InputGroupAddon addonType="prepend">
+                                        <InputGroupText><i className="fas fa-thumbtack"></i></InputGroupText>
+                                    </InputGroupAddon>
+                                    <Input
+                                        type="text"
+                                        name="Var"
+                                        value={this.state.Var}
+                                        placeholder={defaultMessage.Descriptive.Var.placeholder}
+                                        onFocus={this.onFocus}
+                                        onBlur={this.onBlur}
+                                        onChange={this.handleChange}
+                                    />
+                                </InputGroup>
+                            </FormGroup>
+                        </Col>
+                        <Col sm>
+                            <FormGroup>
+                                <CardTitle>{defaultMessage.Descriptive.distrib.title}</CardTitle>
+                                <ButtonGroup>
+                                    <Button color={this.buttoncolor('PopAmost', 'População')} onClick={() => this.onRadioBtnClick('PopAmost', 'População')} active={this.state.PopAmost === 'População'}>População</Button>
+                                    <Button color={this.buttoncolor('PopAmost', 'Amostra')} onClick={() => this.onRadioBtnClick('PopAmost', 'Amostra')} active={this.state.PopAmost === 'Amostra'}>Amostra</Button>
+                                </ButtonGroup>
+                            </FormGroup>
+                        </Col>
+                    </Row>
+                    <FormGroup>
+                        <CardTitle>{defaultMessage.Descriptive.Tags.title}</CardTitle>
+                        {!this.state.dispcsv ? (
+                            <TagInput
+                                tagStyle={`background: linear-gradient(to bottom right, #550300, #d32a23, #550300);`}
+                                placeholder={defaultMessage.Descriptive.Tags.placeholder}
+                                tags={this.state.tags}
+                                onTagsChanged={this.onTagsChanged}
                             />
-                        </InputGroup>
-                    </MDBCol>
-                    <MDBCol>
-                        <CardTitle>Variable values:</CardTitle>
-                        <TagInput tags={this.state.tags}
-                            tagStyle={`background: linear-gradient(to bottom right, #550300, #d32a23, #550300)!important;`}
-                            onTagsChanged={this.onTagsChanged}
-                            placeholder="Values"
-                        />
-                    </MDBCol>
+                        ) :
+                            <ul className="list-group mt-2">
+                                {tagcsv}
+                            </ul>}
+                    </FormGroup>
+                    <br />
+                    <Nav style={{ justifyContent: 'center' }}>
+                        <NavItem style={{ width: '220px' }}>
+                            <label
+                                id="csv"
+                                className={
+                                    this.state.csv
+                                        ? 'has-csv'
+                                        : ''}>
+                                <input
+                                    key={fileInputKey}
+                                    className="csv-input"
+                                    type="file"
+                                    accept=".csv"
+                                    ref={input => {
+                                        this.filesInput = input;
+                                    }}
+                                    name="file"
+                                    placeholder={null}
+                                    onChange={this.handlecsvChange}
+                                /><img
+                                    src={csvicon}
+                                    alt="select file"
+                                    style={{ height: '30px' }} />
+                                <p />
+                            </label>
+                            {this.state.acceptedFiles !== '' ? (
+                                <ul className="list-group mt-2">
+                                    {<Alert
+                                        toggle={this.onDismissCSV}
+                                        color={'success'} className="text-center">{this.state.acceptedFiles}</Alert>
+                                    }
+                                </ul>) : ''}
+                        </NavItem>
+                        <NavItem ><span>&nbsp;&nbsp;</span></NavItem >
+                        <NavItem >
+                            <Button
+                                className="btn-round btn-icon animation-on-hover"
+                                style={this.state.acceptedFiles !== '' ? { top: '15px' } : { top: '7px' }}
+                                color="success"
+                                size="sm"
+                                onClick={this.importCSV}
+                                disabled={this.state.acceptedFiles !== '' ? false : true}>
+                                <AddCircle color='#fff' ></AddCircle>
+                            </Button>
+                        </NavItem>
+                    </Nav>
                 </Container>
             </CardBody>
         } else if (Position === 1) {
             button = []
             if (this.state.collapse) {
-                table = <div style={{ margin: 20 }}>
-                    <h2>Table row dragging</h2>
+                table = <div style={{ justifyContent: 'center' }}>
                     <Table
+                        bordered={true}
+                        size={'small'}
                         responsive
-                        className={(this.state.dragIndex >= 0 && 'dragging-container') || ''}
+                        className={
+                            // (this.state.dragIndex >= 0 && 'dragging-container') || 
+                            this.header}
                         ref="dragContainer"
                         columns={this.columns}
                         pagination={false}
@@ -533,8 +826,6 @@ class Descriptive extends React.Component {
                     />
                 </div>
             }
-
-
             button.push(
                 <Button
                     className="btn-round btn-icon"
@@ -552,52 +843,42 @@ class Descriptive extends React.Component {
                 >
                     Show Results
               </Button>);
-
             if (this.state.Type === 'Qualitativo') {
                 ButtonType = <ButtonGroup>
                     <Button color={this.buttoncolor('QntQuali', 'Nominal')} onClick={() => this.onRadioBtnClick('QntQuali', 'Nominal')} active={this.state.rSelected === 'Nominal'}>Nominal</Button>
                     <Button color={this.buttoncolor('QntQuali', 'Ordinal')} onClick={() => this.onRadioBtnClick('QntQuali', 'Ordinal')} active={this.state.rSelected === 'Ordinal'}>Ordinal</Button>
                 </ButtonGroup>
             } else if (this.state.Type === 'Quantitativo') {
-
                 ButtonType = <ButtonGroup>
                     <Button color={this.buttoncolor('QntQuali', 'Contínua')} onClick={() => this.onRadioBtnClick('QntQuali', 'Contínua')} active={this.state.rSelected === 'Contínua'}>Contínua</Button>
                     <Button color={this.buttoncolor('QntQuali', 'Discreta')} onClick={() => this.onRadioBtnClick('QntQuali', 'Discreta')} active={this.state.rSelected === 'Discreta'}>Discreta</Button>
                 </ButtonGroup>
-
             }
             Card_Body = <CardBody style={{ marginLeft: '10%', marginRight: '10%' }}>
                 <Container >
-                    <MDBRow className="mx-auto" >
-
-                        <MDBCol >
-                            <CardTitle>Tipo de distribuição de dados: <b>{this.state.PopAmost}</b></CardTitle>
-                            <CardTitle>Tipo de análise de dados desejada:</CardTitle>
-                            {ButtonType}
-                            {/* <p>Selected: {this.state.rSelected}</p> */}
-                            {/* <Button style={{ width: '100%' }} color="primary" type="button" onClick={() => this.ResultCollapse()}>
-                                Aplicar
-                            </Button> */}
-
-                        </MDBCol>
-                        <MDBCol >
+                    <Row>
+                        <Col sm>
+                            <FormGroup>
+                                <CardTitle>{defaultMessage.Descriptive.distrib.title}</CardTitle>
+                                <ButtonGroup>
+                                    <Button disabled={true} color={this.buttoncolor('PopAmost', 'População')} onClick={() => this.onRadioBtnClick('PopAmost', 'População')} active={this.state.PopAmost === 'População'}>População</Button>
+                                    <Button disabled={true} color={this.buttoncolor('PopAmost', 'Amostra')} onClick={() => this.onRadioBtnClick('PopAmost', 'Amostra')} active={this.state.PopAmost === 'Amostra'}>Amostra</Button>
+                                </ButtonGroup>
+                            </FormGroup>
+                        </Col>
+                        <Col sm>
+                            <FormGroup>
+                                <CardTitle>{defaultMessage.Descriptive.Type.title}</CardTitle>
+                                {ButtonType}
+                            </FormGroup>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col sm>
                             {table}
-
-                            {/* <CardTitle>Variável estudada: <b>{this.state.Var}</b></CardTitle>
-                            <TagInput placeholder="Valores da variável" addTagOnEnterKeyPressed={false} tagStyle={`
-                            background: linear-gradient(to bottom left, #550300, #d32a23, #550300);`} inputStyle={`
-                            display: none;
-                            `} tagDeleteStyle={`
-                            display: none;
-                            `} tags={this.state.tags} /><br />
-                            <br /> */}
-                        </MDBCol>
-
-
-                    </MDBRow>
-
+                        </Col>
+                    </Row>
                 </Container>
-
             </CardBody>
         } else if (Position === 2) {
             button = []
@@ -654,14 +935,10 @@ class Descriptive extends React.Component {
                                     </Col>
                                 </Row>
                             </form>
-                            {/* <Button style={{ width: '100%' }} color="primary" type="button" onClick={() => this.Calcular()}>
-                                Aplicar
-                            </Button> */}
                         </MDBCol>
                     </MDBRow>
                     {/* <Collapse isOpen={this.state.collapse}> */}
                     <div><br /><br />
-
                         <ListGroup>
                             <ListGroupItem style={{ backgroundColor: 'transparent' }}
                                 className="justify-content-between">Média Ponderada Simples: <Badge pill>{this.state.weightedMean}</Badge></ListGroupItem>
@@ -688,29 +965,35 @@ class Descriptive extends React.Component {
                         </table>
                     </div>
                     <div className="chart-area">
-                    
-                    <Doughnut
-                      data={this.state.data}
+                        <Doughnut
+                            data={this.state.data}
 
-                      options={'sss'}
-                    />
-                  </div>
+                            options={'sss'}
+                        />
+                    </div>
                     {/* </Collapse> */}
-
-
-
                 </Container>
-
             </CardBody>
-
         }
         return (
             <>
                 <div className="content">
+                    <div className="react-notification-alert-container">
+                        <NotificationAlert ref="notificationAlert" />
+                    </div>
                     <Row>
                         <Col md="12">
                             <Card>
-                                <CardHeader>Estatística Descritiva</CardHeader>
+                                <CardHeader>{defaultMessage.Descriptive.title}
+                                    <span>&nbsp;&nbsp;</span>
+                                    <Button
+                                        className="btn-round btn-icon animation-on-hover"
+                                        color="info"
+                                        onClick={this.toggleModalHelp}
+                                        style={{ height: '20px', width: '15px' }}>?
+                                    </Button>
+                                    {ModalHelp}
+                                </CardHeader>
                                 <CardBody>
                                     <Card>
                                         <Stepper steps={this.state.steps}
@@ -718,18 +1001,11 @@ class Descriptive extends React.Component {
                                             activeColor={"#750f0f"}
                                             completeColor={"#c45858"} />
                                         <CardBody>
-                                            {
-                                                this.state.message !== '' ? (
-                                                    <Alert color={"danger"} className="text-center">{this.state.message}</Alert>
-                                                ) : ''}
-
                                             {Card_Body}
-
                                             {button[0]}
                                             {button[1]}
                                             {button[2]}
                                         </CardBody>
-
                                     </Card>
                                 </CardBody>
                             </Card>

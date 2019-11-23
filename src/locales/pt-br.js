@@ -39,7 +39,7 @@ module.exports = {
             "token": {
                   "title": "Token de Autenticação",
                   "error": "Insira o Token de Autenticação!",
-                  "msg": "O Token de Autenticação foi enviado no seu email!",                  
+                  "msg": "O Token de Autenticação foi enviado no seu email!",
                   "valid": "Token validado!",
                   "info": "Informe o Token de Autenticação que enviamos no seu email"
             },
@@ -92,7 +92,25 @@ module.exports = {
             }
       },
       "Descriptive": {
-            "title": "Análise Descritiva"
+            "title": "Análise Descritiva",            
+            "distrib": {
+                  "title": "Tipo de distribuição de dados:",
+                  "error": "Selecione um tipo de distribuição de dados!"
+            },
+            "Var": {
+                  "title": "Nome da variável em estudo:",
+                  "placeholder": "Variável",
+                  "error": "Insira um nome para variável em estudo!"
+            },
+            "Tags": {
+                  "title": "Valores da variável em estudo:",
+                  "placeholder": "Valores",
+                  "error": "Insira algum valor para variável em estudo!"
+            },
+            "Type": {
+                  "title": "Sub-tipo da análise em estudo:",
+                  "error": "Selecione um sub-tipo para análise em estudo!"
+            }
       },
       "Probability": {
             "title": "Probabilidade",
@@ -181,7 +199,7 @@ module.exports = {
             },
             "xyerror": "A quantidade de valores para variável independente e dependente deve ser igual!",
             "csv": {
-                  "error1": "Formato de arquivo não compatível, por favor, faça o download do arquivo exemplo (clique em Ajuda) e teste-o primeiro!",
+                  "error1": "Formato de arquivo não compatível. Por favor, faça o download do arquivo exemplo (clique em Ajuda) e teste-o primeiro!",
                   "error2": "Há uma célula má formatada em seu arquivo, verifique!",
                   "error3": "Formato de arquivo não compátivel, apenas arquivos .csv são aceitos!"
             },

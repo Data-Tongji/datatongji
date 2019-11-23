@@ -87,7 +87,7 @@ export class Login extends React.Component {
       if (response.ok) {
         localStorage.setItem('token', token);
         localStorage.setItem('valid', "OK");
-        this.getUserConfig(token);
+        await this.getUserConfig(token);
         this.setState({
           loading: false
         });
@@ -249,7 +249,7 @@ export class Login extends React.Component {
           <div className="react-notification-alert-container">
             <NotificationAlert ref="notificationAlert" />
           </div>
-          <div class="notranslate">
+          {/* <div class="notranslate"> */}
           <Col className="col_center_login" md="4">
             <Card className="card-user">
               <CardBody>
@@ -355,7 +355,7 @@ export class Login extends React.Component {
                 </div>
             </Card>
           </Col>
-          </div>
+          {/* </div> */}
         </Row>
       </>
     );

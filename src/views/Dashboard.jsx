@@ -37,6 +37,11 @@ class Dashboard extends React.Component {
       bigChartData: "data1"
     };
   }
+
+  componentDidMount() {
+    // window.location.reload();
+  }
+
   setBgChartData = name => {
     this.setState({
       bigChartData: name

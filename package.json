@@ -29,6 +29,7 @@
     "clsx": "^1.0.4",
     "css-animation": "^2.0.4",
     "dotenv": "^8.1.0",
+    "emotion": "^10.0.23",
     "flag-icon-css": "^3.4.5",
     "gh-pages": "^2.1.1",
     "grommet": "^2.7.8",
