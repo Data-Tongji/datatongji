@@ -173,11 +173,16 @@ class AdminNavbar extends React.Component {
                     <DropdownMenu className="dropdown-navbar" right tag="ul">
                       <NavLink tag="li">
                         <Link to="/admin/user-profile">
-                          <DropdownItem className="nav-item" >{defaultMessage.NavBar.ac1}</DropdownItem>
+                          <DropdownItem className="nav-item" ><i class="fas fa-user" size="2x"/>{' '}{defaultMessage.NavBar.ac1}</DropdownItem>
                         </Link>
                       </NavLink>
                       <NavLink tag="li">
-                        <DropdownItem className="nav-item" onClick={this.logout}>{defaultMessage.NavBar.ac2}</DropdownItem>
+                        <Link to="/auth/talkwithus">
+                          <DropdownItem className="nav-item" ><i class="fas fa-envelope" size="2x"/>{' '}{defaultMessage.Menu.Talk}</DropdownItem>
+                        </Link>
+                      </NavLink>
+                      <NavLink tag="li">
+                        <DropdownItem className="nav-item" onClick={this.logout}><i class="fas fa-sign-out-alt"/>{' '}{defaultMessage.NavBar.ac2}</DropdownItem>
                       </NavLink>
                     </DropdownMenu>
                   </UncontrolledDropdown>

@@ -1,6 +1,6 @@
 import React from "react";
 import { MDBRow, MDBCol } from 'mdbreact';
-import { Save, AddCircle } from 'grommet-icons';
+import { Save, AddCircle, Download } from 'grommet-icons';
 import Stepper from 'react-stepper-horizontal';
 import { TagInput } from '../components/reactjs-tag-input';
 import InputRange from 'react-input-range';
@@ -18,7 +18,9 @@ import {
     CardBody,
     CardHeader,
     CardTitle,
+    Collapse,
     Container,
+    Label,
     Modal,
     ModalBody,
     ModalFooter,
@@ -92,6 +94,7 @@ class Descriptive extends React.Component {
             tags: [],
             vet: [],
             collapse: false,
+            collapsetable: false,
             stepPosition: 0,
             btncolor: "primary",
             focused: "",
@@ -100,7 +103,7 @@ class Descriptive extends React.Component {
             Var: '',
             step: 1,
             value: 0,
-            MedSep: "Percentil",
+            MedSep: defaultMessage.Descriptive.spt.type.tp1,
             cSelected: [],
             items: [],
             test: [],
@@ -138,33 +141,33 @@ class Descriptive extends React.Component {
         });
         this.columns = [
             {
-                title: 'Variável',
+                title: `${defaultMessage.Descriptive.Table.col1}`,
                 dataIndex: 'value',
                 align: 'center',
             },
             {
-                title: 'Fi',
+                title: `${defaultMessage.Descriptive.Table.col2}`,
                 dataIndex: 'frequency',
                 align: 'center',
             },
             {
-                title: 'Fac',
+                title: `${defaultMessage.Descriptive.Table.col3}`,
                 dataIndex: 'cumulativeFrequency',
                 align: 'center',
             },
             {
-                title: 'Fr%',
-                dataIndex: 'accumulatedPercentage',
+                title: `${defaultMessage.Descriptive.Table.col4}`,
+                dataIndex: 'relativeFrequency',
                 align: 'center',
             },
             {
-                title: 'Fac%',
-                dataIndex: 'relativeFrequency',
+                title: `${defaultMessage.Descriptive.Table.col5}`,
+                dataIndex: 'accumulatedPercentage',
                 align: 'center',
             },
 
             {
-                title: 'Operates',
+                title: `${defaultMessage.Descriptive.Table.col6}`,
                 key: 'operate',
                 width: '90px',
                 align: 'center',
@@ -205,7 +208,7 @@ class Descriptive extends React.Component {
         });
     };
 
-    toggleModalDemo() {
+    toggleModalDemo = () => {
         this.setState({
             modalDemo: !this.state.modalDemo
         });
@@ -234,7 +237,8 @@ class Descriptive extends React.Component {
         const { csvfile } = this.state;
         Papa.parse(csvfile, {
             skipEmptyLines: 'greedy',
-            // dynamicTyping: true,
+            encoding: "ISO-8859-1",
+            dynamicTyping: true,
             keepEmptyRows: false,
             complete: this.updateData,
             header: true,
@@ -264,7 +268,7 @@ class Descriptive extends React.Component {
                         inputValue = inputValue.replace(/,{1,}/g, '.');
                         inputValue = inputValue.replace(/\.{2,}/g, '.');
                         inputValue = inputValue.replace(/\;{2,}/g, ';');
-                        inputValue = inputValue.normalize('NFD').replace(/([\u0300-\u036f]|[^0-9a-zA-Z\s,-\.\;])/g, '');
+                        inputValue = inputValue.replace(/([\u0300-\u036f]|[^0-9a-zA-ZáàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ\s,-\.\;])/g, '');
                         if (isNaN(inputValue)) {
                             inputValue = inputValue.replace(/,{1,}/g, '.');
                             inputValue = inputValue.replace(/\.{1,}/g, '');
@@ -308,11 +312,11 @@ class Descriptive extends React.Component {
     onRadioBtnClick(categ, rSelected) {
         if (rSelected !== 'Ordinal') {
             this.setState({
-                collapse: false
+                collapsetable: false
             });
         } else {
             this.setState({
-                collapse: true
+                collapsetable: true
             });
         }
 
@@ -357,9 +361,20 @@ class Descriptive extends React.Component {
 
     async SendArray() {
         let aux = [];
-        for (let i = 0; i < this.state.tags.length; i++) {
-            aux.push((this.state.tags[i].displayValue));
-        }
+        if (this.state.Type === 'Qualitative' && this.state.rSelected === 'Ordinal') {
+            for (let i = 0; i < this.state.vet.length; i++) {
+                aux.splice(i, 0,
+                    {
+                        value: this.state.vet[i].value,
+                        frequency: this.state.vet[i].frequency
+                    }
+                );
+            }
+        } else {
+            for (let i = 0; i < this.state.tags.length; i++) {
+                aux.push((this.state.tags[i].displayValue));
+            }
+        };
         const requestInfo = {
             method: 'POST',
             body: JSON.stringify({
@@ -374,11 +389,9 @@ class Descriptive extends React.Component {
                 'Authorization': localStorage.getItem('token')
             }),
         };
-
-        try {
+        try {//https://datatongji-backend.herokuapp.com
             const response = await fetch('https://datatongji-backend.herokuapp.com/descriptive/simple_frequency', requestInfo);
             var result = await response.json();
-            console.log(result);
             if (response.ok) {
                 this.setState({
                     Type: result.typeVar,
@@ -389,6 +402,7 @@ class Descriptive extends React.Component {
                     coefvar: result.coefvar,
                     percentile: result.percentile,
                     rSelected: result.subType,
+                    btnSave: false,
                     loading: false
                 });
                 if (result.mode.length > 1) {
@@ -413,6 +427,69 @@ class Descriptive extends React.Component {
         }
     };
 
+    saveValidation = () => {
+        if (this.state.Name === '') {
+            this.Name.focus();
+        }
+        else {
+            this.setState({
+                loadingsv: true
+            });
+            var body = {
+                "name": this.state.Name,
+                "data": {
+                    "type": this.state.Type,
+                    "subType": this.state.rSelected,
+                    "PopAmost": this.state.PopAmost,
+                    "name": this.state.Var,
+                    "values": this.state.tags
+                },
+                "results": {
+                    "dataDescriptive": this.state.vet,
+                    "weightedMean": this.state.weightedMean,
+                    "median": this.state.median,
+                    "variance": this.state.variance,
+                    "deviation": this.state.deviation,
+                    "coefvar": this.state.coefvar,
+                    "percentile": this.state.percentile,
+                    "mode": this.state.mode,
+                },
+                "language": localStorage.getItem('defaultLanguage'),
+            };
+            console.log(JSON.stringify(body));
+            this.saveChanges(body);
+        };
+    }
+
+    async saveChanges(body) {
+        const requestInfo = {
+            method: 'POST',
+            body: JSON.stringify(body),
+            headers: new Headers({
+                'Content-Type': 'application/json',
+                'Authorization': localStorage.getItem('token')
+            }),
+        };
+        try {
+            const response = await fetch('https://datatongji-backend.herokuapp.com/descriptive/save', requestInfo);
+            var promise = await response.json();
+            if (response.ok) {
+                this.notify('br', defaultMessage.Modal.save.message, 'fas fa-check', 'success');
+                this.setState({
+                    loadingsv: false
+                });
+                this.toggleModalDemo();
+            } else {
+                throw new Error(promise.error);
+            }
+        } catch (e) {
+            this.notify('tc', e.message, 'fas fa-exclamation-triangle', 'danger');
+            this.setState({
+                loading: false
+            });
+        }
+    };
+
     onMouseDown(e) {
         const target = this.getTrNode(e.target);
         if (target) {
@@ -425,11 +502,9 @@ class Descriptive extends React.Component {
     onDragStart(e) {
         const target = this.getTrNode(e.target);
         if (target) {
-            //       e.dataTransfer.setData('Text', '');
             e.dataTransfer.effectAllowed = 'move';
             target.parentElement.ondragenter = this.onDragEnter;
             target.parentElement.ondragover = function (ev) {
-                //         ev.target.dataTransfer.effectAllowed = 'none'
                 ev.preventDefault();
                 return true;
             };
@@ -443,7 +518,7 @@ class Descriptive extends React.Component {
         this.setState({
             draggedIndex: target ? target.rowIndex - 1 : -1,
         });
-    }
+    };
 
     onDragEnd(e) {
         const target = this.getTrNode(e.target);
@@ -455,11 +530,11 @@ class Descriptive extends React.Component {
             target.parentElement.ondragover = null;
             this.changeRowIndex();
         }
-    }
+    };
 
     getTrNode(target) {
         return closest(target, 'tr');
-    }
+    };
 
     changeRowIndex() {
         const result = {};
@@ -479,11 +554,17 @@ class Descriptive extends React.Component {
             result.draggedIndex = -1;
         }
         this.setState(result);
-    }
+    };
 
     renderTableHeader() {
         let header = Object.keys(
-            { Variável: 'se', Fi: '2', Fac: 2, 'Fr%': '25.00', 'Fac%': '25.00' }
+            {
+                Variável: 'se',
+                Fi: '2',
+                Fac: 2,
+                'Fr%': '25.00',
+                'Fac%': '25.00'
+            }
         )
         return header.map((key, index) => {
             return <th key={index} style={{ background: 'linear-gradient(to bottom left, #550300, #d32a23, #550300)' }}>{key}</th>
@@ -516,25 +597,25 @@ class Descriptive extends React.Component {
     }
 
     RangeStep = (med) => {
-        if (med === 'Quartil') {
+        if (med.includes('Quartil')) {
             this.setState({
                 MedSep: med,
                 step: 25
             })
         }
-        else if (med === 'Quintil') {
+        else if (med.includes('Quintil')) {
             this.setState({
                 MedSep: med,
                 step: 20
             })
         }
-        else if (med === 'Decil') {
+        else if (med.includes('Decil')) {
             this.setState({
                 MedSep: med,
                 step: 10
             })
         }
-        else if (med === 'Percentil') {
+        else if (med.includes('Percentil')) {
             this.setState({
                 MedSep: med,
                 step: 1
@@ -558,31 +639,42 @@ class Descriptive extends React.Component {
         this.setState({
             focused: ""
         });
-
     };
 
     handleChange = e => {
         this.setState({ [e.target.name]: e.target.value });
     };
 
-    ResultCollapse = e => {
-        this.setState(state => ({ collapse: !this.state.collapse }));
-        if (this.state.stepPosition === 2) {
-            this.SendArray();
-        }
-    };
-
     async positionStep(steps) {
         var Position = this.state.stepPosition;
-        console.log(this.state.stepPosition);
         if (steps === 1) {
-            if (await this.inputValidation())
-                return this.setState({ stepPosition: Position += + 1 });
+            if (await this.inputValidation()) {
+                if (Position !== 1) {
+                    this.setState({
+                        rSelected: '',
+                    });
+                }
+                this.setState({
+                    stepPosition: Position += + 1,
+                    collapsetable: false
+                });
+            }
         }
-
-        if (steps !== 1 && Position > 0) {
-            await this.SendArray();
-            return this.setState({ stepPosition: Position += - 1 });
+        if (steps !== 1) {
+            if ((Position - 1) > 0) {
+                await this.SendArray();
+                // return this.setState({
+                //     stepPosition: Position += - 1,
+                //     collapsetable: false
+                // });
+            }
+            // else {
+            return this.setState({
+                stepPosition: Position += - 1,
+                rSelected: '',
+                collapsetable: false
+            });
+            // }
         }
     };
 
@@ -608,7 +700,7 @@ class Descriptive extends React.Component {
         // this.Calcular();
     };
 
-    inputValidation = () => {
+    async inputValidation() {
         if (this.state.stepPosition === 0) {
             if (this.state.PopAmost === "") {
                 return this.notify('br', defaultMessage.Descriptive.distrib.error, 'fas fa-exclamation-triangle', 'danger');
@@ -619,7 +711,7 @@ class Descriptive extends React.Component {
                 return this.notify('br', defaultMessage.Descriptive.Tags.error, 'fas fa-exclamation-triangle', 'danger');
             }
             else {
-                this.SendArray();
+                await this.SendArray();
                 return true;
             }
         }
@@ -628,6 +720,7 @@ class Descriptive extends React.Component {
                 return this.notify('br', defaultMessage.Descriptive.Type.error, 'fas fa-exclamation-triangle', 'danger');
             }
             else {
+                await this.SendArray();
                 return true;
             }
         }
@@ -657,14 +750,19 @@ class Descriptive extends React.Component {
                 </button>
             </div>
             <ModalBody style={{ textAlign: 'justify' }}>
-                <div dangerouslySetInnerHTML={{ __html: defaultMessage.Modal.info.corregText }} />
+                <div dangerouslySetInnerHTML={{ __html: defaultMessage.Modal.info.descText }} />
             </ModalBody>
             <ModalFooter>
                 <Button color="secondary" onClick={this.toggleModalHelp}>
                     {defaultMessage.Modal.btn1}
                 </Button>
+                <Button href="https://www.dropbox.com/s/xc7dds1mh9i8aov/Descriptive.csv?dl=1" className="btn-round animation-on-hover" color="success">
+                    <form class="form-horizontal"> {defaultMessage.Modal.btn3}</form>
+                </Button>
             </ModalFooter>
         </Modal>)
+
+
 
         if (this.state.dispcsv) {
             tagcsv =
@@ -694,11 +792,13 @@ class Descriptive extends React.Component {
             />
         };
 
+        let ResultItems;
+
         if (Position === 0) {
             button.push(
                 <Button
                     disabled={true}
-                    className="btn-round btn-icon"
+                    className="btn-round btn-icon animation-on-hover"
                     color="primary"
                     onClick={() => this.positionStep(0)}>
                     <i className="tim-icons icon-double-left" />
@@ -706,7 +806,7 @@ class Descriptive extends React.Component {
             );
             button.push(
                 <Button
-                    className="btn-round btn-icon"
+                    className="btn-round btn-icon animation-on-hover"
                     color="primary"
                     onClick={() => this.positionStep(1)}>
                     <i className="tim-icons icon-double-right" />
@@ -739,8 +839,8 @@ class Descriptive extends React.Component {
                             <FormGroup>
                                 <CardTitle>{defaultMessage.Descriptive.distrib.title}</CardTitle>
                                 <ButtonGroup>
-                                    <Button color={this.buttoncolor('PopAmost', 'População')} onClick={() => this.onRadioBtnClick('PopAmost', 'População')} active={this.state.PopAmost === 'População'}>População</Button>
-                                    <Button color={this.buttoncolor('PopAmost', 'Amostra')} onClick={() => this.onRadioBtnClick('PopAmost', 'Amostra')} active={this.state.PopAmost === 'Amostra'}>Amostra</Button>
+                                    <Button color={this.buttoncolor('PopAmost', 'Population')} onClick={() => this.onRadioBtnClick('PopAmost', 'Population')} active={this.state.PopAmost === 'Population'}>{defaultMessage.Descriptive.popamost.pop}</Button>
+                                    <Button color={this.buttoncolor('PopAmost', 'Sample')} onClick={() => this.onRadioBtnClick('PopAmost', 'Sample')} active={this.state.PopAmost === 'Sample'}>{defaultMessage.Descriptive.popamost.amost}</Button>
                                 </ButtonGroup>
                             </FormGroup>
                         </Col>
@@ -810,25 +910,23 @@ class Descriptive extends React.Component {
             </CardBody>
         } else if (Position === 1) {
             button = []
-            if (this.state.collapse) {
-                table = <div style={{ justifyContent: 'center' }}>
-                    <Table
-                        bordered={true}
-                        size={'small'}
-                        responsive
-                        className={
-                            // (this.state.dragIndex >= 0 && 'dragging-container') || 
-                            this.header}
-                        ref="dragContainer"
-                        columns={this.columns}
-                        pagination={false}
-                        dataSource={this.state.vet}
-                    />
-                </div>
-            }
+            table = <div style={{ justifyContent: 'center' }}>
+                <Table
+                    bordered={true}
+                    size={'small'}
+                    responsive
+                    className={
+                        // (this.state.dragIndex >= 0 && 'dragging-container') || 
+                        this.header}
+                    ref="dragContainer"
+                    columns={this.columns}
+                    pagination={false}
+                    dataSource={this.state.vet}
+                />
+            </div>
             button.push(
                 <Button
-                    className="btn-round btn-icon"
+                    className="btn-round btn-icon animation-on-hover"
                     color="primary"
                     onClick={() => this.positionStep(0)}>
                     <i className="tim-icons icon-double-left" />
@@ -836,22 +934,20 @@ class Descriptive extends React.Component {
             );
             button.push(
                 <Button
-                    className="btn-round animation-on-hover"
+                    className="btn-round btn-icon animation-on-hover"
                     color="primary"
-                    type="button"
-                    onClick={() => this.positionStep(1)}
-                >
-                    Show Results
-              </Button>);
-            if (this.state.Type === 'Qualitativo') {
+                    onClick={() => this.positionStep(1)}>
+                    <i className="tim-icons icon-double-right" />
+                </Button>);
+            if (this.state.Type === 'Qualitative') {
                 ButtonType = <ButtonGroup>
-                    <Button color={this.buttoncolor('QntQuali', 'Nominal')} onClick={() => this.onRadioBtnClick('QntQuali', 'Nominal')} active={this.state.rSelected === 'Nominal'}>Nominal</Button>
-                    <Button color={this.buttoncolor('QntQuali', 'Ordinal')} onClick={() => this.onRadioBtnClick('QntQuali', 'Ordinal')} active={this.state.rSelected === 'Ordinal'}>Ordinal</Button>
+                    <Button color={this.buttoncolor('QntQuali', 'Nominal')} onClick={() => this.onRadioBtnClick('QntQuali', 'Nominal')} active={this.state.rSelected === 'Nominal'}>{defaultMessage.Descriptive.quali.type1}</Button>
+                    <Button color={this.buttoncolor('QntQuali', 'Ordinal')} onClick={() => this.onRadioBtnClick('QntQuali', 'Ordinal')} active={this.state.rSelected === 'Ordinal'}>{defaultMessage.Descriptive.quali.type2}</Button>
                 </ButtonGroup>
-            } else if (this.state.Type === 'Quantitativo') {
+            } else if (this.state.Type === 'Quantitative') {
                 ButtonType = <ButtonGroup>
-                    <Button color={this.buttoncolor('QntQuali', 'Contínua')} onClick={() => this.onRadioBtnClick('QntQuali', 'Contínua')} active={this.state.rSelected === 'Contínua'}>Contínua</Button>
-                    <Button color={this.buttoncolor('QntQuali', 'Discreta')} onClick={() => this.onRadioBtnClick('QntQuali', 'Discreta')} active={this.state.rSelected === 'Discreta'}>Discreta</Button>
+                    <Button color={this.buttoncolor('QntQuali', 'Continuous')} onClick={() => this.onRadioBtnClick('QntQuali', 'Continuous')} active={this.state.rSelected === 'Continuous'}>{defaultMessage.Descriptive.quant.type1}</Button>
+                    <Button color={this.buttoncolor('QntQuali', 'Discrete')} onClick={() => this.onRadioBtnClick('QntQuali', 'Discrete')} active={this.state.rSelected === 'Discrete'}>{defaultMessage.Descriptive.quant.type2}</Button>
                 </ButtonGroup>
             }
             Card_Body = <CardBody style={{ marginLeft: '10%', marginRight: '10%' }}>
@@ -861,8 +957,8 @@ class Descriptive extends React.Component {
                             <FormGroup>
                                 <CardTitle>{defaultMessage.Descriptive.distrib.title}</CardTitle>
                                 <ButtonGroup>
-                                    <Button disabled={true} color={this.buttoncolor('PopAmost', 'População')} onClick={() => this.onRadioBtnClick('PopAmost', 'População')} active={this.state.PopAmost === 'População'}>População</Button>
-                                    <Button disabled={true} color={this.buttoncolor('PopAmost', 'Amostra')} onClick={() => this.onRadioBtnClick('PopAmost', 'Amostra')} active={this.state.PopAmost === 'Amostra'}>Amostra</Button>
+                                    <Button disabled={true} color={this.buttoncolor('PopAmost', 'Population')} onClick={() => this.onRadioBtnClick('PopAmost', 'Population')} active={this.state.PopAmost === 'Population'}>{defaultMessage.Descriptive.popamost.pop}</Button>
+                                    <Button disabled={true} color={this.buttoncolor('PopAmost', 'Sample')} onClick={() => this.onRadioBtnClick('PopAmost', 'Sample')} active={this.state.PopAmost === 'Sample'}>{defaultMessage.Descriptive.popamost.amost}</Button>
                                 </ButtonGroup>
                             </FormGroup>
                         </Col>
@@ -875,39 +971,127 @@ class Descriptive extends React.Component {
                     </Row>
                     <Row>
                         <Col sm>
-                            {table}
+                            <Collapse isOpen={this.state.collapsetable}>
+                                {table}
+                            </Collapse>
                         </Col>
                     </Row>
                 </Container>
             </CardBody>
         } else if (Position === 2) {
+            if (this.state.Type === 'Qualitative') {
+                ButtonType = <ButtonGroup>
+                    <Button disabled={true} color={this.buttoncolor('QntQuali', 'Nominal')} onClick={() => this.onRadioBtnClick('QntQuali', 'Nominal')} active={this.state.rSelected === 'Nominal'}>{defaultMessage.Descriptive.quali.type1}</Button>
+                    <Button disabled={true} color={this.buttoncolor('QntQuali', 'Ordinal')} onClick={() => this.onRadioBtnClick('QntQuali', 'Ordinal')} active={this.state.rSelected === 'Ordinal'}>{defaultMessage.Descriptive.quali.type2}</Button>
+                </ButtonGroup>
+            } else if (this.state.Type === 'Quantitative') {
+                ButtonType = <ButtonGroup>
+                    <Button disabled={true} color={this.buttoncolor('QntQuali', 'Continuous')} onClick={() => this.onRadioBtnClick('QntQuali', 'Continuous')} active={this.state.rSelected === 'Continuous'}>{defaultMessage.Descriptive.quant.type1}</Button>
+                    <Button disabled={true} color={this.buttoncolor('QntQuali', 'Discrete')} onClick={() => this.onRadioBtnClick('QntQuali', 'Discrete')} active={this.state.rSelected === 'Discrete'}>{defaultMessage.Descriptive.quant.type2}</Button>
+                </ButtonGroup>
+            }
             button = []
             button.push(
                 <Button
-                    className="btn-round btn-icon"
+                    className="btn-round btn-icon animation-on-hover"
                     color="primary"
                     onClick={() => this.positionStep(0)}>
                     <i className="tim-icons icon-double-left" />
                 </Button>
             );
-
+            button.push(
+                <Button
+                    className="btn-round btn-icon animation-on-hover"
+                    color="primary"
+                    onClick={this.toggleModalDemo}
+                    disabled={this.state.btnSave}>
+                    <Save color='#fff' ></Save>
+                </Button>
+            );
+            if (this.state.Type === 'Qualitative') {
+                ResultItems =
+                    <ListGroup>
+                        <ListGroupItem style={{ backgroundColor: 'transparent' }}
+                            className="justify-content-between">{defaultMessage.Descriptive.Results.mode}: <Badge pill>{this.state.mode}</Badge></ListGroupItem>
+                        <ListGroupItem style={{ backgroundColor: 'transparent' }}
+                            className="justify-content-between">{defaultMessage.Descriptive.Results.median}: <Badge pill>{this.state.median}</Badge></ListGroupItem>
+                        <ListGroupItem style={{ backgroundColor: 'transparent' }}
+                            className="justify-content-between">{this.state.MedSep} ({((this.state.value * (100 / this.state.step)) / 100)}): <Badge pill>{this.state.percentile[this.state.value - 1]}</Badge></ListGroupItem>
+                    </ListGroup>;
+            }
+            else {
+                ResultItems = <ListGroup>
+                    <ListGroupItem style={{ backgroundColor: 'transparent' }}
+                        className="justify-content-between">{defaultMessage.Descriptive.Results.wmean}: <Badge pill>{this.state.weightedMean}</Badge></ListGroupItem>
+                    <ListGroupItem style={{ backgroundColor: 'transparent' }}
+                        className="justify-content-between">{defaultMessage.Descriptive.Results.mode}: <Badge pill>{this.state.mode}</Badge></ListGroupItem>
+                    <ListGroupItem style={{ backgroundColor: 'transparent' }}
+                        className="justify-content-between">{defaultMessage.Descriptive.Results.median}: <Badge pill>{this.state.median}</Badge></ListGroupItem>
+                    <ListGroupItem style={{ backgroundColor: 'transparent' }}
+                        className="justify-content-between">{defaultMessage.Probability.Results.var}: <Badge pill>{this.state.variance}</Badge></ListGroupItem>
+                    <ListGroupItem style={{ backgroundColor: 'transparent' }}
+                        className="justify-content-between">{defaultMessage.Probability.Results.std}: <Badge pill>{this.state.deviation}</Badge></ListGroupItem>
+                    <ListGroupItem style={{ backgroundColor: 'transparent' }}
+                        className="justify-content-between">{defaultMessage.Probability.Results.coef}: <Badge pill>{this.state.coefvar}</Badge></ListGroupItem>
+                    <ListGroupItem style={{ backgroundColor: 'transparent' }}
+                        className="justify-content-between">{this.state.MedSep} ({((this.state.value * (100 / this.state.step)) / 100)}): <Badge pill>{this.state.percentile[this.state.value - 1]}</Badge></ListGroupItem>
+                </ListGroup>;
+            }
             Card_Body = <CardBody style={{ marginLeft: '10%', marginRight: '10%' }}>
                 <Container >
-                    <MDBRow className="mx-auto" >
-                        {/* <MDBCol >
-                            <CardTitle>Variável estudada: <b>{this.state.Var}</b></CardTitle>
-                            <TagInput placeholder="Valores da variável" addTagOnEnterKeyPressed={false} tagStyle={`
-                            background: linear-gradient(to bottom left, #550300, #d32a23, #550300);`} inputStyle={`
-                            display: none;
-                            `} tagDeleteStyle={`
-                            display: none;
-                            `} tags={this.state.tags} /><br />
-                            <br />
-                        </MDBCol> */}
-                        <MDBCol >
-                            <CardTitle>Tipo de distribuição de dados: <b>{this.state.PopAmost}</b></CardTitle>
-                            <CardTitle>Tipo de análise de dados desejada: <b>{this.state.rSelected}</b></CardTitle>
-                            <ComboBox value={this.state.MedSep} data={['Quartil', 'Quintil', 'Decil', 'Percentil']} onChange={event => this.onChangeCB(event.target.value)} color={'primary'} style={{ color: 'black' }} /><br /><br />
+                    <Modal isOpen={this.state.modalDemo} toggle={this.toggleModalDemo}>
+                        <div className="modal-header">
+                            <h5 className="modal-title" id="exampleModalLabel">
+                                <b>{defaultMessage.Modal.save.title}</b>
+                            </h5>
+                            <button
+                                type="button"
+                                className="close"
+                                data-dismiss="modal"
+                                aria-hidden="true"
+                                onClick={this.toggleModalDemo}
+                            >
+                                <i className="tim-icons icon-simple-remove" />
+                            </button>
+                        </div>
+                        <ModalBody>
+                            <p>{defaultMessage.Modal.save.text}</p>
+                            <Label for="error" className="control-label">{defaultMessage.Modal.save.input1}:</Label>
+                            <Input type="text" name="Name" placeholder={defaultMessage.Modal.save.lbl1}
+                                autoFocus
+                                onFocus={this.onFocus}
+                                ref={(input) => { this.Name = input; }}
+                                onInput={this.handleChange.bind(this)}
+                                style={{ backgroundColor: '#1c2336', color: '#fff' }} />
+                        </ModalBody>
+                        <ModalFooter>
+                            <Button className="btn-round animation-on-hover" color="secondary" onClick={this.toggleModalDemo}>
+                                {defaultMessage.Modal.btn1}
+                            </Button>
+                            <Button disabled={this.state.loadingsv} className="btn-round animation-on-hover" color="primary" onClick={this.saveValidation}>
+                                {saveBtn}
+                            </Button>
+                        </ModalFooter>
+                    </Modal>
+                    <Row>
+                        <Col sm>
+                            <FormGroup>
+                                <CardTitle>{defaultMessage.Descriptive.distrib.title}</CardTitle>
+                                <ButtonGroup>
+                                    <Button disabled={true} color={this.buttoncolor('PopAmost', 'Population')} onClick={() => this.onRadioBtnClick('PopAmost', 'Population')} active={this.state.PopAmost === 'Population'}>{defaultMessage.Descriptive.popamost.pop}</Button>
+                                    <Button disabled={true} color={this.buttoncolor('PopAmost', 'Sample')} onClick={() => this.onRadioBtnClick('PopAmost', 'Sample')} active={this.state.PopAmost === 'Sample'}>{defaultMessage.Descriptive.popamost.amost}</Button>
+                                </ButtonGroup>
+                            </FormGroup>
+                            <FormGroup>
+                                <CardTitle>{defaultMessage.Descriptive.Type.title}</CardTitle>
+                                {ButtonType}
+                            </FormGroup>
+                        </Col>
+                        <Col sm>
+                            <FormGroup>
+                                <CardTitle>{defaultMessage.Descriptive.spt.title}</CardTitle>
+                                <ComboBox value={this.state.MedSep} data={[`${defaultMessage.Descriptive.spt.type.tp4}`, `${defaultMessage.Descriptive.spt.type.tp3}`, `${defaultMessage.Descriptive.spt.type.tp2}`, `${defaultMessage.Descriptive.spt.type.tp1}`]} onChange={event => this.onChangeCB(event.target.value)} color={'primary'} style={{ color: 'black' }} /><br /><br />
+                            </FormGroup>
                             <form>
                                 <Row>
                                     <Col className="text-center text-md-right" sm={{ size: 2 }}>
@@ -935,43 +1119,23 @@ class Descriptive extends React.Component {
                                     </Col>
                                 </Row>
                             </form>
-                        </MDBCol>
-                    </MDBRow>
-                    {/* <Collapse isOpen={this.state.collapse}> */}
+                        </Col>
+                    </Row>
                     <div><br /><br />
-                        <ListGroup>
-                            <ListGroupItem style={{ backgroundColor: 'transparent' }}
-                                className="justify-content-between">Média Ponderada Simples: <Badge pill>{this.state.weightedMean}</Badge></ListGroupItem>
-                            <ListGroupItem style={{ backgroundColor: 'transparent' }}
-                                className="justify-content-between">Moda: <Badge pill>{this.state.mode}</Badge></ListGroupItem>
-                            <ListGroupItem style={{ backgroundColor: 'transparent' }}
-                                className="justify-content-between">Mediana: <Badge pill>{this.state.median}</Badge></ListGroupItem>
-                            <ListGroupItem style={{ backgroundColor: 'transparent' }}
-                                className="justify-content-between">Variância: <Badge pill>{this.state.variance}</Badge></ListGroupItem>
-                            <ListGroupItem style={{ backgroundColor: 'transparent' }}
-                                className="justify-content-between">Desvio Padrão: <Badge pill>{this.state.deviation}</Badge></ListGroupItem>
-                            <ListGroupItem style={{ backgroundColor: 'transparent' }}
-                                className="justify-content-between">Coeficiente de Variação: <Badge pill>{this.state.coefvar}</Badge></ListGroupItem>
-                            <ListGroupItem style={{ backgroundColor: 'transparent' }}
-                                className="justify-content-between">{this.state.MedSep} ({((this.state.value * (100 / this.state.step)) / 100)}): <Badge pill>{this.state.percentile[this.state.value - 1]}</Badge></ListGroupItem>
-
-                        </ListGroup><br /><br />
-
                         <table id='students' hover>
                             <tbody>
                                 <tr>{this.renderTableHeader()}</tr>
                                 {this.renderTableData()}
                             </tbody>
-                        </table>
+                        </table><br />
+                        {ResultItems}
                     </div>
-                    <div className="chart-area">
+                    <br /><div className="chart-area">
                         <Doughnut
                             data={this.state.data}
-
                             options={'sss'}
                         />
                     </div>
-                    {/* </Collapse> */}
                 </Container>
             </CardBody>
         }

@@ -589,6 +589,9 @@ class CorrelationRegression extends React.Component {
         <Button color="secondary" onClick={this.toggleModalHelp}>
           {defaultMessage.Modal.btn1}
         </Button>
+        <Button href="https://www.dropbox.com/s/wqwtkcpn6c6x2bu/Correlation-Regression.csv?dl=1" className="btn-round animation-on-hover" color="success">
+          <form class="form-horizontal"> {defaultMessage.Modal.btn3}</form>
+        </Button>
       </ModalFooter>
     </Modal>)
     return (

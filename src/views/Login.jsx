@@ -150,6 +150,7 @@ export class Login extends React.Component {
           register: false,
           loading: false
         });
+        localStorage.setItem('defaultLanguage', this.state.language);
         return;
       } else {
         throw new Error(promise.error);

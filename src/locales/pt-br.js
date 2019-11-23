@@ -76,11 +76,12 @@ module.exports = {
       "Modal": {
             "btn1": "Fechar",
             "btn2": "Salvar",
+            "btn3": "Baixar arquivo exemplo",
             "info": {
                   "title": "Precisa de ajuda?",
                   "probabilityText": "A <b>distribuição normal</b> é um tipo de probabilidade simétrica em relação à média, ilustra que a ocorrência dos dados próximos a ela é mais frequente do que os dados que estão distantes. Na forma de gráfico, a distribuição normal aparecerá como uma curva de sino. A distribuição normal possui dois parâmetros: a <b>média</b>  e o <b>desvio padrão</b>. <br/>A <b>distribuição uniforme</b>  é um tipo de probabilidade em que todos os resultados são igualmente prováveis, cada variável tem a mesma probabilidade de que será o resultado. Essa distribuição é definida por dois parâmetros: o <b>ponto mínimo (inicial)</b> e o <b>ponto máximo (final)</b>. <br/>A <b>distribuição binomial</b>  resume a probabilidade de um valor assumir um dos dois valores independentes sob um determinado conjunto de parâmetros ou suposições. As suposições subjacentes à distribuição binomial são que existe apenas um resultado para cada tentativa, que cada tentativa tem a mesma probabilidade de sucesso e que cada tentativa é mutuamente exclusiva ou independente uma da outra. Portanto, representa a probabilidade de <b><i>k</i> eventos</b> em <b><i>n</i> tentativas</b>, dada a probabilidade de <b>sucesso (<i>p</i>)</b> ou <b>fracasso (<i>q</i>)</b>  para cada tentativa.",
-                  "corregText": "<b>Correlação</b> é um método de análise estatística que determina o co-relacionamento ou associação de duas variáveis, usando o <b>coeficiente de correlação</b>, que indica a extensão em que duas variáveis ​​se movem juntas.<br /> A <b>Regressão</b> descreve como uma variável independente está numericamente relacionada à variável dependente. Indica o impacto de uma alteração de unidade na variável conhecida (x) na variável estimada (y).<br /> Use os campos de entrada abaixo para inserir os dados manualmente ou importar um arquivo <b>.csv</b> e calcular os resultados, utilize <a href='https://raw.githubusercontent.com/leoronne/datatongji/master/src/assets/files/Correlation-Regression.csv' target='_blank'>este</a> arquivo como exemplo.",
-
+                  "corregText": "<b>Correlação</b> é um método de análise estatística que determina o co-relacionamento ou associação de duas variáveis, usando o <b>coeficiente de correlação</b>, que indica a extensão em que duas variáveis ​​se movem juntas.<br /> A <b>Regressão</b> descreve como uma variável independente está numericamente relacionada à variável dependente. Indica o impacto de uma alteração de unidade na variável conhecida (x) na variável estimada (y).<br /> Use os campos de entrada abaixo para inserir os dados manualmente ou importar um arquivo <b>.csv</b> e calcular os resultados. Se precisar, utilize o arquivo exemplo como teste.",
+                  "descText": "A <b>Estatística Descritiva</b> é utilizada para organizar, resumir e descrever os aspectos importantes de um conjunto de características observadas ou comparar tais características entre dois ou mais conjuntos.  <br/>O conjunto pode ser formado de <b>Variáveis Quantitativas</b> – quando são características que podem ser medidas em uma escala quantitativa, isto é, apresentam valores numéricos que fazem sentido – ou de <b>Variáveis Qualitativas</b> – quando são características que são definidas por várias categorias ou classificações.<br/>As <b>Variáveis Quantitativas Discretas</b> tem seu campo de variação num conjunto finito ou infinito enumerável (por exemplo contagens), diferentemente das <b>Contínuas</b> que são características mensuráveis que assumem valores em uma escala contínua (na reta real). <br/>As <b>Variáveis Qualitativas Nominais</b> não apresentam importância na ordenação entre as categorias, já as <b>Ordinais</b> são valores que seguem uma ordem natural (por exemplo meses do ano, escolaridade etc). <br/>Analises do tipo <b>População</b> são quando os valores analisados se referem ou representam um conjunto total, um subconjunto deste é chamado de <b>Amostra</b>. <br /> Use os campos de entrada abaixo para inserir os dados manualmente ou importar um arquivo <b>.csv</b> e calcular os resultados. Se precisar, utilize o arquivo exemplo como teste."
             },
             "save": {
                   "title": "Salvar Análise",
@@ -92,7 +93,7 @@ module.exports = {
             }
       },
       "Descriptive": {
-            "title": "Análise Descritiva",            
+            "title": "Análise Descritiva",
             "distrib": {
                   "title": "Tipo de distribuição de dados:",
                   "error": "Selecione um tipo de distribuição de dados!"
@@ -110,6 +111,40 @@ module.exports = {
             "Type": {
                   "title": "Sub-tipo da análise em estudo:",
                   "error": "Selecione um sub-tipo para análise em estudo!"
+            },
+            "popamost": {
+                  "pop": "População",
+                  "amost": "Amostra"
+            },
+            "quali": {
+                  "type1": "Norminal",
+                  "type2": "Ordinal",
+            },
+            "quant": {
+                  "type1": "Discreta",
+                  "type2": "Contínua"
+            },
+            "spt": {
+                  "title": "Medidas Separatrizes:",
+                  "type":{
+                        "tp1":"Percentil",
+                        "tp2":"Decil",
+                        "tp3":"Quintil",
+                        "tp4":"Quartil",
+                  }
+            },
+            "Results":{
+                  "mode": "Moda",
+                  "wmean": "Média Ponderada",
+                  "median": "Mediana",
+            },
+            "Table":{
+                  "col1": "Variável",
+                  "col2": "Frequência Simples",
+                  "col3": "Frequência Acumulada",
+                  "col4": "Frequência Relativa",
+                  "col5": "Frequência Relativa Acumulada",
+                  "col6": "Mover"
             }
       },
       "Probability": {
@@ -182,7 +217,7 @@ module.exports = {
             "x": {
                   "title": "Nome da variável independente",
                   "error": "O Nome da variável independente não pode focar vazio!",
-                  "placeholder": "Nome da Xi",
+                  "placeholder": "Nome de Xi",
                   "values": {
                         "title": "Valores da variável independente",
                         "error": "Insira algum valor para a Variável independente!"
@@ -191,7 +226,7 @@ module.exports = {
             "y": {
                   "title": "Nome da variável dependente",
                   "error": "O Nome da variável dependente não pode focar vazio!",
-                  "placeholder": "Nome da Yi",
+                  "placeholder": "Nome de Yi",
                   "values": {
                         "title": "Valores da variável dependente",
                         "error": "Insira algum valor para a Variável dependente!"

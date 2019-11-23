@@ -21391,6 +21391,7 @@ textarea.ant-mentions {
   clear: both;
 }
 .ant-table {
+      display: block;
   -webkit-box-sizing: border-box;
           box-sizing: border-box;
   margin: 0;
@@ -21404,6 +21405,40 @@ textarea.ant-mentions {
           font-feature-settings: 'tnum';
   position: relative;
   clear: both;
+
+  @media screen and (max-width: 600px) {
+      &-thead {
+        display: none;
+      }
+  
+      &-thead>tr,
+      &-tbody>tr {
+  
+        th,
+        td {
+          &:first-of-type {
+            padding-top: 1rem;
+          }
+  
+          &:last-of-type {
+            padding-bottom: 1rem;
+          }
+        }
+  
+        >th,
+        >td {
+          display: block;
+          width: auto !important;
+          border: none;
+          padding: 0 1rem;
+          font-size: 1.1rem;
+  
+          &:last-child {
+            border-bottom: 1px solid #eee;
+          }
+        }
+      }
+    }
 }
 .ant-table-body {
   -webkit-transition: opacity 0.3s;
@@ -21416,7 +21451,7 @@ textarea.ant-mentions {
 .ant-table table {
   width: 100%;
   text-align: left;
-  border-radius: 4px 4px 0 0;
+  /* border-radius: 4px 4px 0 0; */
   border-collapse: separate;
   border-spacing: 0;
 }
@@ -21693,7 +21728,7 @@ textarea.ant-mentions {
   background: #fafafa;
 }
 .ant-table-header table {
-  border-radius: 4px 4px 0 0;
+  /* border-radius: 4px 4px 0 0; */
 }
 .ant-table-loading {
   position: relative;
@@ -21720,7 +21755,7 @@ textarea.ant-mentions {
 .ant-table-bordered .ant-table-body > table,
 .ant-table-bordered .ant-table-fixed-left table,
 .ant-table-bordered .ant-table-fixed-right table {
-  border: 1px solid #e8e8e8;
+  /* border: 1px solid #e8e8e8; */
   border-right: 0;
   border-bottom: 0;
 }
@@ -22090,7 +22125,7 @@ tr.ant-table-expanded-row td > .ant-table-wrapper {
 }
 .ant-table-small {
   border: 1px solid #e8e8e8;
-  border-radius: 4px;
+  border-radius: 2px;
 }
 .ant-table-small > .ant-table-title,
 .ant-table-small > .ant-table-footer {
@@ -22217,8 +22252,9 @@ tr.ant-table-expanded-row td > .ant-table-wrapper {
   margin: -8px -8px -9px;
 }
 .ant-table-small.ant-table-fixed-header > .ant-table-content > .ant-table-scroll > .ant-table-body {
-  border-radius: 0 0 4px 4px;
+  border-radius: 0 0 2px 2px;
 }
+
 
 /* stylelint-disable at-rule-empty-line-before,at-rule-name-space-after,at-rule-no-unknown */
 /* stylelint-disable no-duplicate-selectors */
