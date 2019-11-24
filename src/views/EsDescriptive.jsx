@@ -830,12 +830,7 @@ class Descriptive extends React.Component {
                 style={{ marginLeft: '5%', marginRight: '5%' }}
             >
                 <Container >
-                    <Row>     <ComboBox
-                        value={this.state.MedSep}
-                        data={[`${defaultMessage.Descriptive.spt.type.tp4}`, `${defaultMessage.Descriptive.spt.type.tp3}`, `${defaultMessage.Descriptive.spt.type.tp2}`, `${defaultMessage.Descriptive.spt.type.tp1}`]}
-                        onChange={event => this.onChangeCB(event.target.value)}
-                        color={'primary'}
-                        style={{ color: 'black', fontColor: '#000 !important' }} />
+                    <Row>    
                         <Col sm md="9">
                             <FormGroup>
                                 <CardTitle>{defaultMessage.Descriptive.Var.title}</CardTitle>
