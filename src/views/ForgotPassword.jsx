@@ -23,6 +23,39 @@ import {
 } from "reactstrap";
 import { DotLoader } from 'react-spinners';
 
+const authenticate_token = () => {
+  const requestInfo = {
+    method: 'POST',
+    body: JSON.stringify({ "token": localStorage.getItem('token') }),
+    headers: new Headers({
+      'Content-Type': 'application/json'
+    }),
+  };
+
+  fetch('https://datatongji-backend.herokuapp.com/auth/authenticate_token', requestInfo)
+    .then(response => {
+      if (response.ok) {
+        localStorage.setItem('valid', 'OK');
+        return true;
+      } else {
+        localStorage.setItem('valid', 'NO');
+        return false;
+      }
+    });
+};
+
+const isAuthenticated = () => {
+  if (localStorage.hasOwnProperty('token')) {
+    authenticate_token();
+    if (localStorage.getItem('valid') === 'OK') {
+
+      return true;
+    } else { return false }
+  } else {
+    return false;
+  };
+};
+
 export class ForgotPassword extends React.Component {
 
   constructor(props) {
@@ -53,6 +86,9 @@ export class ForgotPassword extends React.Component {
         language: 'pt-br',
         defaultMessage: require('../locales/pt-br.js')
       })
+    }
+    if (isAuthenticated()) {
+      this.props.history.push("/admin/dashboard");
     }
   };
 
@@ -416,61 +452,61 @@ export class ForgotPassword extends React.Component {
       <>
         <Row>
           <div class="notranslate">
-          <div className="react-notification-alert-container">
-            <NotificationAlert ref="notificationAlert" />
-          </div>
-          <Col className="col_center_login" md="4">
-            <Card className="card-user">
-              <CardBody>
-                <CardText />
-                <div className="author">
-                  <div className="block block-one" />
-                  <div className="block block-two" />
-                  <div className="block block-three" />
-                  <div className="block block-four" />
-                  <a href="/#/" >
-                    <img
-                      alt="..."
-                      className="avatar-logo"
-                      src={require("assets/img/logoTong.png")}
-                    />
-                  </a><br />
-                  <ButtonGroup>
-                    <Button
-                      className="btn-round btn-icon animation-on-hover"
-                      style={{ top: '15px' }}
-                      color={this.buttoncolor('en-us')}
-                      onClick={() => this.changeLanguage('en-us')}
-                      active={this.state.language === 'en-us'}
-                      size="sm">
-                      <span class="flag-icon flag-icon-us flag-icon-squared" style={{ left: '7px' }} />
-                    </Button>
-                    <Button
-                      className="btn-round btn-icon animation-on-hover"
-                      style={{ top: '15px' }}
-                      color={this.buttoncolor('pt-br')}
-                      onClick={() => this.changeLanguage('pt-br')}
-                      active={this.state.language === 'pt-br'}
-                      size="sm">
-                      <span class="flag-icon flag-icon-br flag-icon-squared" style={{ left: '7px' }} />
-                    </Button>
-                  </ButtonGroup>
-                </div>
-                <form><br />
-                  <Card>
-                    <Stepper
-                      activeColor={"#750f0f"}
-                      completeColor={"#c45858"}
-                      steps={this.state.steps}
-                      activeStep={this.state.stepPosition} />
-                    <CardBody>
-                      {Card_Body}
-                    </CardBody>
-                  </Card>
-                </form>
-              </CardBody>
-            </Card>
-          </Col>
+            <div className="react-notification-alert-container">
+              <NotificationAlert ref="notificationAlert" />
+            </div>
+            <Col className="col_center_login" md="4">
+              <Card className="card-user">
+                <CardBody>
+                  <CardText />
+                  <div className="author">
+                    <div className="block block-one" />
+                    <div className="block block-two" />
+                    <div className="block block-three" />
+                    <div className="block block-four" />
+                    <a href="/#/" >
+                      <img
+                        alt="..."
+                        className="avatar-logo"
+                        src={require("assets/img/logoTong.png")}
+                      />
+                    </a><br />
+                    <ButtonGroup>
+                      <Button
+                        className="btn-round btn-icon animation-on-hover"
+                        style={{ top: '15px' }}
+                        color={this.buttoncolor('en-us')}
+                        onClick={() => this.changeLanguage('en-us')}
+                        active={this.state.language === 'en-us'}
+                        size="sm">
+                        <span class="flag-icon flag-icon-us flag-icon-squared" style={{ left: '7px' }} />
+                      </Button>
+                      <Button
+                        className="btn-round btn-icon animation-on-hover"
+                        style={{ top: '15px' }}
+                        color={this.buttoncolor('pt-br')}
+                        onClick={() => this.changeLanguage('pt-br')}
+                        active={this.state.language === 'pt-br'}
+                        size="sm">
+                        <span class="flag-icon flag-icon-br flag-icon-squared" style={{ left: '7px' }} />
+                      </Button>
+                    </ButtonGroup>
+                  </div>
+                  <form><br />
+                    <Card>
+                      <Stepper
+                        activeColor={"#750f0f"}
+                        completeColor={"#c45858"}
+                        steps={this.state.steps}
+                        activeStep={this.state.stepPosition} />
+                      <CardBody>
+                        {Card_Body}
+                      </CardBody>
+                    </Card>
+                  </form>
+                </CardBody>
+              </Card>
+            </Col>
           </div>
         </Row>
       </>

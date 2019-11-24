@@ -19,6 +19,39 @@ import {
 } from "reactstrap";
 import { DotLoader } from 'react-spinners';
 
+const authenticate_token = () => {
+  const requestInfo = {
+    method: 'POST',
+    body: JSON.stringify({ "token": localStorage.getItem('token') }),
+    headers: new Headers({
+      'Content-Type': 'application/json'
+    }),
+  };
+
+  fetch('https://datatongji-backend.herokuapp.com/auth/authenticate_token', requestInfo)
+    .then(response => {
+      if (response.ok) {
+        localStorage.setItem('valid', 'OK');
+        return true;
+      } else {
+        localStorage.setItem('valid', 'NO');
+        return false;
+      }
+    });
+};
+
+const isAuthenticated = () => {
+  if (localStorage.hasOwnProperty('token')) {
+    authenticate_token();
+    if (localStorage.getItem('valid') === 'OK') {
+     
+      return true;
+    } else { return false }
+  } else {
+    return false;
+  };
+};
+
 export class Login extends React.Component {
 
   constructor(props) {
@@ -38,7 +71,7 @@ export class Login extends React.Component {
     this.register = this.register.bind(this);
   };
 
-  componentWillMount() {
+  componentWillMount() {    
     if (localStorage.getItem('authLanguage') !== 'pt-br') {
       localStorage.setItem('authLanguage', 'en-us');
       this.setState({
@@ -50,6 +83,9 @@ export class Login extends React.Component {
         language: 'pt-br',
         defaultMessage: require('../locales/pt-br.js')
       })
+    }
+    if (isAuthenticated()) {
+      this.props.history.push("/admin/dashboard");
     }
   };
 

@@ -119,6 +119,7 @@ class Sidebar extends React.Component {
                       to={prop.layout + prop.path}
                       className="nav-link"
                       activeClassName="active"
+                      style={{fontSize:'11px'}}
                       onClick={this.props.toggleSidebar}
                     >
                       <i className={prop.icon} />

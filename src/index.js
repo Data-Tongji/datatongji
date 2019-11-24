@@ -44,21 +44,20 @@ const authenticate_token = () => {
 const isAuthenticated = () => {
   if (localStorage.hasOwnProperty('token')) {
     authenticate_token();
-    if (localStorage.getItem('valid') === 'OK') {
-     
+    if (localStorage.getItem('valid') === 'OK') {     
       return true;
     } else { return false }
   } else {
     return false;
   };
 };
+
 ReactDOM.render(
   <BrowserRouter basename={window.location.pathname || ''}>
     <Router history={hist} basename={window.location.pathname || ''}>
       <Switch>
         <PrivateRoute path="/admin" component={AdminLayout} />
         {/* <Route path="/admin" render={props => <AdminLayout {...props} />} /> */}
-        <Route path="/rtl" render={props => <RTLLayout {...props} />} />
         <Route path="/auth" render={props => <AuthLayout {...props} />} />
         <Redirect from="/auth/login" to={
           isAuthenticated() ? "/admin/dashboard" : "/auth/login"

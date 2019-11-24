@@ -15703,7 +15703,7 @@ hr {
 .sidebar .logo p,
 .off-canvas-sidebar .logo p {
   float: left;
-  font-size: 20px;
+  font-size: 30px;
   margin: 10px 10px;
   color: #ffffff;
   line-height: 20px;
@@ -15718,7 +15718,7 @@ hr {
   white-space: nowrap;
   color: #ffffff;
   text-decoration: none;
-  font-weight: 400;
+  font-weight: 600;
   line-height: 30px;
   overflow: hidden;
 }

@@ -1,5 +1,6 @@
 import React from "react";
 import classNames from "classnames";
+import { UserSettings, Logout, Tooltip } from "grommet-icons";
 import { Link } from "react-router-dom";
 // reactstrap components
 import {
@@ -136,7 +137,9 @@ class AdminNavbar extends React.Component {
                     <span className="navbar-toggler-bar bar3" />
                   </button>
                 </div>
-                <NavbarBrand onClick={e => e.preventDefault()}>
+                <NavbarBrand 
+                onClick={e => e.preventDefault()}
+                style={{fontStyle: 'bold'}}>
                   {this.props.brandText}
                 </NavbarBrand>
               </div>
@@ -173,16 +176,16 @@ class AdminNavbar extends React.Component {
                     <DropdownMenu className="dropdown-navbar" right tag="ul">
                       <NavLink tag="li">
                         <Link to="/admin/user-profile">
-                          <DropdownItem className="nav-item" ><i class="fas fa-user" size="2x"/>{' '}{defaultMessage.NavBar.ac1}</DropdownItem>
+                          <DropdownItem className="nav-item" ><UserSettings size="small"/><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>{defaultMessage.NavBar.ac1}</DropdownItem>
                         </Link>
                       </NavLink>
                       <NavLink tag="li">
                         <Link to="/auth/talkwithus">
-                          <DropdownItem className="nav-item" ><i class="fas fa-envelope" size="2x"/>{' '}{defaultMessage.Menu.Talk}</DropdownItem>
+                          <DropdownItem className="nav-item" ><Tooltip size="small"/><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>{defaultMessage.Menu.Talk}</DropdownItem>
                         </Link>
                       </NavLink>
                       <NavLink tag="li">
-                        <DropdownItem className="nav-item" onClick={this.logout}><i class="fas fa-sign-out-alt"/>{' '}{defaultMessage.NavBar.ac2}</DropdownItem>
+                        <DropdownItem className="nav-item" onClick={this.logout}><Logout size="small"/><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>{defaultMessage.NavBar.ac2}</DropdownItem>
                       </NavLink>
                     </DropdownMenu>
                   </UncontrolledDropdown>
