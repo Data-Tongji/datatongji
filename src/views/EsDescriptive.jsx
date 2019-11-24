@@ -6,6 +6,7 @@ import { TagInput } from '../components/reactjs-tag-input';
 import InputRange from 'react-input-range';
 import { ComboBox } from '@progress/kendo-react-dropdowns';
 import NotificationAlert from "react-notification-alert";
+import { Bar, Pie } from "react-chartjs-2";
 
 import {
     Button,
@@ -41,7 +42,6 @@ import { Table } from 'antd';
 import { DotLoader } from 'react-spinners';
 import { css } from 'emotion'
 import Papa from 'papaparse';
-import { Doughnut } from 'react-chartjs-2';
 import csvicon from '../assets/img/csv.svg';
 import '../assets/css/antdtable.css';
 import "react-table/react-table.css";
@@ -69,6 +69,7 @@ const closest = function (el, selector, rootNode) {
     }
     return el;
 };
+
 var defaultMessage = localStorage.getItem('defaultLanguage') !== 'pt-br' ? require('../locales/en-us.js') : require('../locales/pt-br.js');
 
 class Descriptive extends React.Component {
@@ -113,6 +114,8 @@ class Descriptive extends React.Component {
             acceptedFiles: '',
             btnSave: true,
             dispcsv: false,
+            freqData: [],
+            labels: [],
             csv: null,
             csvfile: undefined,
             activeTab: '2',
@@ -143,29 +146,33 @@ class Descriptive extends React.Component {
             {
                 title: `${defaultMessage.Descriptive.Table.col1}`,
                 dataIndex: 'value',
+                width: '100px',
                 align: 'center',
             },
             {
                 title: `${defaultMessage.Descriptive.Table.col2}`,
                 dataIndex: 'frequency',
+                width: '100px',
                 align: 'center',
             },
             {
                 title: `${defaultMessage.Descriptive.Table.col3}`,
                 dataIndex: 'cumulativeFrequency',
+                width: '110px',
                 align: 'center',
             },
             {
                 title: `${defaultMessage.Descriptive.Table.col4}`,
                 dataIndex: 'relativeFrequency',
+                width: '100px',
                 align: 'center',
             },
             {
                 title: `${defaultMessage.Descriptive.Table.col5}`,
                 dataIndex: 'accumulatedPercentage',
+                width: '120px',
                 align: 'center',
             },
-
             {
                 title: `${defaultMessage.Descriptive.Table.col6}`,
                 key: 'operate',
@@ -375,6 +382,7 @@ class Descriptive extends React.Component {
 
     async SendArray() {
         let aux = [];
+        let b = [];
         this.setState({ loading: true });
         if (this.state.Type === 'Qualitative' && this.state.rSelected === 'Ordinal') {
             for (let i = 0; i < this.state.vet.length; i++) {
@@ -390,6 +398,7 @@ class Descriptive extends React.Component {
                 aux.push((this.state.tags[i].displayValue));
             }
         };
+        this.setState({ aux: aux });
         const requestInfo = {
             method: 'POST',
             body: JSON.stringify({
@@ -408,6 +417,12 @@ class Descriptive extends React.Component {
             const response = await fetch('https://datatongji-backend.herokuapp.com/descriptive/simple_frequency', requestInfo);
             var result = await response.json();
             if (response.ok) {
+                aux = [];
+                for (let i = 0; i < result.dataDescriptive.length; i++) {
+                    aux.splice(i, 0, result.dataDescriptive[i].value);
+                    b.splice(i, 0, result.dataDescriptive[i].frequency);
+                };
+                var max = b.reduce(function (a, c) { return Math.max(a, c) });
                 this.setState({
                     Type: result.typeVar,
                     weightedMean: result.weightedMean,
@@ -417,6 +432,10 @@ class Descriptive extends React.Component {
                     coefvar: result.coefvar,
                     percentile: result.percentile,
                     rSelected: result.subType,
+                    vet: result.dataDescriptive,
+                    labels: aux,
+                    freqData: b,
+                    MaxFreq: max,
                     btnSave: false,
                     loading: false
                 });
@@ -429,7 +448,6 @@ class Descriptive extends React.Component {
                 } else {
                     this.setState({ mode: result.mode[0].Value })
                 }
-                this.setState({ vet: result.dataDescriptive });
             } else {
                 throw new Error(result.error);
             }
@@ -570,36 +588,6 @@ class Descriptive extends React.Component {
         this.setState(result);
     };
 
-    renderTableHeader() {
-        let header = Object.keys(
-            {
-                Variável: 'se',
-                Fi: '2',
-                Fac: 2,
-                'Fr%': '25.00',
-                'Fac%': '25.00'
-            }
-        )
-        return header.map((key, index) => {
-            return <th key={index} style={{ background: 'linear-gradient(to bottom left, #550300, #d32a23, #550300)' }}>{key}</th>
-        })
-    }
-
-    renderTableData() {
-        return this.state.vet.map((student, index) => {
-            const { value, frequency, cumulativeFrequency, relativeFrequency, accumulatedPercentage } = student //destructuring
-            return (
-                <tr key={value}>
-                    <td>{value}</td>
-                    <td>{frequency}</td>
-                    <td>{cumulativeFrequency}</td>
-                    <td>{relativeFrequency + '%'}</td>
-                    <td>{accumulatedPercentage + '%'}</td>
-                </tr>
-            )
-        })
-    }
-
     onTagsChanged(tags) {
         this.setState({ tags })
     };
@@ -611,25 +599,25 @@ class Descriptive extends React.Component {
     }
 
     RangeStep = (med) => {
-        if (med.includes('Quartil')) {
+        if (med === 'Quartil' || med === 'Quartile') {
             this.setState({
                 MedSep: med,
                 step: 25
             })
         }
-        else if (med.includes('Quintil')) {
+        else if (med === 'Quintil' || med === 'Quintile') {
             this.setState({
                 MedSep: med,
                 step: 20
             })
         }
-        else if (med.includes('Decil')) {
+        else if (med === 'Decil' || med === 'Decile') {
             this.setState({
                 MedSep: med,
                 step: 10
             })
         }
-        else if (med.includes('Percentil')) {
+        else if (med === 'Percentil' || med === 'Percentile') {
             this.setState({
                 MedSep: med,
                 step: 1
@@ -660,6 +648,7 @@ class Descriptive extends React.Component {
     };
 
     async positionStep(steps) {
+        this.setState({ activeTab: '2' });
         var Position = this.state.stepPosition;
         if (steps === 1) {
             if (await this.inputValidation()) {
@@ -677,18 +666,12 @@ class Descriptive extends React.Component {
         if (steps !== 1) {
             if ((Position - 1) > 0) {
                 await this.SendArray();
-                // return this.setState({
-                //     stepPosition: Position += - 1,
-                //     collapsetable: false
-                // });
             }
-            // else {
             return this.setState({
                 stepPosition: Position += - 1,
                 rSelected: '',
                 collapsetable: false
             });
-            // }
         }
     };
 
@@ -824,6 +807,7 @@ class Descriptive extends React.Component {
         };
 
         let ResultItems;
+        let Chart;
 
         if (Position === 0) {
             button.push(
@@ -846,7 +830,12 @@ class Descriptive extends React.Component {
                 style={{ marginLeft: '5%', marginRight: '5%' }}
             >
                 <Container >
-                    <Row>
+                    <Row>     <ComboBox
+                        value={this.state.MedSep}
+                        data={[`${defaultMessage.Descriptive.spt.type.tp4}`, `${defaultMessage.Descriptive.spt.type.tp3}`, `${defaultMessage.Descriptive.spt.type.tp2}`, `${defaultMessage.Descriptive.spt.type.tp1}`]}
+                        onChange={event => this.onChangeCB(event.target.value)}
+                        color={'primary'}
+                        style={{ color: 'black', fontColor: '#000 !important' }} />
                         <Col sm md="9">
                             <FormGroup>
                                 <CardTitle>{defaultMessage.Descriptive.Var.title}</CardTitle>
@@ -943,12 +932,12 @@ class Descriptive extends React.Component {
             button = []
             table = <div style={{ justifyContent: 'center' }}>
                 <Table
+                    scroll={{ x: 'max-content' }}
+                    style={{ width: '100%' }}
                     bordered={true}
                     size={'small'}
                     responsive
-                    className={
-                        // (this.state.dragIndex >= 0 && 'dragging-container') || 
-                        this.header}
+                    className={this.header}
                     ref="dragContainer"
                     columns={this.columns}
                     pagination={false}
@@ -1068,6 +1057,149 @@ class Descriptive extends React.Component {
                         className="justify-content-between">{this.state.MedSep} ({((this.state.value * (100 / this.state.step)) / 100)}): <Badge pill>{this.state.percentile[this.state.value - 1]}</Badge></ListGroupItem>
                 </ListGroup>;
             }
+            if (this.state.rSelected === 'Continuous' || this.state.rSelected === 'Discrete') {
+                Chart = <Container style={{ justifyContent: 'center', textAlign: 'center' }}>
+                    <CardTitle><b>{this.state.rSelected === 'Continuous' ? defaultMessage.Descriptive.Chart.cont.title : defaultMessage.Descriptive.Chart.disc.title}</b></CardTitle>
+                    <div className="chart-area">
+                        <Bar
+                            data={canvas => {
+                                let ctx = canvas.getContext("2d");
+                                let gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
+                                gradientStroke.addColorStop(1, "rgba(72,72,176,0.1)");
+                                gradientStroke.addColorStop(0.4, "rgba(72,72,176,0.0)");
+                                gradientStroke.addColorStop(0, "rgba(119,52,169,0)"); //purple colors
+                                return {
+                                    labels: this.state.labels,
+                                    datasets: [
+                                        {
+                                            label: this.state.Var,
+                                            fill: true,
+                                            backgroundColor: gradientStroke,
+                                            hoverBackgroundColor: gradientStroke,
+                                            borderColor: "#d32a23",
+                                            borderWidth: 1,
+                                            borderDash: [],
+                                            borderDashOffset: 0.0,
+                                            data: this.state.freqData
+                                        }
+                                    ]
+                                };
+                            }}
+                            options={{
+                                maintainAspectRatio: false,
+                                legend: {
+                                    display: true,
+                                    position: 'bottom',
+                                    labels: {
+                                        fontColor: 'gray'
+                                    }
+                                },
+                                tooltips: {
+                                    backgroundColor: "#f5f5f5",
+                                    titleFontColor: "#333",
+                                    bodyFontColor: "#666",
+                                    bodySpacing: 4,
+                                    xPadding: 12,
+                                    mode: "nearest",
+                                    intersect: 0,
+                                    position: "nearest"
+                                },
+                                responsive: true,
+                                scales: {
+                                    yAxes: [
+                                        {
+                                            gridLines: {
+                                                drawBorder: false,
+                                                color: "rgba(225,78,202,0.1)",
+                                                zeroLineColor: "transparent"
+                                            },
+                                            ticks: {
+                                                beginAtZero: true,
+                                                suggestedMax: this.state.MaxFreq,
+                                                padding: 20,
+                                                fontColor: "#9e9e9e"
+                                            }
+                                        }
+                                    ],
+                                    xAxes: [
+                                        {
+                                            categoryPercentage: this.state.rSelected === 'Continuous' ? 1.0 : 0.9,
+                                            barPercentage: this.state.rSelected === 'Continuous' ? 1.0 : 0.9,
+                                            gridLines: {
+                                                drawBorder: false,
+                                                color: "rgba(225,78,202,0.1)",
+                                                zeroLineColor: "transparent"
+                                            },
+                                            ticks: {
+                                                padding: 20,
+                                                fontColor: "#9e9e9e"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }}
+                        /></div>
+                </Container>
+            }
+            else if (this.state.Type === 'Qualitative') {
+                Chart = <Container style={{ justifyContent: 'center', textAlign: 'center' }}>
+                    <CardTitle><b>{defaultMessage.Descriptive.Chart.quali.title}</b></CardTitle>
+                    <div className="chart-area">
+                        <Pie
+                            data={canvas => {
+                                var efficiency = [];
+                                var coloR = [];
+
+                                var dynamicColors = function (i, total) {
+                                    var r = 100 + i * 155 / total;
+                                    var g = i * 211 / total;
+                                    var b = i * 211 / total;
+                                    return "rgb(" + r + "," + g + "," + b + ")";
+                                };
+
+                                for (var i in this.state.freqData) {
+                                    efficiency.push(this.state.freqData[i]);
+                                    coloR.push(dynamicColors(i, this.state.freqData.length));
+                                }
+
+                                return {
+                                    labels: this.state.labels,
+                                    datasets: [
+                                        {
+                                            label: this.state.Var,
+                                            fill: true,
+                                            backgroundColor: coloR,
+                                            hoverBackgroundColor: coloR,
+                                            data: this.state.freqData
+                                        }
+                                    ]
+                                };
+                            }}
+                            options={{
+                                maintainAspectRatio: false,
+                                legend: {
+                                    display: true,
+                                    position: 'bottom',
+                                    labels: {
+                                        fontColor: 'gray'
+                                    }
+                                },
+                                tooltips: {
+                                    backgroundColor: "#f5f5f5",
+                                    titleFontColor: "#333",
+                                    bodyFontColor: "#666",
+                                    bodySpacing: 4,
+                                    xPadding: 12,
+                                    mode: "nearest",
+                                    intersect: 0,
+                                    position: "nearest"
+                                },
+                                responsive: true,
+                            }}
+                        /></div>
+                </Container>
+            };
+
             Card_Body =
                 <CardBody style={{ marginLeft: '5%', marginRight: '5%', marginTop: '-2%' }}>
                     <Nav tabs>
@@ -1144,12 +1276,49 @@ class Descriptive extends React.Component {
                             <Row>
                                 <Col sm>
                                     <div><br /><br />
-                                        <table id='students' hover>
-                                            <tbody>
-                                                <tr>{this.renderTableHeader()}</tr>
-                                                {this.renderTableData()}
-                                            </tbody>
-                                        </table>
+                                        <Table
+                                            scroll={{ x: 'max-content' }}
+                                            style={{ width: '100%' }}
+                                            bordered={true}
+                                            size={'small'}
+                                            responsive
+                                            className={this.header}
+                                            ref="dragContainer"
+                                            columns={[
+                                                {
+                                                    title: `${defaultMessage.Descriptive.Table.col1}`,
+                                                    dataIndex: 'value',
+                                                    width: '100px',
+                                                    align: 'center',
+                                                },
+                                                {
+                                                    title: `${defaultMessage.Descriptive.Table.col2}`,
+                                                    dataIndex: 'frequency',
+                                                    width: '100px',
+                                                    align: 'center',
+                                                },
+                                                {
+                                                    title: `${defaultMessage.Descriptive.Table.col3}`,
+                                                    dataIndex: 'cumulativeFrequency',
+                                                    width: '110px',
+                                                    align: 'center',
+                                                },
+                                                {
+                                                    title: `${defaultMessage.Descriptive.Table.col4}`,
+                                                    dataIndex: 'relativeFrequency',
+                                                    width: '100px',
+                                                    align: 'center',
+                                                },
+                                                {
+                                                    title: `${defaultMessage.Descriptive.Table.col5}`,
+                                                    dataIndex: 'accumulatedPercentage',
+                                                    width: '120px',
+                                                    align: 'center',
+                                                }
+                                            ]}
+                                            pagination={false}
+                                            dataSource={this.state.vet}
+                                        />
                                     </div>
                                 </Col>
                             </Row>
@@ -1159,7 +1328,12 @@ class Descriptive extends React.Component {
                                 <Col sm>
                                     <FormGroup>
                                         <CardTitle>{defaultMessage.Descriptive.spt.title}:</CardTitle>
-                                        <ComboBox value={this.state.MedSep} data={[`${defaultMessage.Descriptive.spt.type.tp4}`, `${defaultMessage.Descriptive.spt.type.tp3}`, `${defaultMessage.Descriptive.spt.type.tp2}`, `${defaultMessage.Descriptive.spt.type.tp1}`]} onChange={event => this.onChangeCB(event.target.value)} color={'primary'} style={{ color: 'black' }} /><br /><br />
+                                        <ComboBox
+                                            value={this.state.MedSep}
+                                            data={[`${defaultMessage.Descriptive.spt.type.tp4}`, `${defaultMessage.Descriptive.spt.type.tp3}`, `${defaultMessage.Descriptive.spt.type.tp2}`, `${defaultMessage.Descriptive.spt.type.tp1}`]}
+                                            onChange={event => this.onChangeCB(event.target.value)}
+                                            color={'primary'}
+                                            style={{ color: 'black', fontColor: '#000 !important' }} /><br /><br />
                                     </FormGroup>
                                 </Col>
                                 <Col sm md='8'>
@@ -1206,12 +1380,12 @@ class Descriptive extends React.Component {
                             </Row>
                             <Row>
                                 <Col sm>
-                                    <br /><div className="chart-area">
-                                        <Doughnut
+                                    <br />
+                                    {Chart}
+                                    {/* <Doughnut
                                             data={this.state.data}
                                             options={'sss'}
-                                        />
-                                    </div>
+                                        /> */}
                                 </Col>
                             </Row>
                         </TabPane>

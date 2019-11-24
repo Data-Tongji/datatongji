@@ -5,8 +5,8 @@ import NotificationAlert from "react-notification-alert";
 import { Save, AddCircle } from 'grommet-icons';
 import { Row, Col } from 'react-bootstrap';
 import Papa from 'papaparse';
-import Highcharts from 'highcharts'
-import HighchartsReact from 'highcharts-react-official'
+import Highcharts from 'highcharts';
+import HighchartsReact from 'highcharts-react-official';
 import {
   Alert,
   Badge,
@@ -79,6 +79,13 @@ class CorrelationRegression extends React.Component {
     this.updateData = this.updateData.bind(this);
     this.fileInput = React.createRef();
     this.SendData = this.SendData.bind(this);
+  };
+  
+  componentDidMount() {
+    this.setState({
+      colorBg:
+        localStorage.getItem('background'),
+    })
   };
 
   onTagsChangedX(tagsX) {
@@ -448,6 +455,9 @@ class CorrelationRegression extends React.Component {
       />
     };
     let options = {
+      credits: {
+        enabled: false,
+      },
       chart: {
         type: 'scatter',
         zoomType: 'xy',
@@ -461,24 +471,26 @@ class CorrelationRegression extends React.Component {
       },
       title: {
         style: {
-          fontSize: '16px',
+          fontSize: '1px',
           fontWeight: 'bold'
         },
-        text: `${defaultMessage.Correg.chart.title} (${this.state.VarX} x ${this.state.VarY})`,
-        backgroundColor: '#F0F0EA',
+        text: ' ',
+        backgroundColor: 'transparent',
       },
       xAxis: {
         title: {
           enabled: true,
           text: this.state.VarX
         },
+        gridLineWidth: 0,
+        minorGridLineWidth: 0,
         startOnTick: true,
         endOnTick: true,
         showLastLabel: true,
-        gridLineWidth: 1,
         labels: {
           style: {
-            fontSize: '12px'
+            fontSize: '12px',
+            color: 'gray'
           }
         }
       },
@@ -486,6 +498,8 @@ class CorrelationRegression extends React.Component {
         title: {
           text: this.state.VarY
         },
+        gridLineWidth: 0,
+        minorGridLineWidth: 0,
         minorTickInterval: 'auto',
         labels: {
           style: {
@@ -495,7 +509,7 @@ class CorrelationRegression extends React.Component {
       },
       plotOptions: {
         candlestick: {
-          lineColor: '#404048'
+          lineColor: 'gray' //`${this.state.colorBg==='dark'?'#fff':'#000'}`
         },
         scatter: {
           marker: {
@@ -503,7 +517,7 @@ class CorrelationRegression extends React.Component {
             states: {
               hover: {
                 enabled: true,
-                lineColor: 'rgb(100,100,100)'
+                lineColor: 'gray'
               }
             }
           },
@@ -545,7 +559,7 @@ class CorrelationRegression extends React.Component {
       }],
       tooltip: {
         borderWidth: 0,
-        backgroundColor: 'rgba(219,219,216,0.8)',
+        backgroundColor: '#efefef',
         shadow: true
       },
     };
@@ -839,7 +853,8 @@ class CorrelationRegression extends React.Component {
                             </ListGroup><br />
                           </NavItem>
                         </Nav>
-                        <CardBody >
+                        <CardBody style={{justifyContent:'center', textAlign:'center'}}>
+                          <CardTitle><b>{defaultMessage.Correg.chart.title} ({this.state.VarX} x {this.state.VarY})</b></CardTitle>
                           <HighchartsReact
                             highcharts={Highcharts}
                             options={options}

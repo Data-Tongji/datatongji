@@ -1,8 +1,21 @@
 import React from "react";
 import { Route, Switch } from "react-router-dom";
-// javascript plugin used to create scrollbars on windows
+import classNames from "classnames";
 import PerfectScrollbar from "perfect-scrollbar";
+import { Group, Home, Tooltip } from "grommet-icons";
+import { Link } from "react-router-dom";
 
+import {
+  Collapse,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+  UncontrolledDropdown,
+  Navbar,
+  NavLink,
+  Nav,
+  Container,
+} from "reactstrap";
 // core components
 import Footer from "components/Footer/Footer.jsx";
 import routes from '../../routes';
@@ -21,8 +34,15 @@ class Auth extends React.Component {
       sidebarOpened:
         document.documentElement.className.indexOf("nav-open") !== -1
     };
-  }
+    this.localStorageUpdated = this.localStorageUpdated.bind(this)
+  };
+
+  localStorageUpdated() {
+    console.log('mudou')
+  };
+
   componentDidMount() {
+    window.addEventListener('authLanguage', this.localStorageUpdated);
     if (navigator.platform.indexOf("Win") > -1) {
       document.documentElement.className += " perfect-scrollbar-on";
       document.documentElement.classList.remove("perfect-scrollbar-off");
@@ -126,6 +146,7 @@ class Auth extends React.Component {
 
 
   render() {
+    let photo = <img alt="..." className="avatar" src={require("assets/img/logoTong.png")} />;
     return (
       <>
         <div
@@ -133,73 +154,71 @@ class Auth extends React.Component {
           ref="mainPanel"
           data={this.state.backgroundColor}
         >
-          {/* <Navbar expand="lg" color='primary'>
-            <Container>
-              <NavbarToggler onClick={this.toggle}>
-                <span className="navbar-toggler-bar navbar-kebab"></span>
-                <span className="navbar-toggler-bar navbar-kebab"></span>
-                <span className="navbar-toggler-bar navbar-kebab"></span>
-              </NavbarToggler>
-              <Collapse isOpen={this.state.isOpen} navbar>
-                <NavbarBrand>Hidden Brand</NavbarBrand>
-                <Nav navbar>
-                  <NavItem active>
-                    <NavLink to="#pablo">
-                      Link
-                                </NavLink>
-                  </NavItem>
-                  <NavItem>
-                    <NavLink to="#pablo">
-                      Link
-                                </NavLink>
-                  </NavItem>
-                </Nav>
-              </Collapse>
-            </Container>
-          </Navbar>
-
           <Navbar
             className={classNames("navbar-absolute", this.state.color)}
-            expand="xl"
+            expand="lg"
           >
             <Container fluid>
               <div className="navbar-wrapper">
               </div>
+              <button
+                aria-expanded={false}
+                aria-label="Toggle navigation"
+                className="navbar-toggler"
+                data-target="#navigation"
+                data-toggle="collapse"
+                id="navigation"
+                type="button"
+                onClick={this.toggleCollapse}
+              >
+                <span className="navbar-toggler-bar navbar-kebab" />
+                <span className="navbar-toggler-bar navbar-kebab" />
+                <span className="navbar-toggler-bar navbar-kebab" />
+              </button>
               <Collapse navbar isOpen={this.state.collapseOpen}>
-              <Nav className="ml-auto" navbar>
-                <UncontrolledDropdown nav>
-                  <DropdownToggle
-                    caret
-                    color="default"
-                    data-toggle="dropdown"
-                    nav
-                    onClick={e => e.preventDefault()}
-                  >
-                    <i class="fas fa-ellipsis-v" />
-                  </DropdownToggle>
-                  <DropdownMenu className="dropdown-navbar" right tag="ul">
-                    <NavLink tag="li">
-                      <Link to="/auth/login">
-                        <DropdownItem className="nav-item" >{defaultMessage.NavBar.auth.ac1}</DropdownItem>
-                      </Link>
-                    </NavLink>
-                    <NavLink tag="li">
-                      <Link to="/auth/talkwithus">
-                        <DropdownItem className="nav-item" >{defaultMessage.NavBar.auth.ac3}</DropdownItem>
-                      </Link>
-                    </NavLink>
-                    <NavLink tag="li">
-                      <Link to="/auth/about">
-                        <DropdownItem className="nav-item" >{defaultMessage.NavBar.auth.ac2}</DropdownItem>
-                      </Link>
-                    </NavLink>
-                  </DropdownMenu>
-                </UncontrolledDropdown>
-                <li className="separator d-lg-none" />
-              </Nav>
+                <Nav className="ml-auto" navbar>
+                  <UncontrolledDropdown nav>
+                    <DropdownToggle
+                      caret
+                      color="default"
+                      data-toggle="dropdown"
+                      nav
+                      onClick={e => e.preventDefault()}
+                    >
+                      <div className="photo">
+                        <img
+                          alt="..."
+                          className="avatar-logo"
+                          src={require("assets/img/logoTong.png")}
+                        />
+                      </div>
+                      <b className="caret d-none d-lg-block d-xl-block" />
+                    </DropdownToggle>
+                    <DropdownMenu className="dropdown-navbar" right tag="ul">
+                      <NavLink tag="li">
+                        <Link to="/auth/login">
+                          <DropdownItem className="nav-item" ><Home size="small" /><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>{defaultMessage.NavBar.auth.ac1}</DropdownItem>
+                        </Link>
+                      </NavLink>
+                      <NavLink tag="li">
+                        <Link to="/auth/about">
+                          <DropdownItem className="nav-item" ><Group size="small" /><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>{defaultMessage.NavBar.auth.ac2}</DropdownItem>
+                        </Link>
+                      </NavLink>
+                      <NavLink tag="li">
+                        <Link to="/auth/talkwithus">
+                          <DropdownItem className="nav-item" ><Tooltip size="small" /><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>{defaultMessage.NavBar.auth.ac3}</DropdownItem>
+                        </Link>
+                      </NavLink>
+
+                    </DropdownMenu>
+                  </UncontrolledDropdown>
+                  <li className="separator d-lg-none" />
+                </Nav>
               </Collapse>
             </Container>
-          </Navbar><br /> */}
+          </Navbar><br /><br />
+
           <Switch>{this.getRoutes(routes)}</Switch>
           {// we don't want the Footer to be rendered on map page
             this.props.location.pathname.indexOf("maps") !== -1 ? null : (

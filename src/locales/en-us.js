@@ -55,7 +55,7 @@ module.exports = {
             "ac1": "Profile",
             "ac2": "Log Out",
             "auth": {
-                  "ac1": "Log in",
+                  "ac1": "Home",
                   "ac2": "About",
                   "ac3": "Contact us",
                   "ac4": "Sign Up",
@@ -127,19 +127,19 @@ module.exports = {
             "spt": {
                   "title": "Measures of Position (type)",
                   "title2": "Measures of Position (position)",
-                  "type":{
-                        "tp1":"Percentile",
-                        "tp2":"Decile",
-                        "tp3":"Quintile",
-                        "tp4":"Quartile",
+                  "type": {
+                        "tp1": "Percentile",
+                        "tp2": "Decile",
+                        "tp3": "Quintile",
+                        "tp4": "Quartile",
                   }
             },
-            "Results":{
+            "Results": {
                   "mode": "Mode",
                   "wmean": "Weighted Mean",
                   "median": "Median",
             },
-            "Table":{
+            "Table": {
                   "col1": "Variable",
                   "col2": "Simple Frequency",
                   "col3": "Cumulative Frequency",
@@ -150,6 +150,17 @@ module.exports = {
             "Nav": {
                   "pn1": "Data",
                   "pn2": "Results"
+            },
+            "Chart": {
+                  "cont": {
+                        "title": "Frequency Chart (Histogram)"
+                  },
+                  "quali": {
+                        "title":"Frequency Chart (Pie)" 
+                  },
+                  "disc": {
+                        "title":"Frequency Chart (Bar)" 
+                  },
             }
       },
       "Probability": {

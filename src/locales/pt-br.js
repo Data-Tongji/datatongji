@@ -55,7 +55,7 @@ module.exports = {
             "ac1": "Perfil",
             "ac2": "Sair",
             "auth": {
-                  "ac1": "Entrar",
+                  "ac1": "Página Inicial",
                   "ac2": "Sobre",
                   "ac3": "Fale com a gente",
                   "ac4": "Registrar",
@@ -150,6 +150,17 @@ module.exports = {
             "Nav": {
                   "pn1": "Dados",
                   "pn2": "Resultados"
+            },
+            "Chart": {
+                  "cont": {
+                        "title": "Gráfico de Frequências (Histograma)"
+                  },
+                  "quali": {
+                        "title":"Gráfico de Frequências (Pizza)" 
+                  },
+                  "disc": {
+                        "title":"Gráfico de Frequências (Barras)" 
+                  },
             }
       },
       "Probability": {

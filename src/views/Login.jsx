@@ -392,7 +392,6 @@ export class Login extends React.Component {
                 </div>
             </Card>
           </Col>
-          {/* </div> */}
         </Row>
       </>
     );
