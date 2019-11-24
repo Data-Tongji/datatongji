@@ -125,7 +125,8 @@ module.exports = {
                   "type2": "Continuous"
             },
             "spt": {
-                  "title": "Measures of Position",
+                  "title": "Measures of Position (type)",
+                  "title2": "Measures of Position (position)",
                   "type":{
                         "tp1":"Percentile",
                         "tp2":"Decile",
@@ -145,6 +146,10 @@ module.exports = {
                   "col4": "Relative Frequency",
                   "col5": "Cumulative Relative Frequency",
                   "col6": "Move"
+            },
+            "Nav": {
+                  "pn1": "Data",
+                  "pn2": "Results"
             }
       },
       "Probability": {

@@ -111,6 +111,7 @@ class Probability extends React.Component {
     this.interval = this.interval.bind(this);
     this.toggleModalDemo = this.toggleModalDemo.bind(this);
     this.toggleModalHelp = this.toggleModalHelp.bind(this);
+    this.SendData = this.SendData.bind(this);
   };
 
   toggle(tab) {
@@ -134,7 +135,6 @@ class Probability extends React.Component {
       p: '',
       q: ''
     });
-    this.SendData = this.SendData.bind(this);
   };
 
   toggleModalDemo() {
@@ -142,7 +142,6 @@ class Probability extends React.Component {
       modalDemo: !this.state.modalDemo
     });
   };
-
 
   notify = (place, message, icon, color) => {
     var options = {

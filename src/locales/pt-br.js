@@ -125,26 +125,31 @@ module.exports = {
                   "type2": "Contínua"
             },
             "spt": {
-                  "title": "Medidas Separatrizes:",
-                  "type":{
-                        "tp1":"Percentil",
-                        "tp2":"Decil",
-                        "tp3":"Quintil",
-                        "tp4":"Quartil",
+                  "title": "Medidas Separatrizes (tipo)",
+                  "title2": "Medidas Separatrizes (posição)",
+                  "type": {
+                        "tp1": "Percentil",
+                        "tp2": "Decil",
+                        "tp3": "Quintil",
+                        "tp4": "Quartil",
                   }
             },
-            "Results":{
+            "Results": {
                   "mode": "Moda",
                   "wmean": "Média Ponderada",
                   "median": "Mediana",
             },
-            "Table":{
+            "Table": {
                   "col1": "Variável",
                   "col2": "Frequência Simples",
                   "col3": "Frequência Acumulada",
                   "col4": "Frequência Relativa",
                   "col5": "Frequência Relativa Acumulada",
                   "col6": "Mover"
+            },
+            "Nav": {
+                  "pn1": "Dados",
+                  "pn2": "Resultados"
             }
       },
       "Probability": {

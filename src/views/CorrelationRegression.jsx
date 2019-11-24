@@ -17,6 +17,10 @@ import {
   CardTitle,
   Collapse,
   Container,
+  FormGroup,
+  InputGroup,
+  InputGroupAddon,
+  InputGroupText,
   Input,
   Label,
   ListGroup,
@@ -621,49 +625,89 @@ class CorrelationRegression extends React.Component {
                         <br />
                         <Row>
                           <Col sm>
-                            <CardTitle>{defaultMessage.Correg.x.title} (X<sub>i</sub>):</CardTitle>
-                            <Input
-                              type="text"
-                              name="VarX"
-                              value={this.state.VarX}
-                              placeholder={defaultMessage.Correg.x.placeholder}
-                              onChange={this.handleChange}
-                            /><br />
-                            <CardTitle>X<sub>i</sub> - {this.state.VarX}:</CardTitle>
-                            {!this.state.dispcsv ? (
-                              <TagInputNaN
-                                tagStyle={`background: linear-gradient(to bottom right, #550300, #d32a23, #550300);`}
-                                placeholder={defaultMessage.Correg.x.values.title}
-                                tags={this.state.tagsX}
-                                onTagsChanged={this.onTagsChangedX}
-                              />
-                            ) :
-                              <ul className="list-group mt-2">
-                                {tagcsvX}
-                              </ul>}
-                            <br /></Col>
+                            <FormGroup>
+                              <CardTitle>{defaultMessage.Correg.x.title} (X<sub>i</sub>):</CardTitle>
+                              <InputGroup className={this.state.focusedX}>
+                                <InputGroupAddon addonType="prepend">
+                                  <InputGroupText><i className="fas fa-thumbtack"></i></InputGroupText>
+                                </InputGroupAddon>
+                                <Input
+                                  type="text"
+                                  name="VarX"
+                                  value={this.state.VarX}
+                                  placeholder={defaultMessage.Correg.x.placeholder}
+                                  onChange={this.handleChange}
+                                  onFocus={() => {
+                                    this.setState({
+                                      focusedX: "input-group-focus"
+                                    });
+                                  }}
+                                  onBlur={() => {
+                                    this.setState({
+                                      focusedX: ""
+                                    });
+                                  }}
+                                />
+                              </InputGroup>
+                            </FormGroup><br />
+                            <FormGroup>
+                              <CardTitle>X<sub>i</sub> - {this.state.VarX}:</CardTitle>
+                              {!this.state.dispcsv ? (
+                                <TagInputNaN
+                                  tagStyle={`background: linear-gradient(to bottom right, #550300, #d32a23, #550300);`}
+                                  placeholder={defaultMessage.Correg.x.values.title}
+                                  tags={this.state.tagsX}
+                                  onTagsChanged={this.onTagsChangedX}
+                                />
+                              ) :
+                                <ul className="list-group mt-2">
+                                  {tagcsvX}
+                                </ul>}
+                            </FormGroup>
+                            <br />
+                          </Col>
                           <Col sm>
-                            <CardTitle>{defaultMessage.Correg.y.title} (Y<sub>i</sub>):</CardTitle>
-                            <Input
-                              type="text"
-                              name="VarY"
-                              value={this.state.VarY}
-                              placeholder={defaultMessage.Correg.y.placeholder}
-                              onChange={this.handleChange}
-                            /><br />
-                            <CardTitle>Y<sub>i</sub>  - {this.state.VarY}:</CardTitle>
-                            {!this.state.dispcsv ? (
-                              <TagInputNaN
-                                tagStyle={`background: linear-gradient(to bottom right, #550300, #d32a23, #550300);`}
-                                placeholder={defaultMessage.Correg.y.values.title}
-                                tags={this.state.tagsY}
-                                onTagsChanged={this.onTagsChangedY}
-                              />
-                            ) :
-                              <ul className="list-group mt-2">
-                                {tagcsvY}
-                              </ul>}
-                            <br /></Col>
+                            <FormGroup>
+                              <CardTitle>{defaultMessage.Correg.y.title} (Y<sub>i</sub>):</CardTitle>
+                              <InputGroup className={this.state.focusedY}>
+                                <InputGroupAddon addonType="prepend">
+                                  <InputGroupText><i className="fas fa-thumbtack"></i></InputGroupText>
+                                </InputGroupAddon>
+                                <Input
+                                  type="text"
+                                  name="VarY"
+                                  value={this.state.VarY}
+                                  placeholder={defaultMessage.Correg.y.placeholder}
+                                  onChange={this.handleChange}
+                                  onFocus={() => {
+                                    this.setState({
+                                      focusedY: "input-group-focus"
+                                    });
+                                  }}
+                                  onBlur={() => {
+                                    this.setState({
+                                      focusedY: ""
+                                    });
+                                  }}
+                                />
+                              </InputGroup>
+                            </FormGroup><br />
+                            <FormGroup>
+                              <CardTitle>Y<sub>i</sub>  - {this.state.VarY}:</CardTitle>
+                              {!this.state.dispcsv ? (
+                                <TagInputNaN
+                                  tagStyle={`background: linear-gradient(to bottom right, #550300, #d32a23, #550300);`}
+                                  placeholder={defaultMessage.Correg.y.values.title}
+                                  tags={this.state.tagsY}
+                                  onTagsChanged={this.onTagsChangedY}
+                                />
+                              ) :
+                                <ul className="list-group mt-2">
+                                  {tagcsvY}
+                                </ul>}
+                            </FormGroup>
+                            <br />
+                          </Col>
                         </Row>
                         <Nav style={{ justifyContent: 'center' }}>
                           <NavItem style={{ width: '220px' }}>

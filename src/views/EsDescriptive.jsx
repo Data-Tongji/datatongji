@@ -1,12 +1,9 @@
 import React from "react";
-import { MDBRow, MDBCol } from 'mdbreact';
-import { Save, AddCircle, Download } from 'grommet-icons';
+import { Save, AddCircle } from 'grommet-icons';
+import classnames from 'classnames';
 import Stepper from 'react-stepper-horizontal';
 import { TagInput } from '../components/reactjs-tag-input';
 import InputRange from 'react-input-range';
-import '../assets/css/all.css';
-import '../assets/css/table.css';
-import 'react-input-range/lib/css/index.css';
 import { ComboBox } from '@progress/kendo-react-dropdowns';
 import NotificationAlert from "react-notification-alert";
 
@@ -28,6 +25,7 @@ import {
     Col,
     Nav,
     NavItem,
+    NavLink,
     Alert,
     FormGroup,
     InputGroup,
@@ -36,6 +34,8 @@ import {
     Input,
     ListGroup,
     ListGroupItem,
+    TabContent,
+    TabPane
 } from "reactstrap";
 import { Table } from 'antd';
 import { DotLoader } from 'react-spinners';
@@ -46,6 +46,9 @@ import csvicon from '../assets/img/csv.svg';
 import '../assets/css/antdtable.css';
 import "react-table/react-table.css";
 import '../assets/css/csv.css';
+import '../assets/css/all.css';
+import '../assets/css/table.css';
+import 'react-input-range/lib/css/index.css';
 
 const closest = function (el, selector, rootNode) {
     rootNode = rootNode || document.body;
@@ -71,10 +74,6 @@ var defaultMessage = localStorage.getItem('defaultLanguage') !== 'pt-br' ? requi
 class Descriptive extends React.Component {
     constructor(props) {
         super(props);
-        this.onMouseDown = this.onMouseDown.bind(this);
-        this.onDragStart = this.onDragStart.bind(this);
-        this.onDragEnter = this.onDragEnter.bind(this);
-        this.onDragEnd = this.onDragEnd.bind(this);
         this.state = {
             steps: [
                 { title: '' },
@@ -116,6 +115,7 @@ class Descriptive extends React.Component {
             dispcsv: false,
             csv: null,
             csvfile: undefined,
+            activeTab: '2',
             dragIndex: -1,
             draggedIndex: -1,
         };
@@ -197,6 +197,20 @@ class Descriptive extends React.Component {
         this.onTagsChanged = this.onTagsChanged.bind(this);
         this.onRadioBtnClick = this.onRadioBtnClick.bind(this);
         this.updateData = this.updateData.bind(this);
+        this.toggle = this.toggle.bind(this);
+        this.SendArray = this.SendArray.bind(this);
+        this.toggleModalDemo = this.toggleModalDemo.bind(this);
+        this.toggleModalHelp = this.toggleModalHelp.bind(this);
+        this.onMouseDown = this.onMouseDown.bind(this);
+        this.onDragStart = this.onDragStart.bind(this);
+        this.onDragEnter = this.onDragEnter.bind(this);
+        this.onDragEnd = this.onDragEnd.bind(this);
+    };
+
+    toggle(tab) {
+        this.setState({
+            activeTab: tab,
+        });
     };
 
     onDismissCSV = () => {
@@ -238,7 +252,7 @@ class Descriptive extends React.Component {
         Papa.parse(csvfile, {
             skipEmptyLines: 'greedy',
             encoding: "ISO-8859-1",
-            dynamicTyping: true,
+            // dynamicTyping: true,
             keepEmptyRows: false,
             complete: this.updateData,
             header: true,
@@ -361,6 +375,7 @@ class Descriptive extends React.Component {
 
     async SendArray() {
         let aux = [];
+        this.setState({ loading: true });
         if (this.state.Type === 'Qualitative' && this.state.rSelected === 'Ordinal') {
             for (let i = 0; i < this.state.vet.length; i++) {
                 aux.splice(i, 0,
@@ -389,7 +404,7 @@ class Descriptive extends React.Component {
                 'Authorization': localStorage.getItem('token')
             }),
         };
-        try {//https://datatongji-backend.herokuapp.com
+        try {
             const response = await fetch('https://datatongji-backend.herokuapp.com/descriptive/simple_frequency', requestInfo);
             var result = await response.json();
             if (response.ok) {
@@ -456,7 +471,6 @@ class Descriptive extends React.Component {
                 },
                 "language": localStorage.getItem('defaultLanguage'),
             };
-            console.log(JSON.stringify(body));
             this.saveChanges(body);
         };
     }
@@ -702,15 +716,16 @@ class Descriptive extends React.Component {
 
     async inputValidation() {
         if (this.state.stepPosition === 0) {
-            if (this.state.PopAmost === "") {
-                return this.notify('br', defaultMessage.Descriptive.distrib.error, 'fas fa-exclamation-triangle', 'danger');
-            }
-            else if (this.state.Var == null || this.state.Var.trim() === "") {
+            if (this.state.Var == null || this.state.Var.trim() === "") {
                 return this.notify('br', defaultMessage.Descriptive.Var.error, 'fas fa-exclamation-triangle', 'danger');
             } else if (this.state.tags === null || this.state.tags.length === 0) {
                 return this.notify('br', defaultMessage.Descriptive.Tags.error, 'fas fa-exclamation-triangle', 'danger');
             }
+            else if (this.state.PopAmost === "") {
+                return this.notify('br', defaultMessage.Descriptive.distrib.error, 'fas fa-exclamation-triangle', 'danger');
+            }
             else {
+                this.setState({ loading: true });
                 await this.SendArray();
                 return true;
             }
@@ -720,6 +735,7 @@ class Descriptive extends React.Component {
                 return this.notify('br', defaultMessage.Descriptive.Type.error, 'fas fa-exclamation-triangle', 'danger');
             }
             else {
+                this.setState({ loading: true });
                 await this.SendArray();
                 return true;
             }
@@ -792,6 +808,21 @@ class Descriptive extends React.Component {
             />
         };
 
+        let sendBtn = <i className="tim-icons icon-double-right" />;
+        if (this.state.loading === true) {
+            sendBtn = <DotLoader
+                css={`
+                      display: block;
+                      margin: 0 auto;
+                      border-color: red;
+                      `}
+                sizeUnit={"px"}
+                size={20}
+                color={'#fff'}
+                loading={this.state.loading}
+            />
+        };
+
         let ResultItems;
 
         if (Position === 0) {
@@ -805,18 +836,18 @@ class Descriptive extends React.Component {
                 </Button>
             );
             button.push(
-                <Button
+                <Button disabled={this.state.loading}
                     className="btn-round btn-icon animation-on-hover"
                     color="primary"
                     onClick={() => this.positionStep(1)}>
-                    <i className="tim-icons icon-double-right" />
+                    {sendBtn}
                 </Button>);
             Card_Body = <CardBody
-                style={{ marginLeft: '10%', marginRight: '10%' }}
+                style={{ marginLeft: '5%', marginRight: '5%' }}
             >
                 <Container >
                     <Row>
-                        <Col sm>
+                        <Col sm md="9">
                             <FormGroup>
                                 <CardTitle>{defaultMessage.Descriptive.Var.title}</CardTitle>
                                 <InputGroup className={this.state.focused}>
@@ -834,31 +865,31 @@ class Descriptive extends React.Component {
                                     />
                                 </InputGroup>
                             </FormGroup>
+                            <FormGroup>
+                                <CardTitle>{defaultMessage.Descriptive.Tags.title}</CardTitle>
+                                {!this.state.dispcsv ? (
+                                    <TagInput
+                                        tagStyle={`background: linear-gradient(to bottom right, #550300, #d32a23, #550300);`}
+                                        placeholder={defaultMessage.Descriptive.Tags.placeholder}
+                                        tags={this.state.tags}
+                                        onTagsChanged={this.onTagsChanged}
+                                    />
+                                ) :
+                                    <ul className="list-group mt-2">
+                                        {tagcsv}
+                                    </ul>}
+                            </FormGroup>
                         </Col>
                         <Col sm>
                             <FormGroup>
                                 <CardTitle>{defaultMessage.Descriptive.distrib.title}</CardTitle>
-                                <ButtonGroup>
+                                <ButtonGroup vertical style={{ width: '100%' }}>
                                     <Button color={this.buttoncolor('PopAmost', 'Population')} onClick={() => this.onRadioBtnClick('PopAmost', 'Population')} active={this.state.PopAmost === 'Population'}>{defaultMessage.Descriptive.popamost.pop}</Button>
                                     <Button color={this.buttoncolor('PopAmost', 'Sample')} onClick={() => this.onRadioBtnClick('PopAmost', 'Sample')} active={this.state.PopAmost === 'Sample'}>{defaultMessage.Descriptive.popamost.amost}</Button>
                                 </ButtonGroup>
                             </FormGroup>
                         </Col>
                     </Row>
-                    <FormGroup>
-                        <CardTitle>{defaultMessage.Descriptive.Tags.title}</CardTitle>
-                        {!this.state.dispcsv ? (
-                            <TagInput
-                                tagStyle={`background: linear-gradient(to bottom right, #550300, #d32a23, #550300);`}
-                                placeholder={defaultMessage.Descriptive.Tags.placeholder}
-                                tags={this.state.tags}
-                                onTagsChanged={this.onTagsChanged}
-                            />
-                        ) :
-                            <ul className="list-group mt-2">
-                                {tagcsv}
-                            </ul>}
-                    </FormGroup>
                     <br />
                     <Nav style={{ justifyContent: 'center' }}>
                         <NavItem style={{ width: '220px' }}>
@@ -933,30 +964,30 @@ class Descriptive extends React.Component {
                 </Button>
             );
             button.push(
-                <Button
+                <Button disabled={this.state.loading}
                     className="btn-round btn-icon animation-on-hover"
                     color="primary"
                     onClick={() => this.positionStep(1)}>
-                    <i className="tim-icons icon-double-right" />
+                    {sendBtn}
                 </Button>);
             if (this.state.Type === 'Qualitative') {
-                ButtonType = <ButtonGroup>
+                ButtonType = <ButtonGroup vertical style={{ width: '100%' }}>
                     <Button color={this.buttoncolor('QntQuali', 'Nominal')} onClick={() => this.onRadioBtnClick('QntQuali', 'Nominal')} active={this.state.rSelected === 'Nominal'}>{defaultMessage.Descriptive.quali.type1}</Button>
                     <Button color={this.buttoncolor('QntQuali', 'Ordinal')} onClick={() => this.onRadioBtnClick('QntQuali', 'Ordinal')} active={this.state.rSelected === 'Ordinal'}>{defaultMessage.Descriptive.quali.type2}</Button>
                 </ButtonGroup>
             } else if (this.state.Type === 'Quantitative') {
-                ButtonType = <ButtonGroup>
-                    <Button color={this.buttoncolor('QntQuali', 'Continuous')} onClick={() => this.onRadioBtnClick('QntQuali', 'Continuous')} active={this.state.rSelected === 'Continuous'}>{defaultMessage.Descriptive.quant.type1}</Button>
-                    <Button color={this.buttoncolor('QntQuali', 'Discrete')} onClick={() => this.onRadioBtnClick('QntQuali', 'Discrete')} active={this.state.rSelected === 'Discrete'}>{defaultMessage.Descriptive.quant.type2}</Button>
+                ButtonType = <ButtonGroup vertical style={{ width: '100%' }}>
+                    <Button color={this.buttoncolor('QntQuali', 'Continuous')} onClick={() => this.onRadioBtnClick('QntQuali', 'Continuous')} active={this.state.rSelected === 'Continuous'}>{defaultMessage.Descriptive.quant.type2}</Button>
+                    <Button color={this.buttoncolor('QntQuali', 'Discrete')} onClick={() => this.onRadioBtnClick('QntQuali', 'Discrete')} active={this.state.rSelected === 'Discrete'}>{defaultMessage.Descriptive.quant.type1}</Button>
                 </ButtonGroup>
             }
-            Card_Body = <CardBody style={{ marginLeft: '10%', marginRight: '10%' }}>
+            Card_Body = <CardBody style={{ marginLeft: '5%', marginRight: '5%' }}>
                 <Container >
                     <Row>
                         <Col sm>
                             <FormGroup>
                                 <CardTitle>{defaultMessage.Descriptive.distrib.title}</CardTitle>
-                                <ButtonGroup>
+                                <ButtonGroup vertical style={{ width: '100%' }}>
                                     <Button disabled={true} color={this.buttoncolor('PopAmost', 'Population')} onClick={() => this.onRadioBtnClick('PopAmost', 'Population')} active={this.state.PopAmost === 'Population'}>{defaultMessage.Descriptive.popamost.pop}</Button>
                                     <Button disabled={true} color={this.buttoncolor('PopAmost', 'Sample')} onClick={() => this.onRadioBtnClick('PopAmost', 'Sample')} active={this.state.PopAmost === 'Sample'}>{defaultMessage.Descriptive.popamost.amost}</Button>
                                 </ButtonGroup>
@@ -980,14 +1011,14 @@ class Descriptive extends React.Component {
             </CardBody>
         } else if (Position === 2) {
             if (this.state.Type === 'Qualitative') {
-                ButtonType = <ButtonGroup>
+                ButtonType = <ButtonGroup vertical style={{ width: '100%' }}>
                     <Button disabled={true} color={this.buttoncolor('QntQuali', 'Nominal')} onClick={() => this.onRadioBtnClick('QntQuali', 'Nominal')} active={this.state.rSelected === 'Nominal'}>{defaultMessage.Descriptive.quali.type1}</Button>
                     <Button disabled={true} color={this.buttoncolor('QntQuali', 'Ordinal')} onClick={() => this.onRadioBtnClick('QntQuali', 'Ordinal')} active={this.state.rSelected === 'Ordinal'}>{defaultMessage.Descriptive.quali.type2}</Button>
                 </ButtonGroup>
             } else if (this.state.Type === 'Quantitative') {
-                ButtonType = <ButtonGroup>
-                    <Button disabled={true} color={this.buttoncolor('QntQuali', 'Continuous')} onClick={() => this.onRadioBtnClick('QntQuali', 'Continuous')} active={this.state.rSelected === 'Continuous'}>{defaultMessage.Descriptive.quant.type1}</Button>
-                    <Button disabled={true} color={this.buttoncolor('QntQuali', 'Discrete')} onClick={() => this.onRadioBtnClick('QntQuali', 'Discrete')} active={this.state.rSelected === 'Discrete'}>{defaultMessage.Descriptive.quant.type2}</Button>
+                ButtonType = <ButtonGroup vertical style={{ width: '100%' }}>
+                    <Button disabled={true} color={this.buttoncolor('QntQuali', 'Continuous')} onClick={() => this.onRadioBtnClick('QntQuali', 'Continuous')} active={this.state.rSelected === 'Continuous'}>{defaultMessage.Descriptive.quant.type2}</Button>
+                    <Button disabled={true} color={this.buttoncolor('QntQuali', 'Discrete')} onClick={() => this.onRadioBtnClick('QntQuali', 'Discrete')} active={this.state.rSelected === 'Discrete'}>{defaultMessage.Descriptive.quant.type1}</Button>
                 </ButtonGroup>
             }
             button = []
@@ -1037,8 +1068,26 @@ class Descriptive extends React.Component {
                         className="justify-content-between">{this.state.MedSep} ({((this.state.value * (100 / this.state.step)) / 100)}): <Badge pill>{this.state.percentile[this.state.value - 1]}</Badge></ListGroupItem>
                 </ListGroup>;
             }
-            Card_Body = <CardBody style={{ marginLeft: '10%', marginRight: '10%' }}>
-                <Container >
+            Card_Body =
+                <CardBody style={{ marginLeft: '5%', marginRight: '5%', marginTop: '-2%' }}>
+                    <Nav tabs>
+                        <NavItem>
+                            <NavLink
+                                className={classnames({ active: this.state.activeTab === '1' })}
+                                onClick={() => { this.toggle('1'); }}
+                            >
+                                {defaultMessage.Descriptive.Nav.pn1}
+                            </NavLink>
+                        </NavItem>
+                        <NavItem>
+                            <NavLink
+                                className={classnames({ active: this.state.activeTab === '2' })}
+                                onClick={() => { this.toggle('2'); }}
+                            >
+                                {defaultMessage.Descriptive.Nav.pn2}
+                            </NavLink>
+                        </NavItem>
+                    </Nav>
                     <Modal isOpen={this.state.modalDemo} toggle={this.toggleModalDemo}>
                         <div className="modal-header">
                             <h5 className="modal-title" id="exampleModalLabel">
@@ -1073,71 +1122,101 @@ class Descriptive extends React.Component {
                             </Button>
                         </ModalFooter>
                     </Modal>
-                    <Row>
-                        <Col sm>
-                            <FormGroup>
-                                <CardTitle>{defaultMessage.Descriptive.distrib.title}</CardTitle>
-                                <ButtonGroup>
-                                    <Button disabled={true} color={this.buttoncolor('PopAmost', 'Population')} onClick={() => this.onRadioBtnClick('PopAmost', 'Population')} active={this.state.PopAmost === 'Population'}>{defaultMessage.Descriptive.popamost.pop}</Button>
-                                    <Button disabled={true} color={this.buttoncolor('PopAmost', 'Sample')} onClick={() => this.onRadioBtnClick('PopAmost', 'Sample')} active={this.state.PopAmost === 'Sample'}>{defaultMessage.Descriptive.popamost.amost}</Button>
-                                </ButtonGroup>
-                            </FormGroup>
-                            <FormGroup>
-                                <CardTitle>{defaultMessage.Descriptive.Type.title}</CardTitle>
-                                {ButtonType}
-                            </FormGroup>
-                        </Col>
-                        <Col sm>
-                            <FormGroup>
-                                <CardTitle>{defaultMessage.Descriptive.spt.title}</CardTitle>
-                                <ComboBox value={this.state.MedSep} data={[`${defaultMessage.Descriptive.spt.type.tp4}`, `${defaultMessage.Descriptive.spt.type.tp3}`, `${defaultMessage.Descriptive.spt.type.tp2}`, `${defaultMessage.Descriptive.spt.type.tp1}`]} onChange={event => this.onChangeCB(event.target.value)} color={'primary'} style={{ color: 'black' }} /><br /><br />
-                            </FormGroup>
-                            <form>
-                                <Row>
-                                    <Col className="text-center text-md-right" sm={{ size: 2 }}>
-                                        <Button color={'primary'}
-                                            onClick={() => this.RangeChange('-')}
-                                            size="sm">-</Button>
-                                    </Col>
-                                    <Col className="text-center text-md-right" sm={{ size: 7 }}>
-                                        <InputRange
-                                            style={{ backgroundColor: '#000' }}
-                                            step={this.state.step}
-                                            maxValue={100}
-                                            minValue={0}
-                                            value={this.state.value}
-                                            formatLabel={value => `${value}%`}
-                                            onChange={value =>
-                                                this.setState({
-                                                    value
-                                                })} ></InputRange>
-                                    </Col>
-                                    <Col className="text-center text-md-left" sm={{ size: 1 }}>
-                                        <Button color={'primary'}
-                                            onClick={() => this.RangeChange('+')}
-                                            size="sm">+</Button>
-                                    </Col>
-                                </Row>
-                            </form>
-                        </Col>
-                    </Row>
-                    <div><br /><br />
-                        <table id='students' hover>
-                            <tbody>
-                                <tr>{this.renderTableHeader()}</tr>
-                                {this.renderTableData()}
-                            </tbody>
-                        </table><br />
-                        {ResultItems}
-                    </div>
-                    <br /><div className="chart-area">
-                        <Doughnut
-                            data={this.state.data}
-                            options={'sss'}
-                        />
-                    </div>
-                </Container>
-            </CardBody>
+                    <TabContent activeTab={this.state.activeTab}><br />
+                        <TabPane tabId="1">
+                            <Row>
+                                <Col sm>
+                                    <FormGroup>
+                                        <CardTitle>{defaultMessage.Descriptive.distrib.title}</CardTitle>
+                                        <ButtonGroup vertical style={{ width: '100%' }}>
+                                            <Button disabled={true} color={this.buttoncolor('PopAmost', 'Population')} onClick={() => this.onRadioBtnClick('PopAmost', 'Population')} active={this.state.PopAmost === 'Population'}>{defaultMessage.Descriptive.popamost.pop}</Button>
+                                            <Button disabled={true} color={this.buttoncolor('PopAmost', 'Sample')} onClick={() => this.onRadioBtnClick('PopAmost', 'Sample')} active={this.state.PopAmost === 'Sample'}>{defaultMessage.Descriptive.popamost.amost}</Button>
+                                        </ButtonGroup>
+                                    </FormGroup>
+                                </Col>
+                                <Col sm>
+                                    <FormGroup>
+                                        <CardTitle>{defaultMessage.Descriptive.Type.title}</CardTitle>
+                                        {ButtonType}
+                                    </FormGroup>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col sm>
+                                    <div><br /><br />
+                                        <table id='students' hover>
+                                            <tbody>
+                                                <tr>{this.renderTableHeader()}</tr>
+                                                {this.renderTableData()}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </Col>
+                            </Row>
+                        </TabPane>
+                        <TabPane tabId="2">
+                            <Row>
+                                <Col sm>
+                                    <FormGroup>
+                                        <CardTitle>{defaultMessage.Descriptive.spt.title}:</CardTitle>
+                                        <ComboBox value={this.state.MedSep} data={[`${defaultMessage.Descriptive.spt.type.tp4}`, `${defaultMessage.Descriptive.spt.type.tp3}`, `${defaultMessage.Descriptive.spt.type.tp2}`, `${defaultMessage.Descriptive.spt.type.tp1}`]} onChange={event => this.onChangeCB(event.target.value)} color={'primary'} style={{ color: 'black' }} /><br /><br />
+                                    </FormGroup>
+                                </Col>
+                                <Col sm md='8'>
+                                    <FormGroup>
+                                        <CardTitle>{defaultMessage.Descriptive.spt.title2}:</CardTitle>
+                                        <form >
+                                            <Row style={{ marginTop: '20px' }}>
+                                                <Col className="text-center text-md-left" sm={{ size: 1 }}>
+                                                    <Button color={'primary'}
+                                                        className="btn-round btn-icon animation-on-hover"
+                                                        onClick={() => this.RangeChange('-')}
+                                                        size="sm">-
+                                                    </Button>
+                                                </Col>
+                                                <Col className="text-center" sm md='9'>
+                                                    <Container style={{ width: '98%', justifyItems: 'center', alignContent: 'center' }}>
+                                                        <InputRange
+                                                            step={this.state.step}
+                                                            maxValue={100}
+                                                            minValue={0}
+                                                            value={this.state.value}
+                                                            formatLabel={value => `${value}%`}
+                                                            onChange={value =>
+                                                                this.setState({
+                                                                    value
+                                                                })} /></Container>
+                                                </Col>
+                                                <Col className="text-center text-md-left" sm md='1'>
+                                                    <Button color={'primary'}
+                                                        className="btn-round btn-icon animation-on-hover"
+                                                        onClick={() => this.RangeChange('+')}
+                                                        size="sm">+</Button>
+                                                </Col>
+                                            </Row>
+                                        </form>
+                                    </FormGroup>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col sm>
+                                    <br />
+                                    {ResultItems}
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col sm>
+                                    <br /><div className="chart-area">
+                                        <Doughnut
+                                            data={this.state.data}
+                                            options={'sss'}
+                                        />
+                                    </div>
+                                </Col>
+                            </Row>
+                        </TabPane>
+                    </TabContent>
+                </CardBody>
         }
         return (
             <>

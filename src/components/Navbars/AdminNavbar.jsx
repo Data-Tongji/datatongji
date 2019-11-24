@@ -139,7 +139,7 @@ class AdminNavbar extends React.Component {
                 </div>
                 <NavbarBrand 
                 onClick={e => e.preventDefault()}
-                style={{fontStyle: 'bold'}}>
+                style={{fontStyle: 'bold', color: 'gray', fontSize: '16px'}}>
                   {this.props.brandText}
                 </NavbarBrand>
               </div>
