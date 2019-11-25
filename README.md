@@ -45,7 +45,7 @@ yarn start
 
 ## Contributing
 
-Please read [CONTRIBUTING] (https://github.com/Data-Tongji/datatongji/blob/master/CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
+Please read [CONTRIBUTING](https://github.com/Data-Tongji/datatongji/blob/master/CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
 
 ## License
 
