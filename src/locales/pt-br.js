@@ -59,6 +59,7 @@ module.exports = {
                   "ac2": "Sobre",
                   "ac3": "Fale com a gente",
                   "ac4": "Registrar",
+                  "ac5": "Entrar"
             }
       },
       "Profile": {

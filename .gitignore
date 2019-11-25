@@ -1,0 +1,17 @@
+build
+
+node_modules
+.firebase
+.vscode
+dist
+public
+
+package-lock.json
+yarn.lock
+tsconfig.json
+Procfile
+firebase.json
+.firebaserc
+.env
+
+build

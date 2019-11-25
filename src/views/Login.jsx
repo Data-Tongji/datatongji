@@ -242,7 +242,7 @@ export class Login extends React.Component {
 
   render() {
     let register;
-    let actionLoginText = this.state.defaultMessage.NavBar.auth.ac1;
+    let actionLoginText = this.state.defaultMessage.NavBar.auth.ac5;
     let nameLabel;
     document.body.classList.remove("white-content")
     if (this.state.register === true) {
