@@ -1,7 +1,16 @@
 build
 
 node_modules
+.firebase
+.vscode
+dist
+public
 
 package-lock.json
+tsconfig.json
+Procfile
+firebase.json
+.firebaserc
+.env
 
 build
