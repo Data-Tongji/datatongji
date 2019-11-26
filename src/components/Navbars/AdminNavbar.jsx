@@ -90,7 +90,7 @@ class AdminNavbar extends React.Component {
     this.props.history.push("/auth/login");
   };
   // eslint-disable-next-line no-dupe-class-members
-  async componentDidMount() {
+  async componentWillMount() {
     const token = localStorage.getItem('token');
 
     const response = await fetch(`https://datatongji-backend.herokuapp.com/auth/get_user?token=${token}`)
