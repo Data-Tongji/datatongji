@@ -5,12 +5,12 @@
 # Data Tongjì
 > <p align="justify">Data Tongjì is a website made for educational purposes to portray specific statistic analysis, based on Node.JS and ReactJS. At this repo, you will find the frontend of the application.</p>
 
-<p align="justify">
-This project was developed in order to optimize some statistic analyzes (Descriptive Analysis, Probability and Correlation/Regression) by creating a web system which focuses on the presentation and interpretation of the expected data analysis results.
-</p>
-
 <p align="center">
   <img src="src/assets/img/banner.png" width="800px"/>
+</p>
+
+<p align="justify">
+This project was developed in order to optimize some statistic analyzes (Descriptive Analysis, Probability and Correlation/Regression) by creating a web system which focuses on the presentation and interpretation of the expected data analysis results.
 </p>
 
 ## Technologies
@@ -18,6 +18,10 @@ This project was developed in order to optimize some statistic analyzes (Descrip
   - Reactjs;
   - Node.js ([Backend](https://github.com/Data-Tongji/datatongji-backend));
   - [Check package.json](/src/package.json).
+  
+<p align="center">
+  <img src="src/assets/img/demonstration.gif" width="800px"/>
+</p>
 
 ## Installation
 
