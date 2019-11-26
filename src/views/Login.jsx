@@ -2,6 +2,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import NotificationAlert from "react-notification-alert";
+import { Redirect } from "react-router-dom";
 import {
   Row,
   ButtonGroup,
@@ -44,7 +45,7 @@ const isAuthenticated = () => {
   if (localStorage.hasOwnProperty('token')) {
     authenticate_token();
     if (localStorage.getItem('valid') === 'OK') {
-     
+
       return true;
     } else { return false }
   } else {
@@ -71,7 +72,7 @@ export class Login extends React.Component {
     this.register = this.register.bind(this);
   };
 
-  componentWillMount() {    
+  componentWillMount() {
     if (localStorage.getItem('authLanguage') !== 'pt-br') {
       localStorage.setItem('authLanguage', 'en-us');
       this.setState({
@@ -123,6 +124,7 @@ export class Login extends React.Component {
       if (response.ok) {
         localStorage.setItem('token', token);
         localStorage.setItem('valid', "OK");
+        localStorage.setItem('reload', "0");
         await this.getUserConfig(token);
         this.setState({
           loading: false
@@ -379,17 +381,17 @@ export class Login extends React.Component {
                   {actionLoginText}
                 </Button>
               </CardBody>
-                <div className="button-container">
-                  <Button className="btn-icon btn-round" color="primary"
-                    onClick={this.userRegister}>
-                    <i className="fas fa-user-plus"></i>
+              <div className="button-container">
+                <Button className="btn-icon btn-round" color="primary"
+                  onClick={this.userRegister}>
+                  <i className="fas fa-user-plus"></i>
+                </Button>
+                <Link to="/auth/forgotpassword">
+                  <Button className="btn-icon btn-round" color="primary">
+                    <i className="fas fa-unlock-alt"></i>
                   </Button>
-                  <Link to="/auth/forgotpassword">
-                    <Button className="btn-icon btn-round" color="primary">
-                      <i className="fas fa-unlock-alt"></i>
-                    </Button>
-                  </Link>
-                </div>
+                </Link>
+              </div>
             </Card>
           </Col>
         </Row>

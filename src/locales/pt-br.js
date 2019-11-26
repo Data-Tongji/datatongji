@@ -4,6 +4,11 @@ module.exports = {
             "p1": "Uma boa definição de estatística é a de ser um conjunto de métodos especialmente apropriados à coleta, à apresentação (organização, resumo e descrição), à análise e à interpretação de dados de observação, tendo como objetivo a compreensão de uma realidade específica para a tomada da decisão. Este projeto foi desenvolvido com intuito de otimizar tais análises através da criação de um sistema web, o qual tem foco na apresentação e interpretação de resultados esperados das análises de dados.",
             "p2": "Em outras palavras, o Data Tongjì atende todo o tipo de usuário que está interessado em fazer cálculos estatísticos (limitado a todas as operações da Estatística Descritiva, Probabilidade, Correlação e Regressão) com rapidez e eficiência. Sua interface é agradável e harmoniosa e não requer conhecimentos avançados para sua utilização, o usuário deverá informar os dados que serão analisados, o software irá realizar os cálculos e ele deverá saber interpretar os resultados."
       },
+      "Dashboard": {
+            "title": "Bem Vindo",
+            "txt1": "Olá",
+            "txt2": "obrigado por usar o Data Tongjì!! Selecione um dos tipos de análises localizadas no menu principal para iniciar os seus cálculos. Você pode modificar as suas configurações de usuário (idioma, tema e foto de perfil) na página de Perfil, localizada no menu do canto superior direito!",
+      },
       "Menu": {
             "Correg": "Correlação / Regressão",
             "Dash": "Menu Principal",

@@ -11,15 +11,8 @@ import {
   Card,
   CardHeader,
   CardBody,
-  CardTitle,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-  UncontrolledDropdown,
-  Label,
-  FormGroup,
-  Input,
-  Table,
+  Container,
+  CardText,
   Row,
   Col,
   UncontrolledTooltip
@@ -44,6 +37,13 @@ class Dashboard extends React.Component {
     })
   };
 
+  componentWillMount() {
+    if (localStorage.getItem('reload') === '0') {
+      localStorage.setItem('reload', '1')
+      window.location.reload();
+    };
+  };
+
   setBgChartData = name => {
     this.setState({
       bigChartData: name
@@ -65,8 +65,30 @@ class Dashboard extends React.Component {
       <>
         <div className="content">
           <div class="notranslate">
-            <Card className="card-tasks">
-              <CardHeader>
+            <Card className="card-user" style={{ height: '460px' }}>
+              <CardText />
+              <div className="author" onmousedown='return false' onselectstart='return false'>
+                <div className="block block-one" />
+                <div className="block block-two" />
+                <div className="block block-three" />
+                <div className="block block-four" />
+                
+                <span class="unselectable">
+                  <img
+                    alt="..."
+                    style={{ maxWidth: '30%' }}
+                    width="250px"
+                    src={require("../assets/img/logo.png")}
+                  /></span>
+              </div>
+              <CardHeader style={{ textAlign: 'center', fontSize: '34px' }}><b>{defaultMessage.Dashboard.title}!</b></CardHeader>
+              <br /><CardBody style={{ textAlign: 'justify' }}>
+                <span class="unselectable" style={{ textAlign: 'justify' }}>
+                  {defaultMessage.Dashboard.txt1} <b>{localStorage.getItem('userName')}</b>, {defaultMessage.Dashboard.txt2 + ' '}
+                </span>
+              </CardBody>
+
+              {/* <CardHeader>
                 <Col sm>
                   <ButtonGroup
                     className="btn-group-toggle float-left"
@@ -133,10 +155,10 @@ class Dashboard extends React.Component {
                         type="radio"
                       />
                       <span className="d-none d-sm-block d-md-block d-lg-block d-xl-block">
-                      <span style={{ color: `${this.returnColor('data3')}` }}>{defaultMessage.Correg.title}</span>
-                         </span>
+                        <span style={{ color: `${this.returnColor('data3')}` }}>{defaultMessage.Correg.title}</span>
+                      </span>
                       <span className="d-block d-sm-none">
-                        <i className="tim-icons icon-vector" style={{ color: `${this.returnColor('data3')}` }}/>
+                        <i className="tim-icons icon-vector" style={{ color: `${this.returnColor('data3')}` }} />
                       </span>
                     </Button>
                   </ButtonGroup>
@@ -173,8 +195,8 @@ class Dashboard extends React.Component {
                     </DropdownMenu>
                   </UncontrolledDropdown></Col>
 
-              </CardHeader>
-              <CardBody>
+              </CardHeader> */}
+              {/* <CardBody>
                 <div className="table-full-width table-responsive">
                   <Table>
                     <tbody>
@@ -254,154 +276,11 @@ class Dashboard extends React.Component {
                             Edit Task
                             </UncontrolledTooltip>
                         </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <FormGroup check>
-                            <Label check>
-                              <Input defaultValue="" type="checkbox" />
-                              <span className="form-check-sign">
-                                <span className="check" />
-                              </span>
-                            </Label>
-                          </FormGroup>
-                        </td>
-                        <td>
-                          <p className="title">Solve the issues</p>
-                          <p className="text-muted">
-                            Fifty percent of all respondents said they would
-                            be more likely to shop at a company
-                            </p>
-                        </td>
-                        <td className="td-actions text-right">
-                          <Button
-                            color="link"
-                            id="tooltip362404923"
-                            title=""
-                            type="button"
-                          >
-                            <i className="tim-icons icon-pencil" />
-                          </Button>
-                          <UncontrolledTooltip
-                            delay={0}
-                            target="tooltip362404923"
-                            placement="right"
-                          >
-                            Edit Task
-                            </UncontrolledTooltip>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <FormGroup check>
-                            <Label check>
-                              <Input defaultValue="" type="checkbox" />
-                              <span className="form-check-sign">
-                                <span className="check" />
-                              </span>
-                            </Label>
-                          </FormGroup>
-                        </td>
-                        <td>
-                          <p className="title">Release v2.0.0</p>
-                          <p className="text-muted">
-                            Ra Ave SW, Seattle, WA 98116, SUA 11:19 AM
-                            </p>
-                        </td>
-                        <td className="td-actions text-right">
-                          <Button
-                            color="link"
-                            id="tooltip818217463"
-                            title=""
-                            type="button"
-                          >
-                            <i className="tim-icons icon-pencil" />
-                          </Button>
-                          <UncontrolledTooltip
-                            delay={0}
-                            target="tooltip818217463"
-                            placement="right"
-                          >
-                            Edit Task
-                            </UncontrolledTooltip>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <FormGroup check>
-                            <Label check>
-                              <Input defaultValue="" type="checkbox" />
-                              <span className="form-check-sign">
-                                <span className="check" />
-                              </span>
-                            </Label>
-                          </FormGroup>
-                        </td>
-                        <td>
-                          <p className="title">Export the processed files</p>
-                          <p className="text-muted">
-                            The report also shows that consumers will not
-                            easily forgive a company once a breach exposing
-                            their personal data occurs.
-                            </p>
-                        </td>
-                        <td className="td-actions text-right">
-                          <Button
-                            color="link"
-                            id="tooltip831835125"
-                            title=""
-                            type="button"
-                          >
-                            <i className="tim-icons icon-pencil" />
-                          </Button>
-                          <UncontrolledTooltip
-                            delay={0}
-                            target="tooltip831835125"
-                            placement="right"
-                          >
-                            Edit Task
-                            </UncontrolledTooltip>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <FormGroup check>
-                            <Label check>
-                              <Input defaultValue="" type="checkbox" />
-                              <span className="form-check-sign">
-                                <span className="check" />
-                              </span>
-                            </Label>
-                          </FormGroup>
-                        </td>
-                        <td>
-                          <p className="title">Arival at export process</p>
-                          <p className="text-muted">
-                            Capitol Hill, Seattle, WA 12:34 AM
-                            </p>
-                        </td>
-                        <td className="td-actions text-right">
-                          <Button
-                            color="link"
-                            id="tooltip217595172"
-                            title=""
-                            type="button"
-                          >
-                            <i className="tim-icons icon-pencil" />
-                          </Button>
-                          <UncontrolledTooltip
-                            delay={0}
-                            target="tooltip217595172"
-                            placement="right"
-                          >
-                            Edit Task
-                            </UncontrolledTooltip>
-                        </td>
-                      </tr>
+                      </tr>                             
                     </tbody>
                   </Table>
                 </div>
-              </CardBody>
+              </CardBody> */}
             </Card>
           </div>
         </div>

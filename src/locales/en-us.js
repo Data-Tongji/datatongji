@@ -4,6 +4,11 @@ module.exports = {
             "p1": "A good definition about statistics is based on being a set of methods especially appropriated for collecting, presenting, analyzing and interpreting observation data, it aims the understanding of a specific reality and help in decision making scenarios. This project was developed in order to optimize such analyzes by creating a web system, which focuses on the presentation and interpretation of the expected data analysis results.",
             "p2": "In other words, Data Tongjì meets the needs of all users who are interested in making statistical analysis or calculations (limited to Descriptive Analysis, Probability and Correlation and Regression operations), quickly and efficiently. It's interface is pleasant and harmonious and does not require advanced knowledge for it's use, the user must inform the data to be analyzed, the software will perform the calculations and the user should know how to interpret the results."
       },
+      "Dashboard": {
+            "title": "Welcome",
+            "txt1": "Hello",
+            "txt2": "thank you for using Data Tongjì!! Start your calculations by selecting a type of analysis on the sidebar menu. You can also set your user preferences (language, theme and profile picture) at the Profile page on the top right menu!",
+      },
       "Menu": {
             "Correg": "Correlation / Regression",
             "Dash": "Dashboard",
@@ -157,10 +162,10 @@ module.exports = {
                         "title": "Frequency Chart (Histogram)"
                   },
                   "quali": {
-                        "title":"Frequency Chart (Pie)" 
+                        "title": "Frequency Chart (Pie)"
                   },
                   "disc": {
-                        "title":"Frequency Chart (Bar)" 
+                        "title": "Frequency Chart (Bar)"
                   },
             }
       },
