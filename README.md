@@ -4,6 +4,7 @@
 
 # Data Tongjì
 > <p align="justify">Data Tongjì is a website made for educational purposes to portray specific statistic analysis, based on Node.JS and ReactJS. At this repo, you will find the frontend of the application.</p>
+  - [Preview](https://datatongji.info/);
 
 <p align="center">
   <img src="src/assets/img/banner.png" width="800px"/>
